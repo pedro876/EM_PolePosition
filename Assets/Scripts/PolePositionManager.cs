@@ -78,6 +78,7 @@ public class PolePositionManager : NetworkBehaviour
         Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
+    /*Porcentaje de la vuelta*/
     float ComputeCarArcLength(int ID)
     {
         // Compute the projection of the car position to the closest circuit 

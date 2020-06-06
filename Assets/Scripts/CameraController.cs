@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Actualiza la posición de la cámara en función del target m_Focus y
+ * la dirección del segmento del circuito en el que se encuentra
+ */
+
 public class CameraController : MonoBehaviour
 {
     [SerializeField] public GameObject m_Focus;

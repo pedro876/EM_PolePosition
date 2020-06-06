@@ -19,7 +19,7 @@ public class PlayerController : NetworkBehaviour
     public float engineBrake = 1e+12f;
     public float footBrake = 1e+24f;
     public float topSpeed = 200f;
-    public float downForce = 100f;
+    public float downForce = 1000f;
     public float slipLimit = 0.2f;
 
     private float CurrentRotation { get; set; }

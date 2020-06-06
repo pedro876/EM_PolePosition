@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Dada una posición permite obtener el índice de segmento más cercano, la posición proyectada
+ * sobre él y la distancia al inicio del segmento
+ */
+
 public class CircuitController : MonoBehaviour
 {
     private LineRenderer m_CircuitPath;
