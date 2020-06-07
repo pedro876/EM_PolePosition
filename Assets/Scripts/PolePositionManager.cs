@@ -4,15 +4,19 @@ using System.Collections.Generic;
 using System.Text;
 using Mirror;
 using UnityEngine;
+using System.Threading;
 
 public class PolePositionManager : NetworkBehaviour
 {
-    public int numPlayers;
+    public static int maxNumPlayers=3;
     public NetworkManager networkManager;
 
-    private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>(4);
+    private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
+
+    
+    private List<CircuitProgress> m_PlayersProgresses = new List<CircuitProgress>();
 
     private void Awake()
     {
@@ -78,6 +82,13 @@ public class PolePositionManager : NetworkBehaviour
         Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
+    /*Calculo para aumenta vuelta*/
+    void IncreseLap(int ID)
+    {
+        m_Players[ID].CurrentLap++;
+        m_PlayersProgresses[ID].Reset();
+    }
+
     /*Porcentaje de la vuelta*/
     float ComputeCarArcLength(int ID)
     {
@@ -92,6 +103,8 @@ public class PolePositionManager : NetworkBehaviour
 
         float minArcL =
             this.m_CircuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
+        
+        
 
         this.m_DebuggingSpheres[ID].transform.position = carProj;
 
@@ -105,6 +118,29 @@ public class PolePositionManager : NetworkBehaviour
                        (m_Players[ID].CurrentLap - 1);
         }
 
-        return minArcL;
+        /*Comprueba si ha llegado a algun checkpoint. Hay dos casos:
+         * 1. Comprueba si acabamos de completar una vuelta, por lo que last es 0 (se resetea) y no tenemos que comparar con el checkpoint anterior.
+         * O en caso de ser un checkpoint del medio del mapa, que el anterior esté visitado. Y si nuestra posicion actual es igual a la del primer 
+         * checkpoint, se activa el bool de este checkpoint y last se aumenta en uno para empezar a comprobar el siguiente.
+         * 2. Si nos encontramos en el ultimo checkpoint. Por lo que last es el numero de puntos menos uno (porque empezamos en 0), el checkpoint 
+         * anterior está visitado y nos encontramos en el punto del circuito del checkpoint, aumentamos una vuelta con el metodo IncreseLap,
+         * que resetea los checkpoints visitados y aumenta una vuelta al jugador.
+         * 
+         * */
+        if ((m_PlayersProgresses[ID].actual == 0 || m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual - 1].visited == true) && 
+            m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].progress == (minArcL-(m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap - 1))))
+        {
+            m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].visited = true;
+            m_PlayersProgresses[ID].actual++;
+            
+        }
+        else if(m_PlayersProgresses[ID].actual== m_PlayersProgresses[ID].spots-1 && 
+            m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual-1].visited==true && 
+            m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].progress == (minArcL - (m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap - 1))))
+        {
+            IncreseLap(ID);
+        }
+        
+            return minArcL;
     }
 }
