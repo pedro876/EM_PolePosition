@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerInfo : MonoBehaviour
 {
-    public string Name { get; set; }
+    public string PlayerName { get; set; }
 
     public int ID { get; set; }
 
@@ -15,6 +15,6 @@ public class PlayerInfo : MonoBehaviour
 
     public override string ToString()
     {
-        return Name;
+        return PlayerName;
     }
 }

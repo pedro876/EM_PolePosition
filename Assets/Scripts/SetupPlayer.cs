@@ -42,8 +42,8 @@ public class SetupPlayer : NetworkBehaviour
         base.OnStartClient();
         m_PlayerInfo.ID = m_ID;
 
-        Debug.Log("Client iniciado con nombre: " + m_Name);
-        m_PlayerInfo.Name = m_Name + " " + m_ID;
+        //Debug.Log("Client iniciado con nombre: " + m_Name);
+        //m_PlayerInfo.PlayerName = m_Name + " " + m_ID;
 
         m_PlayerInfo.CurrentLap = 0;
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
@@ -53,6 +53,7 @@ public class SetupPlayer : NetworkBehaviour
     void CmdChangeName(string newName)
     {
         m_Name = newName;
+        m_PlayerInfo.PlayerName = newName;
     }
 
     /// <summary>
@@ -90,11 +91,6 @@ public class SetupPlayer : NetworkBehaviour
         }
     }
 
-    private void Update()
-    {
-        Debug.Log(m_Name);
-    }
-
     void OnSpeedChangeEventHandler(float speed)
     {
         m_UIManager.UpdateSpeed((int) speed * 5); // 5 for visualization purpose (km/h)
@@ -103,5 +99,10 @@ public class SetupPlayer : NetworkBehaviour
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
+    }
+
+    private void OnDestroy()
+    {
+        m_PolePositionManager.RemovePlayer(m_PlayerInfo);
     }
 }

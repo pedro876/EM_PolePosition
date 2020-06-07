@@ -6,9 +6,10 @@ public class CircuitProgress
 {
     public List<CarProgress> visitedSpots { get; set; }
     public int spots;
-    public int actual = 0;
+    public int actual;
     public CircuitProgress(int spots)
     {
+        actual = spots - 2; //penúltimo
         this.spots = spots;
         visitedSpots = new List<CarProgress>(spots);
         for (int i=0; i < spots; i++)

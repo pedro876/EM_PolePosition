@@ -33,6 +33,8 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Update()
     {
+        Debug.Log("Num players: " + m_Players.Count);
+        
         if (m_Players.Count == 0)
             return;
 
@@ -42,6 +44,11 @@ public class PolePositionManager : NetworkBehaviour
     public void AddPlayer(PlayerInfo player)
     {
         m_Players.Add(player);
+    }
+
+    public void RemovePlayer(PlayerInfo player)
+    {
+        m_Players.Remove(player);
     }
 
     private class PlayerInfoComparer : Comparer<PlayerInfo>
@@ -76,7 +83,7 @@ public class PolePositionManager : NetworkBehaviour
         string myRaceOrder = "";
         foreach (var _player in m_Players)
         {
-            myRaceOrder += _player.Name + " ";
+            myRaceOrder += _player.PlayerName + " ";
         }
 
         Debug.Log("El orden de carrera es: " + myRaceOrder);
@@ -103,8 +110,8 @@ public class PolePositionManager : NetworkBehaviour
 
         float minArcL =
             this.m_CircuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
-        
-        
+
+
 
         this.m_DebuggingSpheres[ID].transform.position = carProj;
 
@@ -127,20 +134,24 @@ public class PolePositionManager : NetworkBehaviour
          * que resetea los checkpoints visitados y aumenta una vuelta al jugador.
          * 
          * */
-        if ((m_PlayersProgresses[ID].actual == 0 || m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual - 1].visited == true) && 
-            m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].progress == (minArcL-(m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap - 1))))
-        {
-            m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].visited = true;
-            m_PlayersProgresses[ID].actual++;
-            
-        }
-        else if(m_PlayersProgresses[ID].actual== m_PlayersProgresses[ID].spots-1 && 
+
+        
+        
+        if(m_PlayersProgresses[ID].actual== m_PlayersProgresses[ID].spots-1 && 
             m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual-1].visited==true && 
             m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].progress == (minArcL - (m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap - 1))))
         {
             IncreseLap(ID);
         }
+        else if ((m_PlayersProgresses[ID].actual == 0 || m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual - 1].visited == true) &&
+            m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].progress == (minArcL - (m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap - 1))))
+        {
+            m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].visited = true;
+            m_PlayersProgresses[ID].actual++;
+        }
+
+        return minArcL;
         
-            return minArcL;
+    
     }
 }
