@@ -4,33 +4,62 @@ using UnityEngine;
 
 public class CircuitProgress 
 {
-    public List<CarProgress> visitedSpots { get; set; }
-    public int spots;
-    public int actual;
-    public CircuitProgress(int spots)
+    static int _numCheckpoints = 5;
+
+    public class Checkpoint
     {
-        actual = spots - 2; //penúltimo
-        this.spots = spots;
-        visitedSpots = new List<CarProgress>(spots);
-        for (int i=0; i < spots; i++)
+        public bool visited { get; set; }
+        public float progress { get; set; }
+    }
+
+    private List<Checkpoint> checkpoints { get; set; }
+    private int numCheckpoints;
+    private int currentCheckpoint;
+    
+    public CircuitProgress()
+    {
+        numCheckpoints = _numCheckpoints;
+        
+        currentCheckpoint = numCheckpoints - 2; //penúltimo
+        checkpoints = new List<Checkpoint>(numCheckpoints);
+
+        for (int i=0; i < numCheckpoints; i++)
         {
-            if(i <i-1){
-                visitedSpots[i].visited = true;
-            }
-            else
-            {
-                visitedSpots[i].visited = false;
-            }
-            visitedSpots[i].progress = (1 / spots) * (i + 1);
+            checkpoints.Add(new Checkpoint());
+            checkpoints[i].visited = true;
+            checkpoints[i].progress = (1.0f / numCheckpoints) * (i);
         }
     }
 
     public void Reset()
     {
-        foreach (CarProgress cp in visitedSpots)
+        Debug.Log("NUEVA VUELTA");
+        foreach (Checkpoint cp in checkpoints)
             cp.visited = false;
-        this.actual = 0;
+        checkpoints[0].visited = true;
+        this.currentCheckpoint = 0;
     }
 
-
+    public bool UpdateProgress(float pctCircuit)
+    {
+        if(checkpoints[numCheckpoints-1].visited)
+        {
+            //Debug.Log(pctCircuit + " " + checkpoints[1].progress);
+            if (pctCircuit < checkpoints[1].progress)
+            {
+                Reset();
+                return true; //se debe aumentar la vuelta
+            }
+            return false;
+        } else
+        {
+            if (pctCircuit > checkpoints[currentCheckpoint + 1].progress)
+            {
+                checkpoints[currentCheckpoint + 1].visited = true;
+                currentCheckpoint++;
+            }
+            return false;
+        }
+        return false;
+    }
 }

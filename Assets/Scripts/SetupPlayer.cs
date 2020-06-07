@@ -47,6 +47,7 @@ public class SetupPlayer : NetworkBehaviour
         //m_PlayerInfo.PlayerName = m_Name + " " + m_ID;
 
         m_PlayerInfo.CurrentLap = 0;
+        m_PlayerInfo.CircuitProgress = new CircuitProgress();
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
     }
 

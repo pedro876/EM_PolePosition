@@ -13,8 +13,28 @@ public class PlayerInfo : MonoBehaviour
 
     public int CurrentLap { get; set; }
 
+    public float LastArcLength { get; set; }
+
+    public CircuitProgress CircuitProgress { get; set; }
+
     public override string ToString()
     {
         return PlayerName;
+    }
+}
+
+public class PlayerInfoComparer : Comparer<PlayerInfo>
+{
+
+    /*public PlayerInfoComparer()
+    {
+
+    }*/
+
+    public override int Compare(PlayerInfo x, PlayerInfo y)
+    {
+        if (x.LastArcLength < y.LastArcLength)
+            return 1;
+        else return -1;
     }
 }

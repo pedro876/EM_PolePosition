@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text textSpeed;
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
+    [SerializeField] private Text countdownText;
 
 
     private void Awake()
@@ -43,6 +44,7 @@ public class UIManager : MonoBehaviour
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
         //ActivateMainMenu();
+        ActivateChooseNameHUD();
     }
 
     private void StartGame()
@@ -57,6 +59,40 @@ public class UIManager : MonoBehaviour
         textSpeed.text = "Speed " + speed + " Km/h";
     }
 
+    public void UpdateCountdownText(int numPlayers, int maxPlayers, bool countdownActive, int secondsLeft)
+    {
+        if (countdownText.enabled)
+        {
+            if (!countdownActive)
+            {
+                countdownText.text = numPlayers + "/" + maxPlayers + " PLAYERS";
+            }
+            else
+            {
+                if (secondsLeft == 0)
+                {
+                    countdownText.text = "GO!";
+                    StartCoroutine("RemoveCountdown");
+                }
+                else
+                    countdownText.text = secondsLeft.ToString();
+            }
+        }
+    }
+
+    IEnumerator RemoveCountdown()
+    {
+        yield return new WaitForSeconds(2);
+        countdownText.gameObject.SetActive(false);
+    }
+
+    private void ActivateChooseNameHUD()
+    {
+        mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
+        chooseNameHUD.SetActive(true);
+    }
+    
     private void ActivateMainMenu()
     {
         mainMenu.SetActive(true);
