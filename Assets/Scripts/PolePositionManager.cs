@@ -10,9 +10,11 @@ public class PolePositionManager : NetworkBehaviour
 {
     [SerializeField] UIManager m_uiManager;
     public int maxNumPlayers=1;
+    public int maxLaps = 3;
     public NetworkManager networkManager;
 
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
+    private readonly List<PlayerInfo> m_Ranking = new List<PlayerInfo>();
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
     
@@ -30,7 +32,6 @@ public class PolePositionManager : NetworkBehaviour
             m_DebuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             m_DebuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
-
         
     }
 
@@ -77,26 +78,35 @@ public class PolePositionManager : NetworkBehaviour
     {
         while (secondsLeft > 0)
         {
-            Debug.Log(secondsLeft);
+            //Debug.Log(secondsLeft);
             yield return new WaitForSeconds(2);
             secondsLeft--;
         }
     }
 
-    
+    IEnumerator WaitingLastPlayer()
+    {
+        yield return new WaitForSeconds(20);
+        if (m_Players.Count!=0)
+            m_Players[0].AddLap(maxLaps);
+    }
+
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
-        /*float[] arcLengths = new float[m_Players.Count];
-
-        for (int i = 0; i < m_Players.Count; ++i)
-        {
-            arcLengths[i] = ComputeCarArcLength(i);
-        }*/
+        
         for (int i = 0; i < m_Players.Count; i++)
         {
             m_Players[i].LastArcLength = ComputeCarArcLength(i);
+            if (m_Players[i].Finish)
+            {
+                m_Ranking.Add(m_Players[i]);
+                m_Players.Remove(m_Players[i]);
+            }
         }
+
+        if (m_Ranking.Count == maxNumPlayers - 1)
+            StartCoroutine("WaitingLastPlayer");
 
         m_Players.Sort(new PlayerInfoComparer());
 
@@ -106,7 +116,7 @@ public class PolePositionManager : NetworkBehaviour
             myRaceOrder += _player.PlayerName + " ";
         }
 
-        Debug.Log("El orden de carrera es: " + myRaceOrder);
+        //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
     /*Porcentaje de la vuelta*/
@@ -121,26 +131,16 @@ public class PolePositionManager : NetworkBehaviour
         float carDist;
         Vector3 carProj;
 
-        float minArcL =
-            this.m_CircuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
+        float minArcL = this.m_CircuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
 
-        if (m_Players[ID].CircuitProgress.UpdateProgress(minArcL/m_CircuitController.CircuitLength))
-            m_Players[ID].CurrentLap++;
-
+        if (m_Players[ID].CircuitProgress.UpdateProgress(minArcL / m_CircuitController.CircuitLength))
+            m_Players[ID].AddLap(maxLaps);
+         
         this.m_DebuggingSpheres[ID].transform.position = carProj;
-
-        /*if (this.m_Players[ID].CurrentLap == 0)
-        {
-            minArcL -= m_CircuitController.CircuitLength;
-        }
-        else*/
-        //{
-        minArcL += m_CircuitController.CircuitLength *
-                    (m_Players[ID].CurrentLap);
-        //}
+        
+        minArcL += m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap);
         
         return minArcL;
         
-    
     }
 }
