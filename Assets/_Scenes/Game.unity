@@ -208,12 +208,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fc15f5f776cf554aa9fc85af6de6d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cinematicModeActive: 0
   m_Focus: {fileID: 0}
-  m_offset: {x: 10, y: 10, z: 10}
   m_Circuit: {fileID: 2100276569}
+  m_offset: {x: 10, y: 10, z: 10}
   m_Distance: 10
   m_Elevation: 5
   m_Following: 0.8
+  currentOption: 0
+  distanceOptions:
+  - 5
+  elevationOptions:
+  - 1.9
 --- !u!1 &616783624
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,7 +509,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_uiManager: {fileID: 646748519}
-  maxNumPlayers: 2
+  maxNumPlayers: 1
   networkManager: {fileID: 0}
   secondsLeft: 3
 --- !u!4 &1839589614
