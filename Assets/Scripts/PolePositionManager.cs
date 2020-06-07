@@ -10,7 +10,7 @@ public class PolePositionManager : NetworkBehaviour
 {
     [SerializeField] UIManager m_uiManager;
     public int maxNumPlayers=1;
-    public int maxLaps = 3;
+    public int maxLaps = 1;
     public NetworkManager networkManager;
 
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
@@ -105,7 +105,7 @@ public class PolePositionManager : NetworkBehaviour
             }
         }
 
-        if (m_Ranking.Count == maxNumPlayers - 1)
+        if (m_Ranking.Count == maxNumPlayers - 1 && maxNumPlayers != 1)
             StartCoroutine("WaitingLastPlayer");
 
         m_Players.Sort(new PlayerInfoComparer());
