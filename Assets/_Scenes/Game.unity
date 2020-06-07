@@ -210,10 +210,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Focus: {fileID: 0}
   m_offset: {x: 10, y: 10, z: 10}
-  m_Circuit: {fileID: 0}
+  m_Circuit: {fileID: 2100276569}
   m_Distance: 10
   m_Elevation: 5
-  m_Following: 1
+  m_Following: 0.8
 --- !u!1001 &1039344386
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -432,7 +432,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1994385415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,6 +481,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2100276569 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3251817754351065421, guid: 2356b61abd7af864eadff2e62f8c8586,
+    type: 3}
+  m_PrefabInstance: {fileID: 1039344386}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1da5bf1f90e356b4e8984ff62b95825f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2140735089
 GameObject:
   m_ObjectHideFlags: 0

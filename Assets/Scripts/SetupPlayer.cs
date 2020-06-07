@@ -10,8 +10,8 @@ using Random = System.Random;
 
 public class SetupPlayer : NetworkBehaviour
 {
-    [SyncVar] private int m_ID;
-    [SyncVar] private string m_Name;
+    [SyncVar] [SerializeField] private int m_ID;
+    [SyncVar] [SerializeField] private string m_Name;
 
     private UIManager m_UIManager;
     private NetworkManager m_NetworkManager;
@@ -30,6 +30,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartServer();
         m_ID = connectionToClient.connectionId;
+        Debug.Log("Server iniciado");
     }
 
     /// <summary>
@@ -40,17 +41,29 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartClient();
         m_PlayerInfo.ID = m_ID;
-        m_PlayerInfo.Name = "Player" + m_ID;
+
+        Debug.Log("Client iniciado con nombre: " + m_Name);
+        m_PlayerInfo.Name = m_Name + " " + m_ID;
+
         m_PlayerInfo.CurrentLap = 0;
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
+    }
+
+    [Command]
+    void CmdChangeName(string newName)
+    {
+        m_Name = newName;
     }
 
     /// <summary>
     /// Called when the local player object has been set up.
     /// <para>This happens after OnStartClient(), as it is triggered by an ownership message from the server. This is an appropriate place to activate components or functionality that should only be active for the local player, such as cameras and input.</para>
     /// </summary>
+    /// 
+
     public override void OnStartLocalPlayer()
     {
+        CmdChangeName(m_UIManager.playerName);
     }
 
     #endregion
@@ -67,12 +80,19 @@ public class SetupPlayer : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //m_Name = m_UIManager.playerName;
+
         if (isLocalPlayer)
         {
             m_PlayerController.enabled = true;
             m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             ConfigureCamera();
         }
+    }
+
+    private void Update()
+    {
+        Debug.Log(m_Name);
     }
 
     void OnSpeedChangeEventHandler(float speed)

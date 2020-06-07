@@ -11,6 +11,11 @@ public class UIManager : MonoBehaviour
 
     private NetworkManager m_NetworkManager;
 
+    [Header("Choose Name")] [SerializeField] private GameObject chooseNameHUD;
+    [SerializeField] private InputField inputFieldName;
+    [SerializeField] private Button buttonStart;
+    public string playerName = "PLAYER";
+
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
     [SerializeField] private Button buttonClient;
@@ -24,6 +29,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
 
+
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<NetworkManager>();
@@ -31,9 +37,18 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        buttonStart.onClick.AddListener(() => StartGame());
+
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
+        //ActivateMainMenu();
+    }
+
+    private void StartGame()
+    {
+        if (!inputFieldName.text.Equals(""))
+            playerName = inputFieldName.text.ToUpper();
         ActivateMainMenu();
     }
 
@@ -46,11 +61,13 @@ public class UIManager : MonoBehaviour
     {
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
+        chooseNameHUD.SetActive(false);
     }
 
     private void ActivateInGameHUD()
     {
         mainMenu.SetActive(false);
+        chooseNameHUD.SetActive(false);
         inGameHUD.SetActive(true);
     }
 
