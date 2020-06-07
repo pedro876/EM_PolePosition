@@ -18,6 +18,7 @@ public class SetupPlayer : NetworkBehaviour
     private PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
     private PolePositionManager m_PolePositionManager;
+    private Rigidbody rb;
 
     #region Start & Stop Callbacks
 
@@ -76,6 +77,7 @@ public class SetupPlayer : NetworkBehaviour
         m_NetworkManager = FindObjectOfType<NetworkManager>();
         m_PolePositionManager = FindObjectOfType<PolePositionManager>();
         m_UIManager = FindObjectOfType<UIManager>();
+        rb = GetComponent<Rigidbody>();
     }
 
     // Start is called before the first frame update
@@ -85,10 +87,20 @@ public class SetupPlayer : NetworkBehaviour
 
         if (isLocalPlayer)
         {
-            m_PlayerController.enabled = true;
+            //m_PlayerController.enabled = true;
             m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             ConfigureCamera();
         }
+    }
+
+    public void ReleasePlayer()
+    {
+        if (isLocalPlayer)
+        {
+            m_PlayerController.enabled = true;
+        }
+
+        rb.constraints = RigidbodyConstraints.None;
     }
 
     void OnSpeedChangeEventHandler(float speed)

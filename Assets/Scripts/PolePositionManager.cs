@@ -8,13 +8,14 @@ using System.Threading;
 
 public class PolePositionManager : NetworkBehaviour
 {
-    public static int maxNumPlayers=3;
+    public static int maxNumPlayers=2;
     public NetworkManager networkManager;
 
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
 
+    private int secondsLeft = 3;
     
     private List<CircuitProgress> m_PlayersProgresses = new List<CircuitProgress>();
 
@@ -33,7 +34,7 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Update()
     {
-        Debug.Log("Num players: " + m_Players.Count);
+        //Debug.Log("Num players: " + m_Players.Count);
         
         if (m_Players.Count == 0)
             return;
@@ -44,6 +45,26 @@ public class PolePositionManager : NetworkBehaviour
     public void AddPlayer(PlayerInfo player)
     {
         m_Players.Add(player);
+        if (m_Players.Count==maxNumPlayers)
+            StartCoroutine("DecreaseCountdown");
+    }
+
+    IEnumerator DecreaseCountdown()
+    {
+        while (secondsLeft > 0)
+        {
+            Debug.Log(secondsLeft);
+            yield return new WaitForSeconds(2);
+            secondsLeft--;
+            //mostrar en interfaz segundos 3,2,1, GO!
+        }
+
+        foreach (var player in m_Players)
+        {
+            player.GetComponent<SetupPlayer>().ReleasePlayer();
+
+        }
+        //ocultar interfaz
     }
 
     public void RemovePlayer(PlayerInfo player)
@@ -86,7 +107,7 @@ public class PolePositionManager : NetworkBehaviour
             myRaceOrder += _player.PlayerName + " ";
         }
 
-        Debug.Log("El orden de carrera es: " + myRaceOrder);
+        //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
     /*Calculo para aumenta vuelta*/
@@ -137,7 +158,7 @@ public class PolePositionManager : NetworkBehaviour
 
         
         
-        if(m_PlayersProgresses[ID].actual== m_PlayersProgresses[ID].spots-1 && 
+        /*if(m_PlayersProgresses[ID].actual== m_PlayersProgresses[ID].spots-1 && 
             m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual-1].visited==true && 
             m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].progress == (minArcL - (m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap - 1))))
         {
@@ -148,7 +169,7 @@ public class PolePositionManager : NetworkBehaviour
         {
             m_PlayersProgresses[ID].visitedSpots[m_PlayersProgresses[ID].actual].visited = true;
             m_PlayersProgresses[ID].actual++;
-        }
+        }*/
 
         return minArcL;
         
