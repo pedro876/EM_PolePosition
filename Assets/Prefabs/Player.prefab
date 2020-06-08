@@ -200,7 +200,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   CurrentLap: 0
+  LastArcLength: 0
   uiManager: {fileID: 0}
+  rb: {fileID: 0}
   axisVertical: 0
   axisHorizontal: 0
   axisBrake: 0
@@ -238,7 +240,7 @@ MonoBehaviour:
   circuitController: {fileID: 0}
   saveTime: 1
   speedThreshold: 2
-  angleRange: 85
+  angleRange: 120
 --- !u!114 &6346869062069434778
 MonoBehaviour:
   m_ObjectHideFlags: 0

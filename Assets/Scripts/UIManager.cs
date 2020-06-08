@@ -115,7 +115,7 @@ public class UIManager :  MonoBehaviour
 
     #region rankingHUDfuncs
 
-    void AddPlayerToRanking(string newName)
+    public void AddPlayerToRanking(string newName)
     {
         if(textIndex < 4)
         {
@@ -129,7 +129,7 @@ public class UIManager :  MonoBehaviour
 
     #region changeState
 
-    private void ActivateChooseNameHUD()
+    public void ActivateChooseNameHUD()
     {
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
@@ -137,7 +137,7 @@ public class UIManager :  MonoBehaviour
         rankingHUD.SetActive(false);
     }
     
-    private void ActivateMainMenu()
+    public void ActivateMainMenu()
     {
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
@@ -145,7 +145,7 @@ public class UIManager :  MonoBehaviour
         rankingHUD.SetActive(false);
     }
 
-    private void ActivateInGameHUD()
+    public void ActivateInGameHUD()
     {
         mainMenu.SetActive(false);
         chooseNameHUD.SetActive(false);
@@ -153,7 +153,7 @@ public class UIManager :  MonoBehaviour
         rankingHUD.SetActive(false);
     }
 
-    private void ActivateRankingHUD()
+    public void ActivateRankingHUD()
     {
         mainMenu.SetActive(false);
         chooseNameHUD.SetActive(false);

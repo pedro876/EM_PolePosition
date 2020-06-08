@@ -76,8 +76,11 @@ public class PlayerController : NetworkBehaviour
         InputSteering = m_PlayerInfo.axisHorizontal;
         InputBrake = m_PlayerInfo.axisBrake;
         Speed = m_Rigidbody.velocity.magnitude;
+        if (Input.GetKeyDown(KeyCode.R)) SavePlayer();
         CheckMustSave();
+        //IsWrongDirection();
     }
+
 
     public void FixedUpdate()
     {
@@ -142,6 +145,24 @@ public class PlayerController : NetworkBehaviour
 
     #region savePlayerMethods
 
+    /*public void IsWrongDirection()
+    {
+        int segId;
+        Vector3 posProj;
+        float dist;
+        float arcLen = circuitController.ComputeClosestPointArcLength(transform.position, out segId, out posProj, out dist);
+        Vector3 dir = circuitController.GetSegment(segId);
+
+        if(Vector3.Angle(m_Rigidbody.velocity.normalized, dir.normalized) > 130f && m_Rigidbody.velocity.magnitude > 6f)
+        {
+            m_PlayerInfo.uiManager.backwardsText.gameObject.SetActive(true);
+        }
+        else
+        {
+            m_PlayerInfo.uiManager.backwardsText.gameObject.SetActive(false);
+        }
+    }*/
+
     private void CheckMustSave()
     {
         //Debug.Log(Speed + " " + (Speed < speedThreshold));
@@ -150,28 +171,33 @@ public class PlayerController : NetworkBehaviour
             Debug.Log(Vector3.Angle(-transform.up, Vector3.up));
             if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
             {
-                StartCoroutine("SavePlayer");
+                StartCoroutine("SavePlayerDelay");
                 coroutineCalled = true;
             }
         }
     }
 
-    IEnumerator SavePlayer()
+    IEnumerator SavePlayerDelay()
     {
         yield return new WaitForSeconds(saveTime);
         if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
         {
-            int segId;
-            Vector3 posProj;
-            float dist;
-            float arcLen = circuitController.ComputeClosestPointArcLength(transform.position, out segId, out posProj, out dist);
-            transform.position = posProj;
-            Vector3 dir = circuitController.GetSegment(segId);
-            transform.forward = dir;
-            m_Rigidbody.velocity = Vector3.zero;
-            Speed = 0;
+            SavePlayer();
         }
         coroutineCalled = false;
+    }
+
+    void SavePlayer()
+    {
+        int segId;
+        Vector3 posProj;
+        float dist;
+        float arcLen = circuitController.ComputeClosestPointArcLength(transform.position, out segId, out posProj, out dist);
+        transform.position = posProj;
+        Vector3 dir = circuitController.GetSegment(segId);
+        transform.forward = dir;
+        m_Rigidbody.velocity = Vector3.zero;
+        Speed = 0;
     }
 
     #endregion savePlayerMethods

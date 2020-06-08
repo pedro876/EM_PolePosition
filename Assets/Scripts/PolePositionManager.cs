@@ -12,7 +12,7 @@ public class PolePositionManager : NetworkBehaviour
 
     [SerializeField] UIManager m_uiManager;
     public int maxNumPlayers=1;
-    public static int maxLaps = 3;
+    public static int maxLaps = 2;
     public NetworkManager networkManager;
 
     [SyncVar(hook = nameof(RaceOrder))] public string myRaceOrder;
@@ -45,6 +45,8 @@ public class PolePositionManager : NetworkBehaviour
         if (m_Players.Count == 0) return;
         if(isServer) UpdateRaceProgress();
     }
+
+    [SyncVar(hook = nameof(AddPlayerToRanking))] string newRankingName;
 
     #region addAndRemovePlayers
 
@@ -94,6 +96,11 @@ public class PolePositionManager : NetworkBehaviour
 
     #region raceProgress
 
+    void AddPlayerToRanking(string oldVal, string newVal)
+    {
+        if(newVal != oldVal) m_uiManager.AddPlayerToRanking(newVal);
+    }
+
     public void UpdateRaceProgress()
     {
         //Debug.Log("actualizando race progress");
@@ -103,6 +110,7 @@ public class PolePositionManager : NetworkBehaviour
             if (m_Players[i].Finish)
             {
                 m_Ranking.Add(m_Players[i]);
+                newRankingName = m_Players[i].PlayerName;
                 m_Players.Remove(m_Players[i]);
             }
         }

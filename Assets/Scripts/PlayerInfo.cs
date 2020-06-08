@@ -5,21 +5,51 @@ using UnityEngine;
 
 public class PlayerInfo : NetworkBehaviour
 {
+
+    #region variables
+
     public string PlayerName { get; set; }
-
     public int ID { get; set; }
-
-    [SyncVar(hook =nameof(UpdateLapUI))] public int CurrentLap;
-
+    [SyncVar(hook = nameof(FinishCircuit))] public bool Finish;
+    [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
     [SyncVar(hook = nameof(IsWrongDirection))] public float LastArcLength;
-
+    [SerializeField] private float wrondDirDelayTime = 2.0f;
+    private bool wrongDir = false;
+    private bool coroutineCalled = false;
+    public UIManager uiManager;
     public CircuitProgress CircuitProgress { get; set; }
 
-    public bool Finish { get; set; }
+    #endregion
 
     public override string ToString() { return PlayerName; }
 
-    public UIManager uiManager;
+    private void Update()
+    {
+
+        if (this.isLocalPlayer)
+        {
+            CmdUpdateInput(
+                Input.GetAxis("Vertical"),
+                Input.GetAxis("Horizontal"),
+                Input.GetAxis("Jump"));
+        }
+    }
+
+    #region finishFuncs
+
+    private void FinishCircuit(bool oldVal, bool newVal)
+    {
+        if (newVal) {
+            transform.gameObject.SetActive(false);
+            if (isLocalPlayer)
+            {
+                uiManager.ActivateRankingHUD();
+            }
+        }
+        //Cambiar a cámara de otro jugador en cinematico
+    }
+
+    #endregion finishFuncs
 
     #region inputUpdate
 
@@ -37,33 +67,29 @@ public class PlayerInfo : NetworkBehaviour
 
     #endregion inputUpdate
 
-    private void Update()
-    {
-        
-        if (this.isLocalPlayer)
-        {
-            CmdUpdateInput(
-                Input.GetAxis("Vertical"),
-                Input.GetAxis("Horizontal"),
-                Input.GetAxis("Jump"));
-        }
-    }
 
+    #region wrongDirection
     public void IsWrongDirection(float oldVal, float newVal)
     {
         if (isLocalPlayer)
         {
-            if (oldVal < newVal && uiManager.backwardsText.gameObject.activeSelf)
+            wrongDir = oldVal > newVal;
+            if (!coroutineCalled && wrongDir)
             {
-                uiManager.backwardsText.gameObject.SetActive(false);
-            }
-            if (newVal < oldVal && !uiManager.backwardsText.gameObject.activeSelf)
-            {
-                uiManager.backwardsText.gameObject.SetActive(true);
+                coroutineCalled = true;
+                StartCoroutine("WrongDirDelay");
             }
         }
-        
     }
+
+    IEnumerator WrongDirDelay()
+    {
+        yield return new WaitForSeconds(wrondDirDelayTime);
+        uiManager.backwardsText.gameObject.SetActive(wrongDir);
+        coroutineCalled = false;
+    }
+
+    #endregion
 
     #region updateLap
 
@@ -72,7 +98,7 @@ public class PlayerInfo : NetworkBehaviour
         CurrentLap++;
         if (CurrentLap > PolePositionManager.maxLaps)
         {
-            transform.gameObject.SetActive(false);
+            //transform.gameObject.SetActive(false);
             Finish = true;
         }
         Debug.Log(CurrentLap);
