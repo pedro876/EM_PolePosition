@@ -113,9 +113,11 @@ public class PolePositionManager : NetworkBehaviour
         string myRaceOrder = "";
         foreach (var _player in m_Players)
         {
-            myRaceOrder += _player.PlayerName + " ";
+            myRaceOrder += _player.PlayerName + "\n ";
+            Debug.Log(myRaceOrder);
+            
         }
-
+        m_uiManager.UpdatePosition(myRaceOrder);
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 

@@ -416,7 +416,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_uiManager: {fileID: 646748519}
-  maxNumPlayers: 1
+  maxNumPlayers: 2
   maxLaps: 1
   networkManager: {fileID: 0}
   secondsLeft: 3
