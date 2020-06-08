@@ -19,15 +19,11 @@ public class PlayerInfo : MonoBehaviour
 
     public bool Finish { get; set; }
 
-    public override string ToString()
-    {
-        return PlayerName;
-    }
+    public override string ToString() { return PlayerName; }
 
     public void AddLap(int maxLap)
     {
-        CurrentLap++;
-        if (CurrentLap > maxLap)
+        if (++CurrentLap > maxLap)
         {
             transform.gameObject.SetActive(false);
             Finish = true;
@@ -37,12 +33,6 @@ public class PlayerInfo : MonoBehaviour
 
 public class PlayerInfoComparer : Comparer<PlayerInfo>
 {
-
-    /*public PlayerInfoComparer()
-    {
-
-    }*/
-
     public override int Compare(PlayerInfo x, PlayerInfo y)
     {
         if (x.LastArcLength < y.LastArcLength)

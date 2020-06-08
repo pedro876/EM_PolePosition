@@ -4,18 +4,24 @@ using UnityEngine;
 
 public class CircuitProgress 
 {
-    static int _numCheckpoints = 5;
-
+    #region checkpointClass
     public class Checkpoint
     {
         public bool visited { get; set; }
         public float progress { get; set; }
     }
+    #endregion checkpointClass
+
+    #region variables
+
+    static int _numCheckpoints = 5;
 
     private List<Checkpoint> checkpoints { get; set; }
     private int numCheckpoints;
     private int currentCheckpoint;
-    
+
+    #endregion variables
+
     public CircuitProgress()
     {
         numCheckpoints = _numCheckpoints;
@@ -31,6 +37,8 @@ public class CircuitProgress
         }
     }
 
+    #region progressFuncs
+
     public void Reset()
     {
         Debug.Log("NUEVA VUELTA");
@@ -44,22 +52,23 @@ public class CircuitProgress
     {
         if(checkpoints[numCheckpoints-1].visited)
         {
-            //Debug.Log(pctCircuit + " " + checkpoints[1].progress);
             if (pctCircuit < checkpoints[1].progress)
             {
                 Reset();
                 return true; //se debe aumentar la vuelta
             }
             return false;
-        } else
+        //si estoy entre dos checkpoint y no es el último
+        } else if (pctCircuit > checkpoints[currentCheckpoint + 1].progress
+            && (currentCheckpoint + 2 == numCheckpoints || pctCircuit < checkpoints[currentCheckpoint + 2].progress))
         {
-            if (pctCircuit > checkpoints[currentCheckpoint + 1].progress)
-            {
-                checkpoints[currentCheckpoint + 1].visited = true;
-                currentCheckpoint++;
-            }
+            Debug.Log("Nuevo checkpoint");
+            checkpoints[currentCheckpoint + 1].visited = true;
+            currentCheckpoint++;
             return false;
         }
         return false;
     }
+
+    #endregion progressFuncs
 }

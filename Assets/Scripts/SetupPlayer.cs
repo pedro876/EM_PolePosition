@@ -10,6 +10,8 @@ using Random = System.Random;
 
 public class SetupPlayer : NetworkBehaviour
 {
+    #region variables
+
     [SyncVar] [SerializeField] private int m_ID;
     [SyncVar] [SerializeField] private string m_pName;
 
@@ -19,6 +21,27 @@ public class SetupPlayer : NetworkBehaviour
     private PlayerInfo m_PlayerInfo;
     private PolePositionManager m_PolePositionManager;
     private Rigidbody rb;
+
+    #endregion variables
+
+    private void Awake()
+    {
+        m_PlayerInfo = GetComponent<PlayerInfo>();
+        m_PlayerController = GetComponent<PlayerController>();
+        m_NetworkManager = FindObjectOfType<NetworkManager>();
+        m_PolePositionManager = FindObjectOfType<PolePositionManager>();
+        m_UIManager = FindObjectOfType<UIManager>();
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void Start()
+    {
+        if (isLocalPlayer)
+        {
+            m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
+            ConfigureCamera();
+        }
+    }
 
     #region Start & Stop Callbacks
 
@@ -71,35 +94,10 @@ public class SetupPlayer : NetworkBehaviour
 
     #endregion
 
-    private void Awake()
-    {
-        m_PlayerInfo = GetComponent<PlayerInfo>();
-        m_PlayerController = GetComponent<PlayerController>();
-        m_NetworkManager = FindObjectOfType<NetworkManager>();
-        m_PolePositionManager = FindObjectOfType<PolePositionManager>();
-        m_UIManager = FindObjectOfType<UIManager>();
-        rb = GetComponent<Rigidbody>();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        //m_Name = m_UIManager.playerName;
-
-        if (isLocalPlayer)
-        {
-            //m_PlayerController.enabled = true;
-            m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
-            ConfigureCamera();
-        }
-    }
-
     public void ReleasePlayer()
     {
         if (isLocalPlayer)
-        {
             m_PlayerController.enabled = true;
-        }
 
         rb.constraints = RigidbodyConstraints.None;
     }
