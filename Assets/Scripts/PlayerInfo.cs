@@ -51,14 +51,18 @@ public class PlayerInfo : NetworkBehaviour
 
     public void IsWrongDirection(float oldVal, float newVal)
     {
-        if(oldVal < newVal && uiManager.backwardsText.gameObject.activeSelf)
+        if (isLocalPlayer)
         {
-            uiManager.backwardsText.gameObject.SetActive(false);
+            if (oldVal < newVal && uiManager.backwardsText.gameObject.activeSelf)
+            {
+                uiManager.backwardsText.gameObject.SetActive(false);
+            }
+            if (newVal < oldVal && !uiManager.backwardsText.gameObject.activeSelf)
+            {
+                uiManager.backwardsText.gameObject.SetActive(true);
+            }
         }
-        if (newVal < oldVal && !uiManager.backwardsText.gameObject.activeSelf)
-        {
-            uiManager.backwardsText.gameObject.SetActive(true);
-        }
+        
     }
 
     #region updateLap
