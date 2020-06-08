@@ -5,8 +5,9 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+public class UIManager :  MonoBehaviour
 {
+    #region variables
     public bool showGUI = true;
 
     private NetworkManager m_NetworkManager;
@@ -30,6 +31,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text textPosition;
     [SerializeField] private Text countdownText;
 
+    [Header("Ranking HUD")]
+    [SerializeField] private GameObject rankingHUD;
+    [SerializeField] private Text[] playerTexts;
+    [SerializeField] private Button returnButton;
+    int textIndex = 0;
+
+    #endregion variables
 
     private void Awake()
     {
@@ -43,16 +51,21 @@ public class UIManager : MonoBehaviour
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
-        //ActivateMainMenu();
         ActivateChooseNameHUD();
     }
 
+
+    #region chooseNameHUDfuncs
     private void StartGame()
     {
         if (!inputFieldName.text.Equals(""))
             playerName = inputFieldName.text.ToUpper();
         ActivateMainMenu();
     }
+
+    #endregion chooseNameHUDfuncs
+
+    #region gameHUDfuncs
 
     public void UpdateSpeed(int speed)
     {
@@ -86,11 +99,30 @@ public class UIManager : MonoBehaviour
         countdownText.gameObject.SetActive(false);
     }
 
+    #endregion gameHUDfuncs
+
+    #region rankingHUDfuncs
+
+    void AddPlayerToRanking(string newName)
+    {
+        if(textIndex < 4)
+        {
+            playerTexts[textIndex].gameObject.SetActive(true);
+            playerTexts[textIndex].text = newName;
+            textIndex++;
+        }
+    }
+
+    #endregion rankingHUDfuncs
+
+    #region changeState
+
     private void ActivateChooseNameHUD()
     {
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
         chooseNameHUD.SetActive(true);
+        rankingHUD.SetActive(false);
     }
     
     private void ActivateMainMenu()
@@ -98,6 +130,7 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
         chooseNameHUD.SetActive(false);
+        rankingHUD.SetActive(false);
     }
 
     private void ActivateInGameHUD()
@@ -105,7 +138,20 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(false);
         chooseNameHUD.SetActive(false);
         inGameHUD.SetActive(true);
+        rankingHUD.SetActive(false);
     }
+
+    private void ActivateRankingHUD()
+    {
+        mainMenu.SetActive(false);
+        chooseNameHUD.SetActive(false);
+        inGameHUD.SetActive(false);
+        rankingHUD.SetActive(true);
+    }
+
+    #endregion changeState
+
+    #region hostClientServerFuncs
 
     private void StartHost()
     {
@@ -125,4 +171,6 @@ public class UIManager : MonoBehaviour
         m_NetworkManager.StartServer();
         ActivateInGameHUD();
     }
+
+    #endregion hostClientServerFuncs
 }
