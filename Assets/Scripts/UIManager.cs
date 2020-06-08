@@ -172,8 +172,8 @@ public class UIManager :  MonoBehaviour
 
     private void StartClient()
     {
-        m_NetworkManager.StartClient();
         m_NetworkManager.networkAddress = inputFieldIP.text;
+        m_NetworkManager.StartClient();
         ActivateInGameHUD();
     }
 
