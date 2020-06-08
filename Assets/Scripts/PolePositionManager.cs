@@ -12,7 +12,7 @@ public class PolePositionManager : NetworkBehaviour
 
     [SerializeField] UIManager m_uiManager;
     public int maxNumPlayers=1;
-    public static int maxLaps = 2;
+    public static int maxLaps = 3;
     public NetworkManager networkManager;
 
     [SyncVar(hook = nameof(RaceOrder))] public string myRaceOrder;

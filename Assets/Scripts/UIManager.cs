@@ -173,10 +173,10 @@ public class UIManager :  MonoBehaviour
 
     private void StartClient()
     {
-        /*if(inputFieldIP.text != "")
-            m_NetworkManager.networkAddress = inputFieldIP.text;*/
+        if(inputFieldIP.text != "")
+            m_NetworkManager.networkAddress = inputFieldIP.text;
+        Debug.Log(m_NetworkManager.networkAddress);
         m_NetworkManager.StartClient();
-        m_NetworkManager.networkAddress = inputFieldIP.text;
         ActivateInGameHUD();
     }
 
