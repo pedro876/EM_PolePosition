@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateCountdownText(int numPlayers, int maxPlayers, bool countdownActive, int secondsLeft)
     {
-        if (countdownText.enabled)
+        if (countdownText != null && countdownText.gameObject.activeSelf)
         {
             if (!countdownActive)
             {
