@@ -8,9 +8,11 @@ using System.Threading;
 
 public class PolePositionManager : NetworkBehaviour
 {
+    #region variables
+
     [SerializeField] UIManager m_uiManager;
     public int maxNumPlayers=1;
-    public int maxLaps = 1;
+    public static int maxLaps = 3;
     public NetworkManager networkManager;
 
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
@@ -20,6 +22,8 @@ public class PolePositionManager : NetworkBehaviour
     
 
     [SerializeField][SyncVar(hook = nameof(UpdateCountdownUI))]private int secondsLeft = 3;
+
+    #endregion variables
 
     private void Awake()
     {
@@ -32,18 +36,15 @@ public class PolePositionManager : NetworkBehaviour
             m_DebuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             m_DebuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
-        
     }
 
     private void Update()
     {
-        //Debug.Log("Num players: " + m_Players.Count);
-        
-        if (m_Players.Count == 0)
-            return;
-
-        UpdateRaceProgress();
+        if (m_Players.Count == 0) return;
+        if(isServer) UpdateRaceProgress();
     }
+
+    #region addAndRemovePlayers
 
     public void AddPlayer(PlayerInfo player)
     {
@@ -60,6 +61,10 @@ public class PolePositionManager : NetworkBehaviour
         m_Players.Remove(player);
         m_uiManager.UpdateCountdownText(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
     }
+
+    #endregion addAndRemovePlayers
+
+    #region countdown
 
     void UpdateCountdownUI(int oldVal, int newVal)
     {
@@ -78,23 +83,18 @@ public class PolePositionManager : NetworkBehaviour
     {
         while (secondsLeft > 0)
         {
-            //Debug.Log(secondsLeft);
             yield return new WaitForSeconds(2);
             secondsLeft--;
         }
     }
 
-    IEnumerator WaitingLastPlayer()
-    {
-        yield return new WaitForSeconds(20);
-        if (m_Players.Count!=0)
-            m_Players[0].AddLap(maxLaps);
-    }
+    #endregion countdown
+
+    #region raceProgress
 
     public void UpdateRaceProgress()
     {
-        // Update car arc-lengths
-        
+        //Debug.Log("actualizando race progress");
         for (int i = 0; i < m_Players.Count; i++)
         {
             m_Players[i].LastArcLength = ComputeCarArcLength(i);
@@ -114,11 +114,16 @@ public class PolePositionManager : NetworkBehaviour
         foreach (var _player in m_Players)
         {
             myRaceOrder += _player.PlayerName + "\n ";
-            Debug.Log(myRaceOrder);
-            
+            //Debug.Log(myRaceOrder);
         }
         m_uiManager.UpdatePosition(myRaceOrder);
-        //Debug.Log("El orden de carrera es: " + myRaceOrder);
+    }
+
+    IEnumerator WaitingLastPlayer()
+    {
+        yield return new WaitForSeconds(20);
+        if (m_Players.Count != 0)
+            m_Players[0].AddLap();
     }
 
     /*Porcentaje de la vuelta*/
@@ -136,16 +141,14 @@ public class PolePositionManager : NetworkBehaviour
         float minArcL = this.m_CircuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
 
         if (m_Players[ID].CircuitProgress.UpdateProgress(minArcL / m_CircuitController.CircuitLength))
-        {
-            m_Players[ID].AddLap(maxLaps);
-            m_uiManager.UpdateLap(m_Players[ID].CurrentLap, maxLaps);
-        }
+            m_Players[ID].AddLap();
             
         this.m_DebuggingSpheres[ID].transform.position = carProj;
         
         minArcL += m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap);
         
         return minArcL;
-        
     }
+
+    #endregion raceProgress
 }

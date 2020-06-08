@@ -65,6 +65,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartClient();
         m_PlayerInfo.ID = m_ID;
+        m_PlayerInfo.uiManager = m_UIManager;
 
         //Debug.Log("Client iniciado con nombre: " + m_pName);
         //m_PlayerInfo.PlayerName = m_Name + " " + m_ID;

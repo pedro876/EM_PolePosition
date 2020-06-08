@@ -72,9 +72,10 @@ public class UIManager :  MonoBehaviour
         textSpeed.text = "Speed " + speed + " Km/h";
     }
 
-    public void UpdateLap(int currentLap,int maxLaps)
+    public void UpdateLap(PlayerInfo player)
     {
-        textLaps.text = "LAP: "+currentLap + "/" + maxLaps;
+        if (player.isLocalPlayer)
+            textLaps.text = "LAP: "+ player.CurrentLap + "/" + PolePositionManager.maxLaps;
     }
 
     public void UpdatePosition(String text)
