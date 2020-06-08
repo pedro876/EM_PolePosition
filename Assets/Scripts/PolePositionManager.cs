@@ -15,6 +15,8 @@ public class PolePositionManager : NetworkBehaviour
     public static int maxLaps = 3;
     public NetworkManager networkManager;
 
+    [SyncVar(hook = nameof(RaceOrder))] public string myRaceOrder;
+
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
     private readonly List<PlayerInfo> m_Ranking = new List<PlayerInfo>();
     private CircuitController m_CircuitController;
@@ -110,12 +112,17 @@ public class PolePositionManager : NetworkBehaviour
 
         m_Players.Sort(new PlayerInfoComparer());
 
-        string myRaceOrder = "";
+        myRaceOrder = "";
         foreach (var _player in m_Players)
         {
             myRaceOrder += _player.PlayerName + "\n ";
             //Debug.Log(myRaceOrder);
         }
+        
+    }
+
+    public void RaceOrder(string oldVal,string newVal)
+    {
         m_uiManager.UpdatePosition(myRaceOrder);
     }
 
