@@ -30,6 +30,7 @@ public class UIManager :  MonoBehaviour
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
     [SerializeField] private Text countdownText;
+    [SerializeField] public Text backwardsText;
 
     [Header("Ranking HUD")]
     [SerializeField] private GameObject rankingHUD;

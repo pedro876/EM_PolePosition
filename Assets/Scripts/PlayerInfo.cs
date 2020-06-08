@@ -11,7 +11,7 @@ public class PlayerInfo : NetworkBehaviour
 
     [SyncVar(hook =nameof(UpdateLapUI))] public int CurrentLap;
 
-    public float LastArcLength { get; set; }
+    [SyncVar(hook = nameof(IsWrongDirection))] public float LastArcLength;
 
     public CircuitProgress CircuitProgress { get; set; }
 
@@ -46,6 +46,18 @@ public class PlayerInfo : NetworkBehaviour
                 Input.GetAxis("Vertical"),
                 Input.GetAxis("Horizontal"),
                 Input.GetAxis("Jump"));
+        }
+    }
+
+    public void IsWrongDirection(float oldVal, float newVal)
+    {
+        if(oldVal < newVal && uiManager.backwardsText.gameObject.activeSelf)
+        {
+            uiManager.backwardsText.gameObject.SetActive(false);
+        }
+        if (newVal < oldVal && !uiManager.backwardsText.gameObject.activeSelf)
+        {
+            uiManager.backwardsText.gameObject.SetActive(true);
         }
     }
 
