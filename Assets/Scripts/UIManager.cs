@@ -72,6 +72,11 @@ public class UIManager :  MonoBehaviour
         textSpeed.text = "Speed " + speed + " Km/h";
     }
 
+    public void UpdateLap(int currentLap,int maxLaps)
+    {
+        textLaps.text = "LAP: "+currentLap + "/" + maxLaps;
+    }
+
     public void UpdateCountdownText(int numPlayers, int maxPlayers, bool countdownActive, int secondsLeft)
     {
         if (countdownText != null && countdownText.gameObject.activeSelf)

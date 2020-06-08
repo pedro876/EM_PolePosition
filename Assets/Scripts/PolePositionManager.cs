@@ -134,8 +134,18 @@ public class PolePositionManager : NetworkBehaviour
         float minArcL = this.m_CircuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
 
         if (m_Players[ID].CircuitProgress.UpdateProgress(minArcL / m_CircuitController.CircuitLength))
+        {
             m_Players[ID].AddLap(maxLaps);
-         
+            if (m_Players[ID].CurrentLap == 0)
+            {
+                m_uiManager.UpdateLap(1, maxLaps);
+            }
+            else
+            {
+                m_uiManager.UpdateLap(m_Players[ID].CurrentLap, maxLaps);
+            }
+        }
+            
         this.m_DebuggingSpheres[ID].transform.position = carProj;
         
         minArcL += m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap);
