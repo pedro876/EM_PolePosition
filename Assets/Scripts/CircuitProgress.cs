@@ -41,7 +41,7 @@ public class CircuitProgress
 
     public void Reset()
     {
-        Debug.Log("NUEVA VUELTA");
+        //Debug.Log("NUEVA VUELTA");
         foreach (Checkpoint cp in checkpoints)
             cp.visited = false;
         checkpoints[0].visited = true;
@@ -62,7 +62,6 @@ public class CircuitProgress
         } else if (pctCircuit > checkpoints[currentCheckpoint + 1].progress
             && (currentCheckpoint + 2 == numCheckpoints || pctCircuit < checkpoints[currentCheckpoint + 2].progress))
         {
-            Debug.Log("Nuevo checkpoint");
             checkpoints[currentCheckpoint + 1].visited = true;
             currentCheckpoint++;
             return false;

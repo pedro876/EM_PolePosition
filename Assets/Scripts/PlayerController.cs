@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -51,6 +52,13 @@ public class PlayerController : NetworkBehaviour
 
     public event OnSpeedChangeDelegate OnSpeedChangeEvent;
 
+    [Header("Save Player Options")]
+    [SerializeField] CircuitController circuitController;
+    [SerializeField] float saveTime = 1.0f;
+    [SerializeField] float speedThreshold = 2.0f;
+    [SerializeField] float angleRange = 30f;
+    bool coroutineCalled = false;
+
     #endregion Variables
 
     #region Unity Callbacks
@@ -59,6 +67,7 @@ public class PlayerController : NetworkBehaviour
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         m_PlayerInfo = GetComponent<PlayerInfo>();
+        circuitController = FindObjectOfType<CircuitController>();
     }
 
     public void Update()
@@ -67,6 +76,7 @@ public class PlayerController : NetworkBehaviour
         InputSteering = m_PlayerInfo.axisHorizontal;
         InputBrake = m_PlayerInfo.axisBrake;
         Speed = m_Rigidbody.velocity.magnitude;
+        CheckMustSave();
     }
 
     public void FixedUpdate()
@@ -130,7 +140,45 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
 
+    #region savePlayerMethods
+
+    private void CheckMustSave()
+    {
+        //Debug.Log(Speed + " " + (Speed < speedThreshold));
+        if (!coroutineCalled && Speed < speedThreshold)
+        {
+            Debug.Log(Vector3.Angle(-transform.up, Vector3.up));
+            if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
+            {
+                StartCoroutine("SavePlayer");
+                coroutineCalled = true;
+            }
+        }
+    }
+
+    IEnumerator SavePlayer()
+    {
+        yield return new WaitForSeconds(saveTime);
+        if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
+        {
+            int segId;
+            Vector3 posProj;
+            float dist;
+            float arcLen = circuitController.ComputeClosestPointArcLength(transform.position, out segId, out posProj, out dist);
+            transform.position = posProj;
+            Vector3 dir = circuitController.GetSegment(segId);
+            transform.forward = dir;
+            m_Rigidbody.velocity = Vector3.zero;
+            Speed = 0;
+        }
+        coroutineCalled = false;
+    }
+
+    #endregion savePlayerMethods
+
     #region Methods
+
+
 
     // crude traction control that reduces the power to wheel if the car is wheel spinning too much
     private void TractionControl()
@@ -156,7 +204,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-// this is used to add more grip in relation to speed
+    // this is used to add more grip in relation to speed
     private void AddDownForce()
     {
         foreach (var axleInfo in axleInfos)
@@ -173,8 +221,8 @@ public class PlayerController : NetworkBehaviour
             m_Rigidbody.velocity = topSpeed * m_Rigidbody.velocity.normalized;
     }
 
-// finds the corresponding visual wheel
-// correctly applies the transform
+    // finds the corresponding visual wheel
+    // correctly applies the transform
     public void ApplyLocalPositionToVisuals(WheelCollider col)
     {
         if (col.transform.childCount == 0)

@@ -235,6 +235,10 @@ MonoBehaviour:
   topSpeed: 200
   downForce: 1000
   slipLimit: 0.2
+  circuitController: {fileID: 0}
+  saveTime: 1
+  speedThreshold: 2
+  angleRange: 85
 --- !u!114 &6346869062069434778
 MonoBehaviour:
   m_ObjectHideFlags: 0
