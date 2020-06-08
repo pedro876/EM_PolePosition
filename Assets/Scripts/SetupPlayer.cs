@@ -11,7 +11,7 @@ using Random = System.Random;
 public class SetupPlayer : NetworkBehaviour
 {
     [SyncVar] [SerializeField] private int m_ID;
-    [SyncVar] [SerializeField] private string m_Name;
+    [SyncVar] [SerializeField] private string m_pName;
 
     private UIManager m_UIManager;
     private NetworkManager m_NetworkManager;
@@ -43,7 +43,7 @@ public class SetupPlayer : NetworkBehaviour
         base.OnStartClient();
         m_PlayerInfo.ID = m_ID;
 
-        //Debug.Log("Client iniciado con nombre: " + m_Name);
+        //Debug.Log("Client iniciado con nombre: " + m_pName);
         //m_PlayerInfo.PlayerName = m_Name + " " + m_ID;
 
         m_PlayerInfo.CurrentLap = 0;
@@ -54,7 +54,7 @@ public class SetupPlayer : NetworkBehaviour
     [Command]
     void CmdChangeName(string newName)
     {
-        m_Name = newName;
+        m_pName = newName;
         m_PlayerInfo.PlayerName = newName;
     }
 
