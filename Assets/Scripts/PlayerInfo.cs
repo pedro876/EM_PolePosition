@@ -21,7 +21,7 @@ public class PlayerInfo : NetworkBehaviour
 
     #endregion
 
-    public override string ToString() { return PlayerName; }
+    
 
     private void Update()
     {
@@ -31,7 +31,8 @@ public class PlayerInfo : NetworkBehaviour
             CmdUpdateInput(
                 Input.GetAxis("Vertical"),
                 Input.GetAxis("Horizontal"),
-                Input.GetAxis("Jump"));
+                Input.GetAxis("Jump"),
+                Input.GetKeyDown(KeyCode.R));
         }
     }
 
@@ -53,16 +54,18 @@ public class PlayerInfo : NetworkBehaviour
 
     #region inputUpdate
 
-    [SyncVar]public float axisVertical = 0f;
-    [SyncVar]public float axisHorizontal = 0f;
-    [SyncVar]public float axisBrake = 0f;
+    [SyncVar] public float axisVertical = 0f;
+    [SyncVar] public float axisHorizontal = 0f;
+    [SyncVar] public float axisBrake = 0f;
+    [SyncVar] public bool mustSave = false;
 
     [Command]
-    private void CmdUpdateInput(float aV, float aH, float aB)
+    private void CmdUpdateInput(float aV, float aH, float aB, bool mSave)
     {
         axisVertical = aV;
         axisHorizontal = aH;
         axisBrake = aB;
+        if (!mustSave) mustSave = mSave;
     }
 
     #endregion inputUpdate
@@ -110,6 +113,8 @@ public class PlayerInfo : NetworkBehaviour
     }
 
     #endregion updateLap
+
+    public override string ToString() { return PlayerName; }
 }
 
 public class PlayerInfoComparer : Comparer<PlayerInfo>

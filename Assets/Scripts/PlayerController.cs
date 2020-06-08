@@ -76,9 +76,8 @@ public class PlayerController : NetworkBehaviour
         InputSteering = m_PlayerInfo.axisHorizontal;
         InputBrake = m_PlayerInfo.axisBrake;
         Speed = m_Rigidbody.velocity.magnitude;
-        if (Input.GetKeyDown(KeyCode.R)) SavePlayer();
+        //if (Input.GetKeyDown(KeyCode.R)) SavePlayer();
         CheckMustSave();
-        //IsWrongDirection();
     }
 
 
@@ -145,28 +144,15 @@ public class PlayerController : NetworkBehaviour
 
     #region savePlayerMethods
 
-    /*public void IsWrongDirection()
-    {
-        int segId;
-        Vector3 posProj;
-        float dist;
-        float arcLen = circuitController.ComputeClosestPointArcLength(transform.position, out segId, out posProj, out dist);
-        Vector3 dir = circuitController.GetSegment(segId);
-
-        if(Vector3.Angle(m_Rigidbody.velocity.normalized, dir.normalized) > 130f && m_Rigidbody.velocity.magnitude > 6f)
-        {
-            m_PlayerInfo.uiManager.backwardsText.gameObject.SetActive(true);
-        }
-        else
-        {
-            m_PlayerInfo.uiManager.backwardsText.gameObject.SetActive(false);
-        }
-    }*/
-
     private void CheckMustSave()
     {
         //Debug.Log(Speed + " " + (Speed < speedThreshold));
-        if (!coroutineCalled && Speed < speedThreshold)
+        if (m_PlayerInfo.mustSave)
+        {
+            SavePlayer();
+            m_PlayerInfo.mustSave = false;
+        }
+        else if (!coroutineCalled && Speed < speedThreshold)
         {
             Debug.Log(Vector3.Angle(-transform.up, Vector3.up));
             if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
