@@ -63,9 +63,9 @@ public class PlayerController : NetworkBehaviour
 
     public void Update()
     {
-        InputAcceleration = Input.GetAxis("Vertical");
-        InputSteering = Input.GetAxis(("Horizontal"));
-        InputBrake = Input.GetAxis("Jump");
+        InputAcceleration = m_PlayerInfo.axisVertical;
+        InputSteering = m_PlayerInfo.axisHorizontal;
+        InputBrake = m_PlayerInfo.axisBrake;
         Speed = m_Rigidbody.velocity.magnitude;
     }
 

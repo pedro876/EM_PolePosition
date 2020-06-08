@@ -159,8 +159,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 1
+  syncInterval: 0.08
+  clientAuthority: 0
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
@@ -179,7 +179,12 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   m_ID: 0
-  m_Name: 
+  m_pName: 
+  wheelColls:
+  - {fileID: 6283861155603876286}
+  - {fileID: 2814993475587467073}
+  - {fileID: 7529074410251188952}
+  - {fileID: 2399590223335585634}
 --- !u!114 &3466774584401487325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,6 +197,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 370ebdb6a034beb4dad079ecb19fb3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  CurrentLap: 0
+  uiManager: {fileID: 0}
+  axisVertical: 0
+  axisHorizontal: 0
+  axisBrake: 0
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0

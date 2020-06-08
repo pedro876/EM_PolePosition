@@ -21,6 +21,9 @@ public class SetupPlayer : NetworkBehaviour
     private PlayerInfo m_PlayerInfo;
     private PolePositionManager m_PolePositionManager;
     private Rigidbody rb;
+    private BoxCollider bc;
+    [SerializeField] WheelCollider[] wheelColls;
+
 
     #endregion variables
 
@@ -32,13 +35,22 @@ public class SetupPlayer : NetworkBehaviour
         m_PolePositionManager = FindObjectOfType<PolePositionManager>();
         m_UIManager = FindObjectOfType<UIManager>();
         rb = GetComponent<Rigidbody>();
+        bc = GetComponent<BoxCollider>();
     }
 
     void Start()
     {
-        if (isLocalPlayer)
+        if (isServer)
         {
             m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
+        } else
+        {
+            rb.isKinematic = true;
+            bc.enabled = false;
+            foreach (WheelCollider wc in wheelColls) wc.enabled = false;
+        }
+        if (isLocalPlayer)
+        {
             ConfigureCamera();
         }
     }
@@ -75,12 +87,7 @@ public class SetupPlayer : NetworkBehaviour
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
     }
 
-    [Command]
-    void CmdChangeName(string newName)
-    {
-        m_pName = newName;
-        m_PlayerInfo.PlayerName = newName;
-    }
+    
 
     /// <summary>
     /// Called when the local player object has been set up.
@@ -95,9 +102,16 @@ public class SetupPlayer : NetworkBehaviour
 
     #endregion
 
+    [Command]
+    void CmdChangeName(string newName)
+    {
+        m_pName = newName;
+        m_PlayerInfo.PlayerName = newName;
+    }
+
     public void ReleasePlayer()
     {
-        if (isLocalPlayer)
+        if (isServer)
             m_PlayerController.enabled = true;
 
         rb.constraints = RigidbodyConstraints.None;

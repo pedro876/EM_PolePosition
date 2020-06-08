@@ -9,8 +9,6 @@ public class PlayerInfo : NetworkBehaviour
 
     public int ID { get; set; }
 
-    public int CurrentPosition { get; set; }
-
     [SyncVar(hook =nameof(UpdateLapUI))] public int CurrentLap;
 
     public float LastArcLength { get; set; }
@@ -22,6 +20,34 @@ public class PlayerInfo : NetworkBehaviour
     public override string ToString() { return PlayerName; }
 
     public UIManager uiManager;
+
+    #region inputUpdate
+
+    [SyncVar]public float axisVertical = 0f;
+    [SyncVar]public float axisHorizontal = 0f;
+    [SyncVar]public float axisBrake = 0f;
+
+    [Command]
+    private void CmdUpdateInput(float aV, float aH, float aB)
+    {
+        axisVertical = aV;
+        axisHorizontal = aH;
+        axisBrake = aB;
+    }
+
+    #endregion inputUpdate
+
+    private void Update()
+    {
+        
+        if (this.isLocalPlayer)
+        {
+            CmdUpdateInput(
+                Input.GetAxis("Vertical"),
+                Input.GetAxis("Horizontal"),
+                Input.GetAxis("Jump"));
+        }
+    }
 
     #region updateLap
 
