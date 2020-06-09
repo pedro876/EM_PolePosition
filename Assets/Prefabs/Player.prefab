@@ -178,8 +178,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  m_ID: 0
-  m_pName: 
   wheelColls:
   - {fileID: 6283861155603876286}
   - {fileID: 2814993475587467073}
@@ -199,13 +197,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  PlayerName: 
+  ID: 0
+  Finish: 0
   CurrentLap: 0
   LastArcLength: 0
+  wrondDirDelayTime: 2
   uiManager: {fileID: 0}
-  rb: {fileID: 0}
   axisVertical: 0
   axisHorizontal: 0
   axisBrake: 0
+  mustSave: 0
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0

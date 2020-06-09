@@ -11,21 +11,29 @@ public class PolePositionManager : NetworkBehaviour
     #region variables
 
     [SerializeField] UIManager m_uiManager;
-    public int maxNumPlayers=1;
-    public static int maxLaps = 3;
     public NetworkManager networkManager;
-
-    [SyncVar(hook = nameof(RaceOrder))] public string myRaceOrder;
-
-    private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
-    private readonly List<PlayerInfo> m_Ranking = new List<PlayerInfo>();
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
-    
 
-    [SerializeField][SyncVar(hook = nameof(UpdateCountdownUI))]private int secondsLeft = 3;
+    [Header("RaceConditions")]
+    public int maxNumPlayers=1;
+    public static int maxLaps = 3;
+    private int secondsLeft = 3;
+    private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
+    private readonly List<PlayerInfo> m_Ranking = new List<PlayerInfo>();
+
+    [Header("RaceProgress")]
+    [SerializeField] private float progressInterval = 0.1f;
+    [SerializeField] private float lastPlayerGracePeriod = 20f;
+    private string myRaceOrder;
 
     #endregion variables
+
+    #region netVariables
+
+    //[SyncVar(hook = nameof(AddPlayerToRanking))] string newRankingName;
+
+    #endregion
 
     private void Awake()
     {
@@ -46,35 +54,39 @@ public class PolePositionManager : NetworkBehaviour
         if(isServer) UpdateRaceProgress();
     }
 
-    [SyncVar(hook = nameof(AddPlayerToRanking))] string newRankingName;
-
     #region addAndRemovePlayers
 
     public void AddPlayer(PlayerInfo player)
     {
+        Debug.Log("addPlayer");
         m_Players.Add(player);
-        m_uiManager.UpdateCountdownText(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
-        if (isServer && m_Players.Count == maxNumPlayers)
+        if (isServer)
         {
-            StartCoroutine("DecreaseCountdown");
+            RpcUpdateCountdownUI(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
+            if (m_Players.Count == maxNumPlayers)
+            {
+                StartCoroutine("DecreaseCountdownCoroutine");
+                StartCoroutine("SortRaceOrderCoroutine");
+            }
+            else
+                SortRaceOrder();
         }
     }
 
     public void RemovePlayer(PlayerInfo player)
     {
         m_Players.Remove(player);
-        m_uiManager.UpdateCountdownText(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
+        RpcUpdateCountdownUI(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
     }
 
     #endregion addAndRemovePlayers
 
     #region countdown
 
-    void UpdateCountdownUI(int oldVal, int newVal)
+    void UpdateCountdownUI()
     {
-        m_uiManager.UpdateCountdownText(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, newVal);
-        Debug.Log("actualizando");
-        if (newVal == 0)
+        RpcUpdateCountdownUI(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
+        if (secondsLeft == 0)
         {
             foreach (var player in m_Players)
             {
@@ -83,63 +95,92 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
-    IEnumerator DecreaseCountdown()
+    IEnumerator DecreaseCountdownCoroutine()
     {
         while (secondsLeft > 0)
         {
             yield return new WaitForSeconds(2);
             secondsLeft--;
+            UpdateCountdownUI();
         }
+    }
+
+    [ClientRpc]
+    void RpcUpdateCountdownUI(int numPlayers, int maxPlayers, bool countdownActive, int seconds)
+    {
+        m_uiManager.UpdateCountdownText(numPlayers, maxPlayers, countdownActive, seconds);
     }
 
     #endregion countdown
 
-    #region raceProgress
+    #region ranking
 
-    void AddPlayerToRanking(string oldVal, string newVal)
+    [ClientRpc]
+    void RpcAddPlayerToRanking(string pName, string bestTime)
     {
-        if(newVal != oldVal) m_uiManager.AddPlayerToRanking(newVal);
+        m_uiManager.AddPlayerToRanking(pName, bestTime);
     }
+
+    #endregion
+
+    #region raceProgress
 
     public void UpdateRaceProgress()
     {
-        //Debug.Log("actualizando race progress");
         for (int i = 0; i < m_Players.Count; i++)
         {
             m_Players[i].LastArcLength = ComputeCarArcLength(i);
             if (m_Players[i].Finish)
             {
                 m_Ranking.Add(m_Players[i]);
-                newRankingName = m_Players[i].PlayerName;
+                RpcAddPlayerToRanking(m_Players[i].PlayerName, m_Players[i].bestLap);
                 m_Players.Remove(m_Players[i]);
             }
         }
 
         if (m_Ranking.Count == maxNumPlayers - 1 && maxNumPlayers != 1)
             StartCoroutine("WaitingLastPlayer");
+    }
 
+    IEnumerator SortRaceOrderCoroutine()
+    {
+        while(m_Ranking.Count < maxNumPlayers)
+        {
+            SortRaceOrder();
+            yield return new WaitForSeconds(progressInterval);
+        }
+    }
+
+    void SortRaceOrder()
+    {
         m_Players.Sort(new PlayerInfoComparer());
 
         myRaceOrder = "";
         foreach (var _player in m_Players)
-        {
             myRaceOrder += _player.PlayerName + "\n ";
-            //Debug.Log(myRaceOrder);
-        }
-        
+
+        RpcUpdateRaceProgressUI(myRaceOrder);
     }
 
-    public void RaceOrder(string oldVal,string newVal)
+    [ClientRpc]
+    void RpcUpdateRaceProgressUI(string raceOrder)
     {
-        m_uiManager.UpdatePosition(myRaceOrder);
+        m_uiManager.UpdatePosition(raceOrder);
     }
+
+    #endregion
+
+    #region lastPlayer
 
     IEnumerator WaitingLastPlayer()
     {
-        yield return new WaitForSeconds(20);
+        yield return new WaitForSeconds(lastPlayerGracePeriod);
         if (m_Players.Count != 0)
-            m_Players[0].AddLap();
+            m_Players[0].Finish = true;
+            //m_Players[0].AddLap();
     }
+
+    #endregion
 
     /*Porcentaje de la vuelta*/
     float ComputeCarArcLength(int ID)
@@ -164,6 +205,4 @@ public class PolePositionManager : NetworkBehaviour
         
         return minArcL;
     }
-
-    #endregion raceProgress
 }

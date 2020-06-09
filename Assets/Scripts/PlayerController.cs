@@ -22,7 +22,6 @@ public class PlayerController : NetworkBehaviour
     public float topSpeed = 200f;
     public float downForce = 1000f;
     public float slipLimit = 0.2f;
-
     private float CurrentRotation { get; set; }
     private float InputAcceleration { get; set; }
     private float InputSteering { get; set; }
@@ -33,24 +32,7 @@ public class PlayerController : NetworkBehaviour
     private Rigidbody m_Rigidbody;
     private float m_SteerHelper = 0.8f;
 
-
-    private float m_CurrentSpeed = 0;
-
-    private float Speed
-    {
-        get { return m_CurrentSpeed; }
-        set
-        {
-            if (Math.Abs(m_CurrentSpeed - value) < float.Epsilon) return;
-            m_CurrentSpeed = value;
-            if (OnSpeedChangeEvent != null)
-                OnSpeedChangeEvent(m_CurrentSpeed);
-        }
-    }
-
     public delegate void OnSpeedChangeDelegate(float newVal);
-
-    public event OnSpeedChangeDelegate OnSpeedChangeEvent;
 
     [Header("Save Player Options")]
     [SerializeField] CircuitController circuitController;
@@ -62,7 +44,6 @@ public class PlayerController : NetworkBehaviour
     #endregion Variables
 
     #region Unity Callbacks
-
     public void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
@@ -75,7 +56,7 @@ public class PlayerController : NetworkBehaviour
         InputAcceleration = m_PlayerInfo.axisVertical;
         InputSteering = m_PlayerInfo.axisHorizontal;
         InputBrake = m_PlayerInfo.axisBrake;
-        Speed = m_Rigidbody.velocity.magnitude;
+        m_PlayerInfo.SetSpeed(m_Rigidbody.velocity.magnitude);
         //if (Input.GetKeyDown(KeyCode.R)) SavePlayer();
         CheckMustSave();
     }
@@ -143,16 +124,14 @@ public class PlayerController : NetworkBehaviour
     #endregion
 
     #region savePlayerMethods
-
     private void CheckMustSave()
     {
-        //Debug.Log(Speed + " " + (Speed < speedThreshold));
         if (m_PlayerInfo.mustSave)
         {
             SavePlayer();
             m_PlayerInfo.mustSave = false;
         }
-        else if (!coroutineCalled && Speed < speedThreshold)
+        else if (!coroutineCalled && m_PlayerInfo.Speed < speedThreshold)
         {
             if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
             {
@@ -182,14 +161,12 @@ public class PlayerController : NetworkBehaviour
         Vector3 dir = circuitController.GetSegment(segId);
         transform.forward = dir;
         m_Rigidbody.velocity = Vector3.zero;
-        Speed = 0;
+        m_PlayerInfo.SetSpeed(0);
     }
 
     #endregion savePlayerMethods
 
     #region Methods
-
-
 
     // crude traction control that reduces the power to wheel if the car is wheel spinning too much
     private void TractionControl()

@@ -8,30 +8,47 @@ using System;
 public class PlayerInfo : NetworkBehaviour
 {
 
-    #region variables
+    #region references
+
+    private UIManager uiManager;
+    public CircuitProgress CircuitProgress { get; set; }
+    private Rigidbody rb;
+
+    #endregion
+
+    #region NetVariables
 
     [SyncVar] public string PlayerName;
     [SyncVar] public int ID;
     [SyncVar(hook = nameof(FinishCircuit))] public bool Finish;
     [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
     [SyncVar(hook = nameof(IsWrongDirection))] public float LastArcLength;
-    [SerializeField] private float wrondDirDelayTime = 2.0f;
-    private bool wrongDir = false;
-    private bool coroutineCalled = false;
-    public UIManager uiManager;
-    public CircuitProgress CircuitProgress { get; set; }
-    private DateTime startTime;
-    private TimeSpan bestLapSpan;
-    [SyncVar (hook = nameof(UpdateBestLapUI))]public string bestLap;
-    
-
+    [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
+    [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap;
     #endregion
 
+    #region localVariables
+
+    [Header("Wrong direction Variables")]
+    [SerializeField] private float wrongDirDelayTime = 2.0f;
+    private bool wrongDir = false;
+    private bool coroutineCalled = false;
     
+    private DateTime startTime;
+    private TimeSpan bestLapSpan;
+    
+    #endregion
+
+    private void Start()
+    {
+        uiManager = FindObjectOfType<UIManager>();
+        rb = GetComponent<Rigidbody>();
+        CurrentLap = 0;
+        CircuitProgress = new CircuitProgress();
+    }
 
     private void Update()
     {
-
         if (this.isLocalPlayer)
         {
             CmdUpdateInput(
@@ -41,6 +58,39 @@ public class PlayerInfo : NetworkBehaviour
                 Input.GetKeyDown(KeyCode.R));
         }
     }
+
+    #region name
+
+    [Command]
+    public void CmdChangeName(string newName)
+    {
+        const int maxChars = 9;
+        if (newName.Length > maxChars)
+        {
+            string aux = "";
+            for (int i = 0; i < maxChars; i++) aux += newName[i];
+            newName = aux;
+        }
+
+        this.PlayerName = newName;
+    }
+
+    #endregion
+
+    #region speedChange
+
+    public void SetSpeed(float newVal)
+    {
+        if (Math.Abs(newVal - Speed) < float.Epsilon) return;
+        Speed = newVal;
+    }
+
+    void ChangeSpeedUI(float oldVal, float newVal)
+    {
+        uiManager.UpdateSpeed(this);
+    }
+
+    #endregion
 
     #region finishFuncs
 
@@ -76,7 +126,6 @@ public class PlayerInfo : NetworkBehaviour
 
     #endregion inputUpdate
 
-
     #region wrongDirection
     public void IsWrongDirection(float oldVal, float newVal)
     {
@@ -93,8 +142,8 @@ public class PlayerInfo : NetworkBehaviour
 
     IEnumerator WrongDirDelay()
     {
-        yield return new WaitForSeconds(wrondDirDelayTime);
-        uiManager.backwardsText.gameObject.SetActive(wrongDir);
+        yield return new WaitForSeconds(wrongDirDelayTime);
+        uiManager.backwardsText.gameObject.SetActive(wrongDir && rb.velocity.magnitude > 1.0f);
         coroutineCalled = false;
     }
 
@@ -115,16 +164,7 @@ public class PlayerInfo : NetworkBehaviour
             if(bestLap=="" || interval < bestLapSpan)
             {
                 bestLapSpan = interval;
-                string minutes = bestLapSpan.Minutes.ToString();
-                if (minutes.Length == 1)
-                    minutes = "0" + minutes;
-                string seconds = bestLapSpan.Seconds.ToString();
-                if (seconds.Length == 1)
-                    seconds = "0" + seconds;
-                string milliseconds = (bestLapSpan.Milliseconds / 100).ToString();
-                if (milliseconds.Length == 1)
-                    milliseconds = "0" + milliseconds;
-                bestLap = "Best lap: "+ minutes + ":" + seconds + ":" + milliseconds;
+                ComputeBestTime();
             }
             startTime = endTime;
         }
@@ -133,14 +173,25 @@ public class PlayerInfo : NetworkBehaviour
             //transform.gameObject.SetActive(false);
             Finish = true;
         }
+    }
 
-        Debug.Log(CurrentLap);
+    void ComputeBestTime()
+    {
+        string minutes = bestLapSpan.Minutes.ToString();
+        if (minutes.Length == 1)
+            minutes = "0" + minutes;
+        string seconds = bestLapSpan.Seconds.ToString();
+        if (seconds.Length == 1)
+            seconds = "0" + seconds;
+        string milliseconds = ((int)(bestLapSpan.Milliseconds / 100.0f)).ToString();
+        if (milliseconds.Length == 1)
+            milliseconds = "0" + milliseconds;
+        bestLap = minutes + ":" + seconds + ":" + milliseconds;
     }
 
     private void UpdateBestLapUI(string oldVal, string newVal)
     {
         uiManager.UpdateBestLap(this);
-
     }
 
     public void UpdateLapUI(int oldVal, int newVal)

@@ -25,7 +25,6 @@ public class UIManager :  MonoBehaviour
 
     [Header("In-Game HUD")] [SerializeField]
     private GameObject inGameHUD;
-
     [SerializeField] private Text textSpeed;
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
@@ -36,13 +35,15 @@ public class UIManager :  MonoBehaviour
     [Header("Ranking HUD")]
     [SerializeField] private GameObject rankingHUD;
     [SerializeField] private Text[] playerTexts;
+    [SerializeField] private Text[] timeTexts;
     [SerializeField] private Button returnButton;
-    int textIndex = 0;
+    private int textIndex = 0;
 
     #endregion variables
 
     private void Awake()
     {
+        foreach (Text t in playerTexts) t.gameObject.SetActive(false);
         m_NetworkManager = FindObjectOfType<NetworkManager>();
     }
 
@@ -69,10 +70,19 @@ public class UIManager :  MonoBehaviour
 
     #region gameHUDfuncs
 
-    public void UpdateSpeed(int speed)
+    #region positionAndSpeed
+
+    public void UpdateSpeed(PlayerInfo player)
     {
-        textSpeed.text = "Speed " + speed + " Km/h";
+        if(player.isLocalPlayer)
+            textSpeed.text = "Speed " + (int)(player.Speed*5f) + " Km/h";
     }
+
+    public void UpdatePosition(String text) { textPosition.text = text; }
+
+    #endregion
+
+    #region laps
 
     public void UpdateLap(PlayerInfo player)
     {
@@ -84,14 +94,13 @@ public class UIManager :  MonoBehaviour
     {
         if (player.isLocalPlayer)
         {
-            bestLapText.text = player.bestLap;
+            bestLapText.text = "Best lap: " + player.bestLap;
         }
     }
 
-    public void UpdatePosition(String text)
-    {
-        textPosition.text = text;
-    }
+    #endregion
+
+    #region countdown
 
     public void UpdateCountdownText(int numPlayers, int maxPlayers, bool countdownActive, int secondsLeft)
     {
@@ -119,17 +128,20 @@ public class UIManager :  MonoBehaviour
         yield return new WaitForSeconds(2);
         countdownText.gameObject.SetActive(false);
     }
+    #endregion
 
     #endregion gameHUDfuncs
 
     #region rankingHUDfuncs
 
-    public void AddPlayerToRanking(string newName)
+    public void AddPlayerToRanking(string newName, string bestTime)
     {
         if(textIndex < 4)
         {
             playerTexts[textIndex].gameObject.SetActive(true);
             playerTexts[textIndex].text = newName;
+            timeTexts[textIndex].gameObject.SetActive(true);
+            timeTexts[textIndex].text = bestTime == "00:00:00" || bestTime == "" ? "--:--:--" : bestTime;
             textIndex++;
         }
     }

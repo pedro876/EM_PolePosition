@@ -37,18 +37,11 @@ public class SetupPlayer : NetworkBehaviour
 
     void Start()
     {
-        if (isServer)
-        {
-            m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
-        } else
+        if (!isServer)
         {
             rb.isKinematic = true;
             bc.enabled = false;
             foreach (WheelCollider wc in wheelColls) wc.enabled = false;
-        }
-        if (isLocalPlayer)
-        {
-            ConfigureCamera();
         }
     }
 
@@ -73,17 +66,12 @@ public class SetupPlayer : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        m_PlayerInfo.uiManager = m_UIManager;
-
-        //Debug.Log("Client iniciado con nombre: " + m_pName);
-        //m_PlayerInfo.PlayerName = m_Name + " " + m_ID;
-
-        m_PlayerInfo.CurrentLap = 0;
-        m_PlayerInfo.CircuitProgress = new CircuitProgress();
+        if (isLocalPlayer)
+        {
+            m_PlayerInfo.CmdChangeName(m_UIManager.playerName);
+        }
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
     }
-
-    
 
     /// <summary>
     /// Called when the local player object has been set up.
@@ -93,16 +81,10 @@ public class SetupPlayer : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
-        CmdChangeName(m_UIManager.playerName);
+        ConfigureCamera();
     }
 
     #endregion
-
-    [Command]
-    void CmdChangeName(string newName)
-    {
-        m_PlayerInfo.PlayerName = newName;
-    }
 
     public void ReleasePlayer()
     {
@@ -110,11 +92,6 @@ public class SetupPlayer : NetworkBehaviour
             m_PlayerController.enabled = true;
 
         rb.constraints = RigidbodyConstraints.None;
-    }
-
-    void OnSpeedChangeEventHandler(float speed)
-    {
-        m_UIManager.UpdateSpeed((int) speed * 5); // 5 for visualization purpose (km/h)
     }
 
     void ConfigureCamera()
