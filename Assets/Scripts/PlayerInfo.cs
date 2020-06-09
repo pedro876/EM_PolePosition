@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using System;
+
 
 public class PlayerInfo : NetworkBehaviour
 {
@@ -18,6 +20,10 @@ public class PlayerInfo : NetworkBehaviour
     private bool coroutineCalled = false;
     public UIManager uiManager;
     public CircuitProgress CircuitProgress { get; set; }
+    private DateTime startTime;
+    private TimeSpan bestLapSpan;
+    [SyncVar (hook = nameof(UpdateBestLapUI))]public string bestLap;
+    
 
     #endregion
 
@@ -98,13 +104,43 @@ public class PlayerInfo : NetworkBehaviour
 
     public void AddLap()
     {
+        
         CurrentLap++;
+        if (CurrentLap == 1)
+            startTime = DateTime.Now;
+        else
+        {
+            DateTime endTime = DateTime.Now;
+            TimeSpan interval = endTime - startTime;
+            if(bestLap=="" || interval < bestLapSpan)
+            {
+                bestLapSpan = interval;
+                string minutes = bestLapSpan.Minutes.ToString();
+                if (minutes.Length == 1)
+                    minutes = "0" + minutes;
+                string seconds = bestLapSpan.Seconds.ToString();
+                if (seconds.Length == 1)
+                    seconds = "0" + seconds;
+                string milliseconds = (bestLapSpan.Milliseconds / 100).ToString();
+                if (milliseconds.Length == 1)
+                    milliseconds = "0" + milliseconds;
+                bestLap = "Best lap: "+ minutes + ":" + seconds + ":" + milliseconds;
+            }
+            startTime = endTime;
+        }
         if (CurrentLap > PolePositionManager.maxLaps)
         {
             //transform.gameObject.SetActive(false);
             Finish = true;
         }
+
         Debug.Log(CurrentLap);
+    }
+
+    private void UpdateBestLapUI(string oldVal, string newVal)
+    {
+        uiManager.UpdateBestLap(this);
+
     }
 
     public void UpdateLapUI(int oldVal, int newVal)

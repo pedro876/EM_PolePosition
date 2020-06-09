@@ -31,6 +31,7 @@ public class UIManager :  MonoBehaviour
     [SerializeField] private Text textPosition;
     [SerializeField] private Text countdownText;
     [SerializeField] public Text backwardsText;
+    [SerializeField] public Text bestLapText;
 
     [Header("Ranking HUD")]
     [SerializeField] private GameObject rankingHUD;
@@ -77,6 +78,14 @@ public class UIManager :  MonoBehaviour
     {
         if (player.isLocalPlayer)
             textLaps.text = "LAP: "+ player.CurrentLap + "/" + PolePositionManager.maxLaps;
+    }
+
+    public void UpdateBestLap(PlayerInfo player)
+    {
+        if (player.isLocalPlayer)
+        {
+            bestLapText.text = player.bestLap;
+        }
     }
 
     public void UpdatePosition(String text)
