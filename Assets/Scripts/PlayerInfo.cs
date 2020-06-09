@@ -25,6 +25,12 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar(hook = nameof(IsWrongDirection))] public float LastArcLength;
     [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
     [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap;
+
+    //INPUT
+    [SyncVar] public float axisVertical = 0f;
+    [SyncVar] public float axisHorizontal = 0f;
+    [SyncVar] public float axisBrake = 0f;
+    [SyncVar] public bool mustSave = false;
     #endregion
 
     #region localVariables
@@ -110,11 +116,6 @@ public class PlayerInfo : NetworkBehaviour
 
     #region inputUpdate
 
-    [SyncVar] public float axisVertical = 0f;
-    [SyncVar] public float axisHorizontal = 0f;
-    [SyncVar] public float axisBrake = 0f;
-    [SyncVar] public bool mustSave = false;
-
     [Command]
     private void CmdUpdateInput(float aV, float aH, float aB, bool mSave)
     {
@@ -127,7 +128,7 @@ public class PlayerInfo : NetworkBehaviour
     #endregion inputUpdate
 
     #region wrongDirection
-    public void IsWrongDirection(float oldVal, float newVal)
+    private void IsWrongDirection(float oldVal, float newVal)
     {
         if (isLocalPlayer)
         {
@@ -194,7 +195,7 @@ public class PlayerInfo : NetworkBehaviour
         uiManager.UpdateBestLap(this);
     }
 
-    public void UpdateLapUI(int oldVal, int newVal)
+    private void UpdateLapUI(int oldVal, int newVal)
     {
         uiManager.UpdateLap(this);
     }
