@@ -641,7 +641,7 @@ MonoBehaviour:
   syncInterval: 0.1
   m_uiManager: {fileID: 646748519}
   networkManager: {fileID: 0}
-  maxNumPlayers: 3
+  maxNumPlayers: 4
   progressInterval: 0.1
   lastPlayerGracePeriod: 20
 --- !u!4 &1839589614

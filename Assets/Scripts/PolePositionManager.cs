@@ -26,6 +26,7 @@ public class PolePositionManager : NetworkBehaviour
     [SerializeField] private float progressInterval = 0.1f;
     [SerializeField] private float lastPlayerGracePeriod = 20f;
     private string myRaceOrder;
+    bool orderCoroutineCalled = false;
 
     #endregion variables
 
@@ -66,10 +67,12 @@ public class PolePositionManager : NetworkBehaviour
             if (m_Players.Count == maxNumPlayers)
             {
                 StartCoroutine("DecreaseCountdownCoroutine");
+            }
+            else if (!orderCoroutineCalled)
+            {
+                orderCoroutineCalled = true;
                 StartCoroutine("SortRaceOrderCoroutine");
             }
-            else
-                SortRaceOrder();
         }
     }
 
