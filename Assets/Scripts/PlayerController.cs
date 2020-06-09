@@ -154,7 +154,6 @@ public class PlayerController : NetworkBehaviour
         }
         else if (!coroutineCalled && Speed < speedThreshold)
         {
-            Debug.Log(Vector3.Angle(-transform.up, Vector3.up));
             if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
             {
                 StartCoroutine("SavePlayerDelay");

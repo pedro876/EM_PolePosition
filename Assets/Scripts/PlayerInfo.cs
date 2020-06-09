@@ -8,8 +8,8 @@ public class PlayerInfo : NetworkBehaviour
 
     #region variables
 
-    public string PlayerName { get; set; }
-    public int ID { get; set; }
+    [SyncVar] public string PlayerName;
+    [SyncVar] public int ID;
     [SyncVar(hook = nameof(FinishCircuit))] public bool Finish;
     [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
     [SyncVar(hook = nameof(IsWrongDirection))] public float LastArcLength;

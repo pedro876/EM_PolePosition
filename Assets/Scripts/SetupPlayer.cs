@@ -12,9 +12,6 @@ public class SetupPlayer : NetworkBehaviour
 {
     #region variables
 
-    [SyncVar] [SerializeField] private int m_ID;
-    [SyncVar] [SerializeField] private string m_pName;
-
     private UIManager m_UIManager;
     private NetworkManager m_NetworkManager;
     private PlayerController m_PlayerController;
@@ -65,7 +62,7 @@ public class SetupPlayer : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        m_ID = connectionToClient.connectionId;
+        m_PlayerInfo.ID = connectionToClient.connectionId;
         Debug.Log("Server iniciado");
     }
 
@@ -76,7 +73,6 @@ public class SetupPlayer : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        m_PlayerInfo.ID = m_ID;
         m_PlayerInfo.uiManager = m_UIManager;
 
         //Debug.Log("Client iniciado con nombre: " + m_pName);
@@ -105,7 +101,6 @@ public class SetupPlayer : NetworkBehaviour
     [Command]
     void CmdChangeName(string newName)
     {
-        m_pName = newName;
         m_PlayerInfo.PlayerName = newName;
     }
 
