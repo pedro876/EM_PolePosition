@@ -6,6 +6,10 @@ using Mirror;
 using UnityEngine;
 using System.Threading;
 
+/*
+ * Gestiona todos los datos relacionados con la carrera y los mantiene actualizamos para los jugadores.
+ * */
+
 public class PolePositionManager : NetworkBehaviour
 {
     #region variables
