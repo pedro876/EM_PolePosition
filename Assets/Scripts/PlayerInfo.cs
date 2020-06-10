@@ -22,9 +22,9 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar] public int ID;
     [SyncVar(hook = nameof(FinishCircuit))] public bool Finish;
     [HideInInspector] [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
-    
     [HideInInspector] [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
     [HideInInspector] [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap;
+    [HideInInspector] [SyncVar] public float LastArcLength;
 
 
     #endregion
@@ -41,10 +41,7 @@ public class PlayerInfo : NetworkBehaviour
 
     [Header("Wrong direction Variables")]
     [SerializeField] private float checkDirInterval = 0.5f;
-    /*[HideInInspector] */[SyncVar] public float LastArcLength;
     [SerializeField] private float wrongDirThreshold = 1.0f;
-    //private bool wrongDir = false;
-    //private bool coroutineCalled = false;
 
     //BEST LAP
     private DateTime startTime;
