@@ -33,7 +33,7 @@ public class PlayerController : NetworkBehaviour
     private PlayerInfo m_PlayerInfo;
 
     private Rigidbody m_Rigidbody;
-    private float m_SteerHelper = 0f;
+    private float m_SteerHelper = 0.8f;
 
     public delegate void OnSpeedChangeDelegate(float newVal);
 
