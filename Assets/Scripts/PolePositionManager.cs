@@ -65,10 +65,9 @@ public class PolePositionManager : NetworkBehaviour
         {
             RpcUpdateCountdownUI(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
             if (m_Players.Count == maxNumPlayers)
-            {
                 StartCoroutine("DecreaseCountdownCoroutine");
-            }
-            else if (!orderCoroutineCalled)
+
+            if (!orderCoroutineCalled)
             {
                 orderCoroutineCalled = true;
                 StartCoroutine("SortRaceOrderCoroutine");
@@ -147,7 +146,7 @@ public class PolePositionManager : NetworkBehaviour
 
     IEnumerator SortRaceOrderCoroutine()
     {
-        while(m_Ranking.Count < maxNumPlayers)
+        while (m_Ranking.Count < maxNumPlayers)
         {
             SortRaceOrder();
             yield return new WaitForSeconds(progressInterval);
@@ -158,7 +157,7 @@ public class PolePositionManager : NetworkBehaviour
     {
         m_Players.Sort(new PlayerInfoComparer());
 
-        myRaceOrder = "";
+        myRaceOrder = "\n";
         foreach (var _player in m_Players)
             myRaceOrder += _player.PlayerName + "\n ";
 

@@ -21,25 +21,32 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar] public string PlayerName;
     [SyncVar] public int ID;
     [SyncVar(hook = nameof(FinishCircuit))] public bool Finish;
-    [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
-    [SyncVar(hook = nameof(IsWrongDirection))] public float LastArcLength;
-    [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
-    [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap;
+    [HideInInspector] [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
+    
+    [HideInInspector] [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
+    [HideInInspector] [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap;
 
-    //INPUT
-    [SyncVar] public float axisVertical = 0f;
-    [SyncVar] public float axisHorizontal = 0f;
-    [SyncVar] public float axisBrake = 0f;
-    [SyncVar] public bool mustSave = false;
+
     #endregion
 
     #region localVariables
 
+    //INPUT
+    [Header("Input Variables")]
+    [HideInInspector] public float axisVertical = 0f;
+    [HideInInspector] public float axisHorizontal = 0f;
+    [HideInInspector] public float axisBrake = 0f;
+    [HideInInspector] public bool mustSave = false;
+    private float updateInputInterval = 0.1f;
+
     [Header("Wrong direction Variables")]
-    [SerializeField] private float wrongDirDelayTime = 2.0f;
-    private bool wrongDir = false;
-    private bool coroutineCalled = false;
-    
+    [SerializeField] private float checkDirInterval = 0.5f;
+    /*[HideInInspector] */[SyncVar] public float LastArcLength;
+    [SerializeField] private float wrongDirThreshold = 1.0f;
+    //private bool wrongDir = false;
+    //private bool coroutineCalled = false;
+
+    //BEST LAP
     private DateTime startTime;
     private TimeSpan bestLapSpan;
     
@@ -51,18 +58,17 @@ public class PlayerInfo : NetworkBehaviour
         rb = GetComponent<Rigidbody>();
         CurrentLap = 0;
         CircuitProgress = new CircuitProgress();
+        if (this.isLocalPlayer)
+        {
+            StartCoroutine("UpdateInputCoroutine");
+            StartCoroutine("WrongDirCoroutine");
+        }
     }
 
     private void Update()
     {
-        if (this.isLocalPlayer)
-        {
-            CmdUpdateInput(
-                Input.GetAxis("Vertical"),
-                Input.GetAxis("Horizontal"),
-                Input.GetAxis("Jump"),
-                Input.GetKeyDown(KeyCode.R));
-        }
+        if(isLocalPlayer)
+            mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
     }
 
     #region name
@@ -125,27 +131,34 @@ public class PlayerInfo : NetworkBehaviour
         if (!mustSave) mustSave = mSave;
     }
 
-    #endregion inputUpdate
-
-    #region wrongDirection
-    private void IsWrongDirection(float oldVal, float newVal)
+    IEnumerator UpdateInputCoroutine()
     {
-        if (isLocalPlayer)
+        while (!Finish)
         {
-            wrongDir = oldVal > newVal;
-            if (!coroutineCalled && wrongDir)
-            {
-                coroutineCalled = true;
-                StartCoroutine("WrongDirDelay");
-            }
+            CmdUpdateInput(
+                Input.GetAxis("Vertical"),
+                Input.GetAxis("Horizontal"),
+                Input.GetAxis("Jump"),
+                mustSave);
+            mustSave = false;
+            yield return new WaitForSeconds(updateInputInterval);
         }
     }
 
-    IEnumerator WrongDirDelay()
+    #endregion inputUpdate
+
+    #region wrongDirection
+
+    IEnumerator WrongDirCoroutine()
     {
-        yield return new WaitForSeconds(wrongDirDelayTime);
-        uiManager.backwardsText.gameObject.SetActive(wrongDir && rb.velocity.magnitude > 1.0f);
-        coroutineCalled = false;
+        while (!Finish)
+        {
+            float localLastArcLength = LastArcLength;
+            yield return new WaitForSeconds(checkDirInterval);
+            float difference = LastArcLength - localLastArcLength;
+            bool wrongDir = difference < -wrongDirThreshold;
+            uiManager.backwardsText.gameObject.SetActive(wrongDir && Speed > 1.0f);
+        }
     }
 
     #endregion

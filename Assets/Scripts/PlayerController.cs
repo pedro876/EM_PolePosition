@@ -23,9 +23,6 @@ public class PlayerController : NetworkBehaviour
     public float downForce = 1000f;
     public float slipLimit = 0.2f;
     private float CurrentRotation { get; set; }
-    private float InputAcceleration { get; set; }
-    private float InputSteering { get; set; }
-    private float InputBrake { get; set; }
 
     private PlayerInfo m_PlayerInfo;
 
@@ -53,20 +50,16 @@ public class PlayerController : NetworkBehaviour
 
     public void Update()
     {
-        InputAcceleration = m_PlayerInfo.axisVertical;
-        InputSteering = m_PlayerInfo.axisHorizontal;
-        InputBrake = m_PlayerInfo.axisBrake;
         m_PlayerInfo.SetSpeed(m_Rigidbody.velocity.magnitude);
-        //if (Input.GetKeyDown(KeyCode.R)) SavePlayer();
         CheckMustSave();
     }
 
 
     public void FixedUpdate()
     {
-        InputSteering = Mathf.Clamp(InputSteering, -1, 1);
-        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
-        InputBrake = Mathf.Clamp(InputBrake, 0, 1);
+        float InputSteering = Mathf.Clamp(m_PlayerInfo.axisHorizontal, -1, 1);
+        float InputAcceleration = Mathf.Clamp(m_PlayerInfo.axisVertical, -1, 1);
+        float InputBrake = Mathf.Clamp(m_PlayerInfo.axisBrake, 0, 1);
 
         float steering = maxSteeringAngle * InputSteering;
 
