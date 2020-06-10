@@ -157,9 +157,13 @@ public class PolePositionManager : NetworkBehaviour
     {
         m_Players.Sort(new PlayerInfoComparer());
 
-        myRaceOrder = "\n";
-        foreach (var _player in m_Players)
-            myRaceOrder += _player.PlayerName + "\n ";
+        myRaceOrder = "";
+        for(int i = 0; i < m_Players.Count; i++)
+        {
+            myRaceOrder += m_Players[i].PlayerName;
+            if (i < m_Players.Count - 1)
+                myRaceOrder += "\n";
+        }
 
         RpcUpdateRaceProgressUI(myRaceOrder);
     }
