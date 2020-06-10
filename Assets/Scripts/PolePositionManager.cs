@@ -57,9 +57,12 @@ public class PolePositionManager : NetworkBehaviour
 
     #region addAndRemovePlayers
 
+    /*Se encarga de añadir un jugador a la partida. Actualiza la interfaz de los juagdores restantes, y en caso de haber llegado al maximo de jugadores, 
+    *llama a la corrutina que hace comenzar la cuenta atras previa a la carrera. Cuando se añade el primer jugador a la partida, hará comenzar una 
+    *corrutina que se encargara de mostrar el orden de los jugadores hasta que termine la misma.
+    **/
     public void AddPlayer(PlayerInfo player)
     {
-        Debug.Log("addPlayer");
         m_Players.Add(player);
         if (isServer)
         {
@@ -74,7 +77,7 @@ public class PolePositionManager : NetworkBehaviour
             }
         }
     }
-
+    /*Elimina un jugador y actualiza en la interfaz el número de jugadores restantes en caso de no haber empezado la partida.*/
     public void RemovePlayer(PlayerInfo player)
     {
         m_Players.Remove(player);
@@ -84,7 +87,7 @@ public class PolePositionManager : NetworkBehaviour
     #endregion addAndRemovePlayers
 
     #region countdown
-
+    /*Cuando la cuenta atras llega a 0 libera los playerControllers para que los coches se puedan empezar a mover.*/
     void UpdateCountdownUI()
     {
         RpcUpdateCountdownUI(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
@@ -107,6 +110,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    /*Actualiza la interfaz de la cuenta atras con los segundos restantes para todos los clientes.*/
     [ClientRpc]
     void RpcUpdateCountdownUI(int numPlayers, int maxPlayers, bool countdownActive, int seconds)
     {
@@ -117,6 +121,7 @@ public class PolePositionManager : NetworkBehaviour
 
     #region ranking
 
+    /*Añade el nombre y mejor tiempo del jugador que haya terminado la carrera en la interfaz de todos los clientes.*/
     [ClientRpc]
     void RpcAddPlayerToRanking(string pName, string bestTime)
     {
@@ -127,6 +132,11 @@ public class PolePositionManager : NetworkBehaviour
 
     #region raceProgress
 
+    /*Actualiza el orden de jugadores para mostrarlo en la interfaz inGame. En caso de que un jugador se haya terminado la carrera,
+    *dejara de mostrarse inGame para añadir su nombre y mejor tiempo en el ranking.
+    *Si todos los jugadores menos uno han terminado, se le dará un tiempo de gracia para intentar terminar la carrera. Esto no se 
+    *aplicará cuando solo haya un corredor.
+    **/
     public void UpdateRaceProgress()
     {
         for (int i = 0; i < m_Players.Count; i++)
@@ -188,7 +198,7 @@ public class PolePositionManager : NetworkBehaviour
 
     #endregion
 
-    /*Porcentaje de la vuelta*/
+    /*Se encarga de calcular la distancia recorrida desde el inicio de la carrera, teniendo en cuenta el número de vueltas.*/
     float ComputeCarArcLength(int ID)
     {
         // Compute the projection of the car position to the closest circuit 
