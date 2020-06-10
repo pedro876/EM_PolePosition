@@ -9,6 +9,12 @@ using Mirror;
 	API Reference: https://mirror-networking.com/docs/api/Mirror.NetworkBehaviour.html
 */
 
+
+/*
+ * Clase utilizada unicamente por el Servidor.
+ * No recibirá los inputs sino que se le pasarán desde PlayerInfo y se aplicarán al jugador correspondiente.
+ * */
+
 public class PlayerController : NetworkBehaviour
 {
     #region Variables
