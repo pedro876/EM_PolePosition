@@ -235,7 +235,7 @@ MonoBehaviour:
     steering: 0
   forwardMotorTorque: 100000
   backwardMotorTorque: 50000
-  maxSteeringAngle: 15
+  maxSteeringAngle: 10
   engineBrake: 1e+12
   footBrake: 1e+24
   topSpeed: 200
