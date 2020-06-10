@@ -60,7 +60,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1.5
+    m_Stiffness: 1
   m_Enabled: 1
 --- !u!1 &1508097745644926054
 GameObject:
@@ -201,13 +201,15 @@ MonoBehaviour:
   ID: 0
   Finish: 0
   CurrentLap: 0
+  Speed: 0
+  bestLap: 
   LastArcLength: 0
-  wrondDirDelayTime: 2
-  uiManager: {fileID: 0}
   axisVertical: 0
   axisHorizontal: 0
   axisBrake: 0
   mustSave: 0
+  checkDirInterval: 0.5
+  wrongDirThreshold: 1
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,7 +239,7 @@ MonoBehaviour:
   engineBrake: 1e+12
   footBrake: 1e+24
   topSpeed: 200
-  downForce: 1000
+  downForce: 1500
   slipLimit: 0.2
   circuitController: {fileID: 0}
   saveTime: 1
@@ -576,7 +578,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1.5
+    m_Stiffness: 1
   m_Enabled: 1
 --- !u!1 &5703065227131910028
 GameObject:
@@ -829,7 +831,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1.5
+    m_Stiffness: 1
   m_Enabled: 1
 --- !u!1 &8856475019997471047
 GameObject:
@@ -891,5 +893,5 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1.5
+    m_Stiffness: 1
   m_Enabled: 1
