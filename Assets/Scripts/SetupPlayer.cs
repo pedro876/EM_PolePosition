@@ -8,6 +8,10 @@ using Random = System.Random;
 	API Reference: https://mirror-networking.com/docs/api/Mirror.NetworkBehaviour.html
 */
 
+/*
+ * 
+ */
+
 public class SetupPlayer : NetworkBehaviour
 {
     #region variables
@@ -35,6 +39,9 @@ public class SetupPlayer : NetworkBehaviour
         bc = GetComponent<BoxCollider>();
     }
 
+    /*
+     * En caso de no ser el servidor, no se simulan físicas y se desactivan los colliders
+     */
     void Start()
     {
         if (!isServer)
@@ -68,6 +75,7 @@ public class SetupPlayer : NetworkBehaviour
         base.OnStartClient();
         if (isLocalPlayer)
         {
+            //Al iniciarse un cliente, si es localPlayer, debe mandarse el nombre introducido al servidor
             m_PlayerInfo.CmdChangeName(m_UIManager.playerName);
         }
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
@@ -86,6 +94,9 @@ public class SetupPlayer : NetworkBehaviour
 
     #endregion
 
+    /*
+     * Permite a un jugador moverse, por ejemplo cuando acaba el countdown
+     */
     public void ReleasePlayer()
     {
         if (isServer)
@@ -94,11 +105,17 @@ public class SetupPlayer : NetworkBehaviour
         rb.constraints = RigidbodyConstraints.None;
     }
 
+    /*
+     * Indica a la cámara que utilice a este objeto como target
+     */
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().SetFocus(this.gameObject);
     }
 
+    /*
+     * Al destruirse esta instancia, debe eliminarse de la lista de jugadores
+     */
     private void OnDestroy()
     {
         m_PolePositionManager.RemovePlayer(m_PlayerInfo);

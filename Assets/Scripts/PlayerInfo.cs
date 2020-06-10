@@ -4,7 +4,9 @@ using Mirror;
 using UnityEngine;
 using System;
 
-
+/*
+ * Se encarga de mantener actualizados los datos y el estado del jugador en el cliente y en el servidor
+ */
 public class PlayerInfo : NetworkBehaviour
 {
 
@@ -25,7 +27,6 @@ public class PlayerInfo : NetworkBehaviour
     [HideInInspector] [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
     [HideInInspector] [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap;
     [HideInInspector] [SyncVar] public float LastArcLength;
-
 
     #endregion
 
@@ -49,6 +50,9 @@ public class PlayerInfo : NetworkBehaviour
     
     #endregion
 
+    /*
+     * En caso de ser localPlayer, comienzan las corrutinas para actualizar el input y la comprobación de dirección contraria
+     */
     private void Start()
     {
         uiManager = FindObjectOfType<UIManager>();
@@ -70,6 +74,9 @@ public class PlayerInfo : NetworkBehaviour
 
     #region name
 
+    /*
+     * Envía el nombre al servidor, que una vez recibido, lo limita a un máximo de 9 caracteres
+     */
     [Command]
     public void CmdChangeName(string newName)
     {
@@ -103,14 +110,16 @@ public class PlayerInfo : NetworkBehaviour
 
     #region finishFuncs
 
+    /*
+     * Cuando un jugador termina la partida, se desactiva su coche para no ser visible ni controlable para ningún cliente
+     * En caso de ser localPlayer, se activa el ranking
+     */
     private void FinishCircuit(bool oldVal, bool newVal)
     {
         if (newVal) {
             transform.gameObject.SetActive(false);
             if (isLocalPlayer)
-            {
                 uiManager.ActivateRankingHUD();
-            }
         }
         //Cambiar a cámara de otro jugador en cinematico
     }
@@ -119,6 +128,9 @@ public class PlayerInfo : NetworkBehaviour
 
     #region inputUpdate
 
+    /*
+     * El input se actualizará cada cierto tiempo por una corrutina, una función Cmd se encargará de mantener el input actualizado en el servidor
+     */
     [Command]
     private void CmdUpdateInput(float aV, float aH, float aB, bool mSave)
     {
@@ -146,6 +158,9 @@ public class PlayerInfo : NetworkBehaviour
 
     #region wrongDirection
 
+    /*
+     * Cada cierto tiempo se comprueba si el jugador va en dirección contraria para avisarle por la interfaz
+     */
     IEnumerator WrongDirCoroutine()
     {
         while (!Finish)
@@ -162,6 +177,11 @@ public class PlayerInfo : NetworkBehaviour
 
     #region updateLap
 
+    /*
+     * Actualiza el número de vuelta
+     * Reinicia los contadores para los tiempos de vuelta
+     * En caso de llegar al máximo de vueltas pone Finish a true para avisar de que ha terminado
+     */
     public void AddLap()
     {
         
@@ -180,12 +200,12 @@ public class PlayerInfo : NetworkBehaviour
             startTime = endTime;
         }
         if (CurrentLap > PolePositionManager.maxLaps)
-        {
-            //transform.gameObject.SetActive(false);
             Finish = true;
-        }
     }
 
+    /*
+     * Convierte a una string formateada el valor de la mejor vuelta
+     */
     void ComputeBestTime()
     {
         string minutes = bestLapSpan.Minutes.ToString();

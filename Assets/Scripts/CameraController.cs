@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
- * Actualiza la posición de la cámara en función del target m_Focus y
- * la dirección del segmento del circuito en el que se encuentra
+ * Actualiza la posición de la cámara en función del target m_Focus
  */
 
 public class CameraController : MonoBehaviour
@@ -26,14 +25,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] float[] distanceOptions;
     [SerializeField] float[] elevationOptions;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        mainCamera = this.GetComponent<Camera>();
-        
-    }
-    Vector3 lastPos = Vector3.zero;
-    // Update is called once per frame
+    void Start() { mainCamera = this.GetComponent<Camera>(); }
+
     void Update()
     {
         if (m_Focus != null)
@@ -48,28 +41,26 @@ public class CameraController : MonoBehaviour
     {
         m_Focus = focus;
         if (!cinematicModeActive)
-        {
             transform.position = ComputePosition(true);
-            //transform.rotation = targetPoints[currentTargetPoint].localRotation;
-        }
     }
 
-    Vector3 ComputePosition(bool exact = false)
+    #region playMode
+
+    /*
+     * Esta función calcula una posición para la cámara que se mantenga dentro de un rango con una elevación constante respecto al jugador
+     */
+    Vector3 ComputePosition(bool strictBehind = false)
     {
         Vector3 from = transform.position;
         Vector3 to = m_Focus.transform.position;
-        if (!exact)
+        if (!strictBehind)
         {
             Vector3 direction = to - from;
             if (direction.magnitude > distanceOptions[currentOption])
-            {
                 from = to - direction.normalized * distanceOptions[currentOption];
-            }
         }
         else
-        {
             from = to - m_Focus.transform.forward * distanceOptions[currentOption];
-        }
         
         from.y = elevationOptions[currentOption];
         return from;
@@ -81,21 +72,25 @@ public class CameraController : MonoBehaviour
         transform.LookAt(m_Focus.transform);
     }
 
+    #endregion
+
+    #region cinematicMode
+
+    /*
+     * Este modo de cámara proporciona una vista aérea al jugador
+     */
     void CinematicMode()
     {
         if (this.m_Circuit != null)
         {
             if (this.m_Direction.magnitude == 0)
-            {
                 this.m_Direction = new Vector3(0f, -1f, 0f);
-            }
 
             int segIdx;
             float carDist;
             Vector3 carProj;
 
-            m_Circuit.ComputeClosestPointArcLength(m_Focus.transform.position, out segIdx, out carProj,
-                out carDist);
+            m_Circuit.ComputeClosestPointArcLength(m_Focus.transform.position, out segIdx, out carProj, out carDist);
 
             Vector3 pathDir = -m_Circuit.GetSegment(segIdx);
             pathDir = new Vector3(pathDir.x, 0f, pathDir.z);
@@ -114,4 +109,6 @@ public class CameraController : MonoBehaviour
             mainCamera.transform.LookAt(m_Focus.transform.position);
         }
     }
+
+    #endregion
 }

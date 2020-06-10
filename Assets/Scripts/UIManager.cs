@@ -5,6 +5,10 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*
+ * Se encarga de dar interactividad a la interfaz
+ */
+
 public class UIManager :  MonoBehaviour
 {
     #region variables
@@ -59,6 +63,10 @@ public class UIManager :  MonoBehaviour
 
 
     #region chooseNameHUDfuncs
+
+    /*
+     * Al iniciar el juego, guarda el nombre introducido en la interfaz si no está vacío
+     */
     private void StartGame()
     {
         if (!inputFieldName.text.Equals(""))
@@ -93,15 +101,16 @@ public class UIManager :  MonoBehaviour
     public void UpdateBestLap(PlayerInfo player)
     {
         if (player.isLocalPlayer)
-        {
             bestLapText.text = "Best lap: " + player.bestLap;
-        }
     }
 
     #endregion
 
     #region countdown
 
+    /*
+     * Se encarga de actualizar la información del countdown en pantalla, en caso de no estar activo el countdown indicará el número de jugadores actual respecto al total
+     */
     public void UpdateCountdownText(int numPlayers, int maxPlayers, bool countdownActive, int secondsLeft)
     {
         if (countdownText != null && countdownText.gameObject.activeSelf)
@@ -123,6 +132,9 @@ public class UIManager :  MonoBehaviour
         }
     }
 
+    /*
+     * Esta corrutina se encarga de quitar el mensaje GO! de la interfaz a los dos segundos de aparecer
+     */
     IEnumerator RemoveCountdown()
     {
         yield return new WaitForSeconds(2);
@@ -192,6 +204,9 @@ public class UIManager :  MonoBehaviour
         ActivateInGameHUD();
     }
 
+    /*
+     * Tratará de conectar a localhost por defecto, si el inputField de la IP no está vacío lo utilizará en lugar de localhost
+     */
     private void StartClient()
     {
         if(inputFieldIP.text != "")
