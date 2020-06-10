@@ -17,7 +17,7 @@ public class PolePositionManager : NetworkBehaviour
     [SerializeField] UIManager m_uiManager;
     public NetworkManager networkManager;
     private CircuitController m_CircuitController;
-    private GameObject[] m_DebuggingSpheres;
+    //private GameObject[] m_DebuggingSpheres;
 
     [Header("RaceConditions")]
     public int maxNumPlayers=1;
@@ -44,13 +44,13 @@ public class PolePositionManager : NetworkBehaviour
     {
         if (networkManager == null) networkManager = FindObjectOfType<NetworkManager>();
         if (m_CircuitController == null) m_CircuitController = FindObjectOfType<CircuitController>();
-
+        /*
         m_DebuggingSpheres = new GameObject[networkManager.maxConnections];
         for (int i = 0; i < networkManager.maxConnections; ++i)
         {
             m_DebuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             m_DebuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
-        }
+        }*/
     }
 
     private void Update()
@@ -219,7 +219,7 @@ public class PolePositionManager : NetworkBehaviour
         if (m_Players[ID].CircuitProgress.UpdateProgress(minArcL / m_CircuitController.CircuitLength))
             m_Players[ID].AddLap();
             
-        this.m_DebuggingSpheres[ID].transform.position = carProj;
+        //this.m_DebuggingSpheres[ID].transform.position = carProj;
         
         minArcL += m_CircuitController.CircuitLength * (m_Players[ID].CurrentLap);
         
