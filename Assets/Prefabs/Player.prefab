@@ -197,19 +197,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  carMeshRenderer: {fileID: 3124799276312422027}
   PlayerName: 
+  PlayerColor: {r: 0, g: 0, b: 0, a: 0}
   ID: 0
   Finish: 0
   CurrentLap: 0
   Speed: 0
   bestLap: 
   LastArcLength: 0
+  uiPlayerIndex: 0
+  ready: 0
   axisVertical: 0
   axisHorizontal: 0
   axisBrake: 0
   mustSave: 0
   checkDirInterval: 0.5
   wrongDirThreshold: 1
+  colors:
+  - {r: 1, g: 0.27058825, b: 0.27058825, a: 1}
+  - {r: 0.8901961, g: 0.4, b: 1, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.9882353, g: 1, b: 0.41960785, a: 1}
+  - {r: 1, g: 0.59607846, b: 0.27058825, a: 1}
+  - {r: 0.30588236, g: 1, b: 0.5921569, a: 1}
+  - {r: 0.4117647, g: 0.7294118, b: 1, a: 1}
+  - {r: 1, g: 0.68235296, b: 0.94509804, a: 1}
+  materials:
+  - {fileID: 2100000, guid: 4951a78d4ae4a3347abb50a700ec8309, type: 2}
+  - {fileID: 2100000, guid: 32f42a97552356a46b3e4b61e1ad2e91, type: 2}
+  - {fileID: 2100000, guid: f20e99d5de2030449b26a246481a969d, type: 2}
+  - {fileID: 2100000, guid: 5926df5e512eaf24aaf499000526512a, type: 2}
+  - {fileID: 2100000, guid: 71769748e02f8eb4d81c86d107f67358, type: 2}
+  - {fileID: 2100000, guid: 760e292862e88d143a2f1044a8055db5, type: 2}
+  - {fileID: 2100000, guid: f00262141109ae94da51a6edc8a7c571, type: 2}
+  - {fileID: 2100000, guid: 40a3822b5f97cfc4d94515ad6b9e717d, type: 2}
+  currentMat: {fileID: 2100000, guid: f20e99d5de2030449b26a246481a969d, type: 2}
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,7 +442,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: b5aa39dc1509c3c48b76a6c3a335f594, type: 3}
-  - {fileID: 2100002, guid: b5aa39dc1509c3c48b76a6c3a335f594, type: 3}
+  - {fileID: 2100000, guid: f20e99d5de2030449b26a246481a969d, type: 2}
   - {fileID: 2100004, guid: b5aa39dc1509c3c48b76a6c3a335f594, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0

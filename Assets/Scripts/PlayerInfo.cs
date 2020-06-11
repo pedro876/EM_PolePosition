@@ -15,18 +15,22 @@ public class PlayerInfo : NetworkBehaviour
     private UIManager uiManager;
     public CircuitProgress CircuitProgress { get; set; }
     private Rigidbody rb;
+    [SerializeField] MeshRenderer carMeshRenderer;
 
     #endregion
 
     #region NetVariables
 
     [SyncVar] public string PlayerName;
+    [SyncVar(hook = nameof(ChangeCarColor))] [SerializeField] Color PlayerColor;
     [SyncVar] public int ID;
     [SyncVar(hook = nameof(FinishCircuit))] public bool Finish;
     [HideInInspector] [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
     [HideInInspector] [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
     [HideInInspector] [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap;
     [HideInInspector] [SyncVar] public float LastArcLength;
+    [SyncVar] public int uiPlayerIndex;
+    [SyncVar] public bool ready = false;
 
     #endregion
 
@@ -44,18 +48,32 @@ public class PlayerInfo : NetworkBehaviour
     [SerializeField] private float checkDirInterval = 0.5f;
     [SerializeField] private float wrongDirThreshold = 1.0f;
 
+    [Header("Color")]
+    [SerializeField] Color[] colors;
+    [SerializeField] Material[] materials;
+    Dictionary<string, Material> colorOptions;
+
     //BEST LAP
     private DateTime startTime;
     private TimeSpan bestLapSpan;
-    
+
     #endregion
 
     /*
      * En caso de ser localPlayer, comienzan las corrutinas para actualizar el input y la comprobación de dirección contraria
      */
+
+    private void Awake()
+    {
+        colorOptions = new Dictionary<string, Material>();
+        for (int i = 0; i < colors.Length; i++) colorOptions.Add(ColorUtility.ToHtmlStringRGB(colors[i]), materials[i]);
+    }
+
     private void Start()
     {
-        uiManager = FindObjectOfType<UIManager>();
+        
+        PlayerColor = Color.white;
+        if(uiManager == null) uiManager = FindObjectOfType<UIManager>();
         rb = GetComponent<Rigidbody>();
         CurrentLap = 0;
         CircuitProgress = new CircuitProgress();
@@ -63,6 +81,13 @@ public class PlayerInfo : NetworkBehaviour
         {
             StartCoroutine("UpdateInputCoroutine");
             StartCoroutine("WrongDirCoroutine");
+
+            uiManager.SetColorButtonsFunctions(this);
+            uiManager.SetReadyButtonsFunctions(this);
+        }
+        if (isServer && isLocalPlayer)
+        {
+            ready = true;
         }
     }
 
@@ -72,7 +97,19 @@ public class PlayerInfo : NetworkBehaviour
             mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
     }
 
-    #region name
+    #region uiUpdate
+
+    public void UpdateRoomUI()
+    {
+        if (uiManager == null) uiManager = FindObjectOfType<UIManager>();
+        uiManager.uiPlayers[uiPlayerIndex].textSlot.gameObject.SetActive(true);
+        uiManager.uiPlayers[uiPlayerIndex].textSlot.text = PlayerName;
+        uiManager.uiPlayers[uiPlayerIndex].SetReady(ready, PlayerColor);
+    }
+
+    #endregion
+
+    #region properties
 
     /*
      * Envía el nombre al servidor, que una vez recibido, lo limita a un máximo de 9 caracteres
@@ -89,6 +126,27 @@ public class PlayerInfo : NetworkBehaviour
         }
 
         this.PlayerName = newName;
+    }
+
+    [Command]
+    public void CmdSetReady(bool isReady)
+    {
+        ready = isReady;
+    }
+
+    [Command]
+    public void CmdChangeColor(Color newColor)
+    {
+        PlayerColor = newColor;
+    }
+
+    
+    void ChangeCarColor(Color oldColor, Color newColor)
+    {
+        string newCol = ColorUtility.ToHtmlStringRGB(newColor);
+        Material[] mats = carMeshRenderer.materials;
+        mats[1] = colorOptions[newCol];
+        carMeshRenderer.materials = mats;
     }
 
     #endregion

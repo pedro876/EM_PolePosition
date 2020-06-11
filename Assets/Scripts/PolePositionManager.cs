@@ -20,7 +20,7 @@ public class PolePositionManager : NetworkBehaviour
     //private GameObject[] m_DebuggingSpheres;
 
     [Header("RaceConditions")]
-    public int maxNumPlayers=1;
+    [SyncVar] public int maxNumPlayers=1;
     public static int maxLaps = 3;
     private int secondsLeft = 3;
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
@@ -31,6 +31,9 @@ public class PolePositionManager : NetworkBehaviour
     [SerializeField] private float lastPlayerGracePeriod = 20f;
     private string myRaceOrder;
     bool orderCoroutineCalled = false;
+
+    [Header("RoomProperties")]
+    [SerializeField] float updatePlayersListInterval = 0.3f;
 
     #endregion variables
 
@@ -44,19 +47,53 @@ public class PolePositionManager : NetworkBehaviour
     {
         if (networkManager == null) networkManager = FindObjectOfType<NetworkManager>();
         if (m_CircuitController == null) m_CircuitController = FindObjectOfType<CircuitController>();
-        /*
-        m_DebuggingSpheres = new GameObject[networkManager.maxConnections];
-        for (int i = 0; i < networkManager.maxConnections; ++i)
-        {
-            m_DebuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            m_DebuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
-        }*/
+        
     }
 
     private void Update()
     {
         if (m_Players.Count == 0) return;
         if(isServer) UpdateRaceProgress();
+    }
+
+    #region roomUIUpdate
+
+    IEnumerator UpdateRoomUICoroutine()
+    {
+        while (true)
+        {
+            if(m_Players.Count > 0)
+            {
+                foreach (PlayerInfo player in m_Players)
+                {
+                    player.UpdateRoomUI();
+                }
+            }
+            m_uiManager.RemoveLostPlayersFromUI(m_Players, maxNumPlayers);
+            yield return new WaitForSeconds(updatePlayersListInterval);
+        }
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine("UpdateRoomUICoroutine");
+    }
+
+    #endregion
+
+    public void StartGame()
+    {
+        
+        maxNumPlayers = m_Players.Count;
+        StartCoroutine("DecreaseCountdownCoroutine");
+        RpcUpdateCountdownUI(secondsLeft);
+        RpcChangeUIFromRoomToGame();
+    }
+
+    [ClientRpc]
+    void RpcChangeUIFromRoomToGame()
+    {
+        m_uiManager.ActivateInGameHUD();
     }
 
     #region addAndRemovePlayers
@@ -68,11 +105,12 @@ public class PolePositionManager : NetworkBehaviour
     public void AddPlayer(PlayerInfo player)
     {
         m_Players.Add(player);
+        
         if (isServer)
         {
-            RpcUpdateCountdownUI(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
-            if (m_Players.Count == maxNumPlayers)
-                StartCoroutine("DecreaseCountdownCoroutine");
+
+
+            m_uiManager.AddPlayerToRoomUI(player, m_Players);
 
             if (!orderCoroutineCalled)
             {
@@ -81,11 +119,13 @@ public class PolePositionManager : NetworkBehaviour
             }
         }
     }
+
     /*Elimina un jugador y actualiza en la interfaz el número de jugadores restantes en caso de no haber empezado la partida.*/
     public void RemovePlayer(PlayerInfo player)
     {
-        m_Players.Remove(player);
-        RpcUpdateCountdownUI(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
+        int playerIndex = m_Players.IndexOf(player);
+        m_Players.RemoveAt(playerIndex);
+        m_uiManager.ReAssingUIPlayers(m_Players, maxNumPlayers);
     }
 
     #endregion addAndRemovePlayers
@@ -94,7 +134,7 @@ public class PolePositionManager : NetworkBehaviour
     /*Cuando la cuenta atras llega a 0 libera los playerControllers para que los coches se puedan empezar a mover.*/
     void UpdateCountdownUI()
     {
-        RpcUpdateCountdownUI(m_Players.Count, maxNumPlayers, m_Players.Count == maxNumPlayers, secondsLeft);
+        RpcUpdateCountdownUI(secondsLeft);
         if (secondsLeft == 0)
         {
             foreach (var player in m_Players)
@@ -116,9 +156,9 @@ public class PolePositionManager : NetworkBehaviour
 
     /*Actualiza la interfaz de la cuenta atras con los segundos restantes para todos los clientes.*/
     [ClientRpc]
-    void RpcUpdateCountdownUI(int numPlayers, int maxPlayers, bool countdownActive, int seconds)
+    void RpcUpdateCountdownUI(int seconds)
     {
-        m_uiManager.UpdateCountdownText(numPlayers, maxPlayers, countdownActive, seconds);
+        m_uiManager.UpdateCountdownText(seconds);
     }
 
     #endregion countdown

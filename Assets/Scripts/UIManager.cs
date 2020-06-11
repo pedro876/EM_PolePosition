@@ -5,6 +5,25 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
+[Serializable]
+public class UIPlayer
+{
+    public Text textSlot;
+    public Text readySlot;
+    public bool ready;
+
+    public void SetReady(bool _ready, Color textColor)
+    {
+        ready = _ready;
+        if (readySlot)
+        {
+            readySlot.gameObject.SetActive(ready);
+            readySlot.color = textColor;
+        }
+    }
+}
+
+
 /*
  * Se encarga de dar interactividad a la interfaz
  */
@@ -15,6 +34,7 @@ public class UIManager :  MonoBehaviour
     public bool showGUI = true;
 
     private NetworkManager m_NetworkManager;
+    private PolePositionManager polePosition;
 
     [Header("Choose Name")] [SerializeField] private GameObject chooseNameHUD;
     [SerializeField] private InputField inputFieldName;
@@ -27,8 +47,18 @@ public class UIManager :  MonoBehaviour
     [SerializeField] private Button buttonServer;
     [SerializeField] private InputField inputFieldIP;
 
-    [Header("In-Game HUD")] [SerializeField]
-    private GameObject inGameHUD;
+    [Header("Waiting Room")]
+    [SerializeField] private GameObject roomHUD;
+    [SerializeField] GameObject[] hostOptions;
+    [SerializeField] public UIPlayer[] uiPlayers;
+    [SerializeField] Button[] colorButtons;
+    [SerializeField] Button readyButton;
+    [SerializeField] Button notReadyButton;
+    [SerializeField] Button startButton;
+    
+
+    [Header("In-Game HUD")]
+    [SerializeField] private GameObject inGameHUD;
     [SerializeField] private Text textSpeed;
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
@@ -47,9 +77,18 @@ public class UIManager :  MonoBehaviour
 
     private void Awake()
     {
+        polePosition = FindObjectOfType<PolePositionManager>();
         foreach (Text t in playerTexts) t.gameObject.SetActive(false);
         m_NetworkManager = FindObjectOfType<NetworkManager>();
+        foreach (GameObject option in hostOptions) option.SetActive(false);
+        foreach(UIPlayer uiP in uiPlayers)
+        {
+            uiP.SetReady(false, Color.white);
+            uiP.textSlot.gameObject.SetActive(false);
+        }
     }
+
+    public Text debugText;
 
     private void Start()
     {
@@ -111,24 +150,17 @@ public class UIManager :  MonoBehaviour
     /*
      * Se encarga de actualizar la información del countdown en pantalla, en caso de no estar activo el countdown indicará el número de jugadores actual respecto al total
      */
-    public void UpdateCountdownText(int numPlayers, int maxPlayers, bool countdownActive, int secondsLeft)
+    public void UpdateCountdownText(int secondsLeft)
     {
         if (countdownText != null && countdownText.gameObject.activeSelf)
         {
-            if (!countdownActive)
+            if (secondsLeft == 0)
             {
-                countdownText.text = numPlayers + "/" + maxPlayers + " PLAYERS";
+                countdownText.text = "GO!";
+                StartCoroutine("RemoveCountdown");
             }
             else
-            {
-                if (secondsLeft == 0)
-                {
-                    countdownText.text = "GO!";
-                    StartCoroutine("RemoveCountdown");
-                }
-                else
-                    countdownText.text = secondsLeft.ToString();
-            }
+                countdownText.text = secondsLeft.ToString();
         }
     }
 
@@ -143,6 +175,62 @@ public class UIManager :  MonoBehaviour
     #endregion
 
     #endregion gameHUDfuncs
+
+    #region roomHUD
+
+    public void SetColorButtonsFunctions(PlayerInfo localPlayer)
+    {
+        foreach (Button colorButton in colorButtons)
+        {
+            colorButton.onClick.AddListener(() => localPlayer.CmdChangeColor(colorButton.colors.normalColor));
+        }
+    }
+
+    public void SetReadyButtonsFunctions(PlayerInfo localPlayer)
+    {
+        if (!polePosition) polePosition = FindObjectOfType<PolePositionManager>();
+        if (localPlayer.isServer)
+        {
+            readyButton.gameObject.SetActive(false);
+            notReadyButton.gameObject.SetActive(false);
+            startButton.gameObject.SetActive(true);
+            startButton.onClick.AddListener(() => polePosition.StartGame());
+            
+        } else
+        {
+            readyButton.gameObject.SetActive(!localPlayer.ready);
+            notReadyButton.gameObject.SetActive(localPlayer.ready);
+            startButton.gameObject.SetActive(false);
+            readyButton.onClick.AddListener(() => localPlayer.CmdSetReady(true));
+            notReadyButton.onClick.AddListener(() => localPlayer.CmdSetReady(false));
+        }
+    }
+
+    #region playerList
+
+    public void AddPlayerToRoomUI(PlayerInfo player, List<PlayerInfo> players)
+    {
+        player.uiPlayerIndex = players.Count-1;
+    }
+
+    public void ReAssingUIPlayers(List<PlayerInfo> players, int maxPlayers)
+    {
+        for (int i = 0; i < players.Count; i++)
+            players[i].uiPlayerIndex = i;
+        RemoveLostPlayersFromUI(players, maxPlayers);
+    }
+
+    public void RemoveLostPlayersFromUI(List<PlayerInfo> players, int maxPlayers)
+    {
+        for (int j = players.Count; j < maxPlayers; j++)
+        {
+            uiPlayers[j].SetReady(false, Color.black);
+            uiPlayers[j].textSlot.gameObject.SetActive(false);
+        }
+    }
+    #endregion
+
+    #endregion
 
     #region rankingHUDfuncs
 
@@ -168,6 +256,8 @@ public class UIManager :  MonoBehaviour
         inGameHUD.SetActive(false);
         chooseNameHUD.SetActive(true);
         rankingHUD.SetActive(false);
+        roomHUD.SetActive(false);
+        if(polePosition && polePosition.isActiveAndEnabled) polePosition.StopCoroutine("UpdateRoomUICoroutine");
     }
     
     public void ActivateMainMenu()
@@ -176,6 +266,23 @@ public class UIManager :  MonoBehaviour
         inGameHUD.SetActive(false);
         chooseNameHUD.SetActive(false);
         rankingHUD.SetActive(false);
+        roomHUD.SetActive(false);
+        if (polePosition && polePosition.isActiveAndEnabled) polePosition.StopCoroutine("UpdateRoomUICoroutine");
+    }
+
+    private void ActivateRoomHUD(bool isServer)
+    {
+        mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
+        chooseNameHUD.SetActive(false);
+        rankingHUD.SetActive(false);
+        roomHUD.SetActive(true);
+        if (polePosition && polePosition.isActiveAndEnabled) polePosition.StartCoroutine("UpdateRoomUICoroutine");
+        
+        if (isServer)
+        {
+            foreach (GameObject option in hostOptions) option.SetActive(true);
+        }
     }
 
     public void ActivateInGameHUD()
@@ -184,6 +291,11 @@ public class UIManager :  MonoBehaviour
         chooseNameHUD.SetActive(false);
         inGameHUD.SetActive(true);
         rankingHUD.SetActive(false);
+        roomHUD.SetActive(false);
+        if (polePosition && polePosition.isActiveAndEnabled)
+        {
+            polePosition.StopCoroutine("UpdateRoomUICoroutine");
+        }
     }
 
     public void ActivateRankingHUD()
@@ -192,6 +304,8 @@ public class UIManager :  MonoBehaviour
         chooseNameHUD.SetActive(false);
         inGameHUD.SetActive(false);
         rankingHUD.SetActive(true);
+        roomHUD.SetActive(false);
+        if (polePosition && polePosition.isActiveAndEnabled) polePosition.StopCoroutine("UpdateRoomUICoroutine");
     }
 
     #endregion changeState
@@ -201,7 +315,8 @@ public class UIManager :  MonoBehaviour
     private void StartHost()
     {
         m_NetworkManager.StartHost();
-        ActivateInGameHUD();
+        ActivateRoomHUD(true);
+        //ActivateInGameHUD();
     }
 
     /*
@@ -213,13 +328,15 @@ public class UIManager :  MonoBehaviour
             m_NetworkManager.networkAddress = inputFieldIP.text;
         Debug.Log(m_NetworkManager.networkAddress);
         m_NetworkManager.StartClient();
-        ActivateInGameHUD();
+        //ActivateInGameHUD();
+        ActivateRoomHUD(false);
     }
 
     private void StartServer()
     {
         m_NetworkManager.StartServer();
-        ActivateInGameHUD();
+        
+        //ActivateInGameHUD();
     }
 
     #endregion hostClientServerFuncs
