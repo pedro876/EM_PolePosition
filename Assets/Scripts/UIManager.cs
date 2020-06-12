@@ -51,12 +51,12 @@ public class UIManager :  MonoBehaviour
 
     [Header("Waiting Room")]
     [SerializeField] private GameObject roomHUD;
-    [SerializeField] GameObject[] hostOptions;
+    [SerializeField] private GameObject[] hostOptions;
     [SerializeField] public UIPlayer[] uiPlayers;
-    [SerializeField] Button[] colorButtons;
-    [SerializeField] Button readyButton;
-    [SerializeField] Button notReadyButton;
-    [SerializeField] Button startButton;
+    [SerializeField] private Button[] colorButtons;
+    [SerializeField] private Button readyButton;
+    [SerializeField] private Button notReadyButton;
+    [SerializeField] private Button startButton;
     
 
     [Header("In-Game HUD")]
@@ -96,7 +96,7 @@ public class UIManager :  MonoBehaviour
 
     private void Start()
     {
-        buttonStart.onClick.AddListener(() => StartGame());
+        buttonStart.onClick.AddListener(() => StartMainMenu());
 
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
@@ -111,7 +111,7 @@ public class UIManager :  MonoBehaviour
     /*
      * Al iniciar el juego, guarda el nombre introducido en la interfaz si no está vacío
      */
-    private void StartGame()
+    private void StartMainMenu()
     {
         if (!inputFieldName.text.Equals(""))
             playerName = inputFieldName.text.ToUpper();
@@ -238,7 +238,7 @@ public class UIManager :  MonoBehaviour
     /*
      * Reasigna el índice de slot para mostrar información para cada jugador
      */
-    public void ReAssingUIPlayers(List<PlayerInfo> players, int maxPlayers)
+    public void ReAssignUIPlayers(List<PlayerInfo> players, int maxPlayers)
     {
         for (int i = 0; i < players.Count; i++)
             players[i].uiPlayerIndex = i;
