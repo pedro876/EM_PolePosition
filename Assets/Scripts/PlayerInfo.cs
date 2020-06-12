@@ -89,10 +89,9 @@ public class PlayerInfo : NetworkBehaviour
             uiManager.SetReadyButtonsFunctions(this);
         }
         if (isServer && isLocalPlayer)
-        {
-            PlayerColor = Color.white; //Por defecto el color del jugador es blanco
             ready = true; //Por defecto el host está listo para empezar
-        }
+        if (isServer)
+            PlayerColor = Color.white; //Por defecto el color del jugador es blanco
     }
 
     private void Update()

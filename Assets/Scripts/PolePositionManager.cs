@@ -91,14 +91,20 @@ public class PolePositionManager : NetworkBehaviour
 
     public void StartGame()
     {
-        inGame = true;
-        maxNumPlayers = m_Players.Count;
-        //networkManager.maxConnections = maxNumPlayers;
-        //networkManager.maxConnections = 0;
-        admitsPlayers = false;
-        StartCoroutine("DecreaseCountdownCoroutine");
-        RpcUpdateCountdownUI(secondsLeft);
-        RpcChangeUIFromRoomToGame();
+        bool allReady = true;
+        foreach(PlayerInfo player in m_Players) allReady = allReady && player.ready;
+
+        if (allReady)
+        {
+            inGame = true;
+            maxNumPlayers = m_Players.Count;
+            //networkManager.maxConnections = maxNumPlayers;
+            //networkManager.maxConnections = 0;
+            admitsPlayers = false;
+            StartCoroutine("DecreaseCountdownCoroutine");
+            RpcUpdateCountdownUI(secondsLeft);
+            RpcChangeUIFromRoomToGame();
+        }
     }
 
 
@@ -141,7 +147,7 @@ public class PolePositionManager : NetworkBehaviour
         m_uiManager.ReAssignUIPlayers(m_Players, maxNumPlayers);
         for (int i = playerIndex; i < m_Players.Count; i++)
         {
-            if(m_Players[i] && !inGame)
+            if(m_Players[i] != null && !inGame)
                 m_Players[i].transform.position = startPositions[i].position;
         }
         //networkManager.maxConnections--;
