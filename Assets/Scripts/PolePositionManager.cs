@@ -34,6 +34,7 @@ public class PolePositionManager : NetworkBehaviour
     [SerializeField] private float lastPlayerGracePeriod = 20f;
     private string myRaceOrder;
     bool orderCoroutineCalled = false;
+    bool inGame = false;
 
     [Header("RoomProperties")]
     [SerializeField] float updatePlayersListInterval = 0.3f;
@@ -90,7 +91,7 @@ public class PolePositionManager : NetworkBehaviour
 
     public void StartGame()
     {
-        
+        inGame = true;
         maxNumPlayers = m_Players.Count;
         //networkManager.maxConnections = maxNumPlayers;
         //networkManager.maxConnections = 0;
@@ -140,7 +141,7 @@ public class PolePositionManager : NetworkBehaviour
         m_uiManager.ReAssignUIPlayers(m_Players, maxNumPlayers);
         for (int i = playerIndex; i < m_Players.Count; i++)
         {
-            if(m_Players[i])
+            if(m_Players[i] && !inGame)
                 m_Players[i].transform.position = startPositions[i].position;
         }
         //networkManager.maxConnections--;
