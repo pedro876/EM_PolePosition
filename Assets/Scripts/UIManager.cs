@@ -106,6 +106,15 @@ public class UIManager :  MonoBehaviour
 
     #endregion
 
+    #region getStateFuncs
+
+    public bool inGame()
+    {
+        return inGameHUD.gameObject.activeSelf;
+    }
+
+    #endregion
+
     #region chooseNameHUDfuncs
 
     /*
@@ -181,7 +190,7 @@ public class UIManager :  MonoBehaviour
 
     #endregion gameHUDfuncs
 
-    #region roomHUD
+    #region roomHUDFuncs
 
     #region colorButtons
 
@@ -253,7 +262,7 @@ public class UIManager :  MonoBehaviour
         for (int j = players.Count; j < maxPlayers; j++)
         {
             uiPlayers[j].SetReady(false, Color.black);
-            uiPlayers[j].textSlot.gameObject.SetActive(false);
+            if(uiPlayers[j].textSlot) uiPlayers[j].textSlot.gameObject.SetActive(false);
         }
     }
     #endregion

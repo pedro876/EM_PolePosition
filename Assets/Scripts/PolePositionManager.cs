@@ -19,6 +19,9 @@ public class PolePositionManager : NetworkBehaviour
     private CircuitController m_CircuitController;
     //private GameObject[] m_DebuggingSpheres;
 
+    [Header("RaceStartPos")]
+    [SerializeField] Transform[] startPositions;
+
     [Header("RaceConditions")]
     [SyncVar] public int maxNumPlayers=1;
     public static int maxLaps = 3;
@@ -34,28 +37,26 @@ public class PolePositionManager : NetworkBehaviour
 
     [Header("RoomProperties")]
     [SerializeField] float updatePlayersListInterval = 0.3f;
+    [SyncVar] public bool admitsPlayers = true;
 
     #endregion variables
 
-    #region netVariables
-
-    //[SyncVar(hook = nameof(AddPlayerToRanking))] string newRankingName;
-
-    #endregion
-
-    #region AwakeStart
+    #region AwakeStartUpdate
 
     private void Awake()
     {
         if (networkManager == null) networkManager = FindObjectOfType<NetworkManager>();
         if (m_CircuitController == null) m_CircuitController = FindObjectOfType<CircuitController>();
-        
     }
 
     private void Update()
     {
         if (m_Players.Count == 0) return;
         if(isServer) UpdateRaceProgress();
+        for(int i = maxNumPlayers; i < m_Players.Count; i++)
+        {
+            if (m_Players[i].isLocalPlayer) networkManager.StopClient();
+        }
     }
 
     #endregion
@@ -91,10 +92,14 @@ public class PolePositionManager : NetworkBehaviour
     {
         
         maxNumPlayers = m_Players.Count;
+        //networkManager.maxConnections = maxNumPlayers;
+        //networkManager.maxConnections = 0;
+        admitsPlayers = false;
         StartCoroutine("DecreaseCountdownCoroutine");
         RpcUpdateCountdownUI(secondsLeft);
         RpcChangeUIFromRoomToGame();
     }
+
 
     [ClientRpc]
     void RpcChangeUIFromRoomToGame()
@@ -116,6 +121,7 @@ public class PolePositionManager : NetworkBehaviour
         
         if (isServer)
         {
+            player.transform.position = startPositions[m_Players.Count - 1].position;
             m_uiManager.AddPlayerToRoomUI(player, m_Players);
 
             if (!orderCoroutineCalled)
@@ -132,6 +138,12 @@ public class PolePositionManager : NetworkBehaviour
         int playerIndex = m_Players.IndexOf(player);
         m_Players.RemoveAt(playerIndex);
         m_uiManager.ReAssignUIPlayers(m_Players, maxNumPlayers);
+        for (int i = playerIndex; i < m_Players.Count; i++)
+        {
+            if(m_Players[i])
+                m_Players[i].transform.position = startPositions[i].position;
+        }
+        //networkManager.maxConnections--;
     }
 
     #endregion addAndRemovePlayers

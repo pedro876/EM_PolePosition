@@ -76,10 +76,20 @@ public class SetupPlayer : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+        /*if(isServer && !m_PolePositionManager.admitsPlayers)
+        {
+            m_NetworkManager.StopClient();
+            return;
+        }*/
         if (isLocalPlayer)
         {
             //Al iniciarse un cliente, si es localPlayer, debe mandarse el nombre introducido al servidor
             m_PlayerInfo.CmdChangeName(m_UIManager.playerName);
+            if (!m_PolePositionManager.admitsPlayers)
+            {
+                m_NetworkManager.StopClient();
+                return;
+            }
         }
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
     }

@@ -9,6 +9,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     private Camera mainCamera;
+    private UIManager uiManager;
     [SerializeField] private bool cinematicModeActive = false;
     [SerializeField] public GameObject m_Focus;
     [SerializeField] public CircuitController m_Circuit;
@@ -25,7 +26,11 @@ public class CameraController : MonoBehaviour
     [SerializeField] float[] distanceOptions;
     [SerializeField] float[] elevationOptions;
 
-    void Start() { mainCamera = this.GetComponent<Camera>(); }
+    void Start()
+    {
+        mainCamera = this.GetComponent<Camera>();
+        uiManager = FindObjectOfType<UIManager>();
+    }
 
     void Update()
     {
@@ -68,7 +73,8 @@ public class CameraController : MonoBehaviour
 
     void PlayMode()
     {
-        transform.position = ComputePosition();
+        if (!uiManager) uiManager = FindObjectOfType<UIManager>();
+        transform.position = ComputePosition(!uiManager.inGame());
         transform.LookAt(m_Focus.transform);
     }
 

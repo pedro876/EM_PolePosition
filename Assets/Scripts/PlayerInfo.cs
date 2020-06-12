@@ -76,7 +76,6 @@ public class PlayerInfo : NetworkBehaviour
      */
     private void Start()
     {
-        PlayerColor = Color.white; //Por defecto el color del jugador es blanco
         if(uiManager == null) uiManager = FindObjectOfType<UIManager>();
         rb = GetComponent<Rigidbody>();
         CurrentLap = 0;
@@ -91,6 +90,7 @@ public class PlayerInfo : NetworkBehaviour
         }
         if (isServer && isLocalPlayer)
         {
+            PlayerColor = Color.white; //Por defecto el color del jugador es blanco
             ready = true; //Por defecto el host está listo para empezar
         }
     }

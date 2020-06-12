@@ -113,6 +113,18 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &232228711 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3251817754252941477, guid: 2356b61abd7af864eadff2e62f8c8586,
+    type: 3}
+  m_PrefabInstance: {fileID: 1039344386}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &331620222 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3251817753832546121, guid: 2356b61abd7af864eadff2e62f8c8586,
+    type: 3}
+  m_PrefabInstance: {fileID: 1039344386}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &372009857
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,6 +232,12 @@ MonoBehaviour:
   - 5
   elevationOptions:
   - 1.9
+--- !u!4 &473049863 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3251817753896173946, guid: 2356b61abd7af864eadff2e62f8c8586,
+    type: 3}
+  m_PrefabInstance: {fileID: 1039344386}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &616783624
 GameObject:
   m_ObjectHideFlags: 0
@@ -309,6 +327,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5804d363870f70f47be114bdeab11a5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &656479149 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3251817754012444346, guid: 2356b61abd7af864eadff2e62f8c8586,
+    type: 3}
+  m_PrefabInstance: {fileID: 1039344386}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1016030024 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1016030024, guid: 5c339809502a33749b546f6663bcfb75,
@@ -433,10 +457,16 @@ MonoBehaviour:
   syncInterval: 0.1
   m_uiManager: {fileID: 646748519}
   networkManager: {fileID: 0}
+  startPositions:
+  - {fileID: 331620222}
+  - {fileID: 232228711}
+  - {fileID: 656479149}
+  - {fileID: 473049863}
   maxNumPlayers: 4
   progressInterval: 0.1
   lastPlayerGracePeriod: 20
   updatePlayersListInterval: 0.3
+  admitsPlayers: 1
 --- !u!4 &1839589614
 Transform:
   m_ObjectHideFlags: 0
@@ -587,7 +617,7 @@ MonoBehaviour:
   runInBackground: 1
   startOnHeadless: 1
   showDebugMessages: 0
-  serverTickRate: 10
+  serverTickRate: 30
   offlineScene: 
   onlineScene: 
   transport: {fileID: 2140735091}
@@ -758,6 +788,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: UIManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909394017212769, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6415909394017212771, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
