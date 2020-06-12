@@ -131,7 +131,7 @@ public class PolePositionManager : NetworkBehaviour
     {
         int playerIndex = m_Players.IndexOf(player);
         m_Players.RemoveAt(playerIndex);
-        m_uiManager.ReAssingUIPlayers(m_Players, maxNumPlayers);
+        m_uiManager.ReAssignUIPlayers(m_Players, maxNumPlayers);
     }
 
     #endregion addAndRemovePlayers
