@@ -46,8 +46,11 @@ public class UIManager :  MonoBehaviour
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
     [SerializeField] private Button buttonClient;
-    [SerializeField] private Button buttonServer;
+    //[SerializeField] private Button buttonServer;
     [SerializeField] private InputField inputFieldIP;
+    [SerializeField] GameObject errorField;
+    [SerializeField] Text errorFieldText;
+    [SerializeField] float temporalMessageTime = 4.0f;
 
     [Header("Waiting Room")]
     [SerializeField] private GameObject roomHUD;
@@ -92,15 +95,13 @@ public class UIManager :  MonoBehaviour
         }
     }
 
-    
-
     private void Start()
     {
         buttonStart.onClick.AddListener(() => StartMainMenu());
 
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
-        buttonServer.onClick.AddListener(() => StartServer());
+        //buttonServer.onClick.AddListener(() => StartServer());
         ActivateChooseNameHUD();
     }
 
@@ -128,6 +129,31 @@ public class UIManager :  MonoBehaviour
     }
 
     #endregion chooseNameHUDfuncs
+
+    #region mainMenuFuncs
+
+    bool displayingMessage = false;
+    void SetTemporalMessage(string message = "")
+    {
+        Debug.Log(message);
+        if (message != "" && ! displayingMessage)
+        {
+            displayingMessage = true;
+            //errorField.SetActive(true);
+            errorFieldText.text = message;
+            StartCoroutine("TemporalMessageCoroutine");
+        }
+    }
+
+    IEnumerator TemporalMessageCoroutine()
+    {
+        yield return new WaitForSeconds(temporalMessageTime);
+        errorField.SetActive(false);
+        errorFieldText.text = "";
+        displayingMessage = false;
+    }
+
+    #endregion
 
     #region gameHUDfuncs
 
@@ -201,6 +227,7 @@ public class UIManager :  MonoBehaviour
     {
         foreach (Button colorButton in colorButtons)
         {
+            colorButton.onClick.RemoveAllListeners();
             colorButton.onClick.AddListener(() => localPlayer.CmdChangeColor(colorButton.colors.normalColor));
         }
     }
@@ -214,6 +241,10 @@ public class UIManager :  MonoBehaviour
      */
     public void SetReadyButtonsFunctions(PlayerInfo localPlayer)
     {
+        readyButton.onClick.RemoveAllListeners();
+        notReadyButton.onClick.RemoveAllListeners();
+        startButton.onClick.RemoveAllListeners();
+
         if (!polePosition) polePosition = FindObjectOfType<PolePositionManager>();
         if (localPlayer.isServer)
         {
@@ -297,7 +328,7 @@ public class UIManager :  MonoBehaviour
         if(polePosition && polePosition.isActiveAndEnabled) polePosition.StopCoroutine("UpdateRoomUICoroutine");
     }
     
-    public void ActivateMainMenu()
+    public void ActivateMainMenu(string temporalMessage = "")
     {
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
@@ -305,10 +336,13 @@ public class UIManager :  MonoBehaviour
         rankingHUD.SetActive(false);
         roomHUD.SetActive(false);
         if (polePosition && polePosition.isActiveAndEnabled) polePosition.StopCoroutine("UpdateRoomUICoroutine");
+        SetTemporalMessage(temporalMessage);
     }
 
-    private void ActivateRoomHUD(bool isServer)
+    public void ActivateRoomHUD(bool isServer)
     {
+        errorField.SetActive(false);
+
         mainMenu.SetActive(false);
         inGameHUD.SetActive(false);
         chooseNameHUD.SetActive(false);
@@ -352,8 +386,6 @@ public class UIManager :  MonoBehaviour
     private void StartHost()
     {
         m_NetworkManager.StartHost();
-        ActivateRoomHUD(true);
-        //ActivateInGameHUD();
     }
 
     /*
@@ -363,18 +395,18 @@ public class UIManager :  MonoBehaviour
     {
         if(inputFieldIP.text != "")
             m_NetworkManager.networkAddress = inputFieldIP.text;
-        Debug.Log(m_NetworkManager.networkAddress);
         m_NetworkManager.StartClient();
-        //ActivateInGameHUD();
-        ActivateRoomHUD(false);
+
+        errorField.SetActive(true);
+        errorFieldText.text = "Trying to connect...";
     }
 
-    private void StartServer()
+    /*private void StartServer()
     {
         m_NetworkManager.StartServer();
         
         //ActivateInGameHUD();
-    }
+    }*/
 
     #endregion hostClientServerFuncs
 }

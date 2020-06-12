@@ -14,6 +14,10 @@ public class CameraController : MonoBehaviour
     [SerializeField] public GameObject m_Focus;
     [SerializeField] public CircuitController m_Circuit;
 
+    private Vector3 originalPosition = new Vector3(0f, 2.82f, -10f);
+    private Quaternion originalRotation = Quaternion.identity;
+
+
     [Header("Cinematic mode")]
     [SerializeField] public Vector3 m_offset = new Vector3(10, 10, 10);
     [SerializeField] private float m_Distance = 10;
@@ -25,6 +29,12 @@ public class CameraController : MonoBehaviour
     [SerializeField] int currentOption = 0;
     [SerializeField] float[] distanceOptions;
     [SerializeField] float[] elevationOptions;
+
+    private void Awake()
+    {
+        //originalPosition = transform.position;
+        //originalRotation = transform.rotation;
+    }
 
     void Start()
     {
@@ -47,6 +57,14 @@ public class CameraController : MonoBehaviour
         m_Focus = focus;
         if (!cinematicModeActive)
             transform.position = ComputePosition(true);
+    }
+
+    public void ResetCamera()
+    {
+        m_Focus = null;
+        transform.position = originalPosition;
+        transform.rotation = originalRotation;
+        Debug.Log("Reset cam");
     }
 
     #region playMode

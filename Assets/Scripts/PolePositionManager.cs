@@ -145,14 +145,16 @@ public class PolePositionManager : NetworkBehaviour
     public void RemovePlayer(PlayerInfo player)
     {
         int playerIndex = m_Players.IndexOf(player);
-        m_Players.RemoveAt(playerIndex);
-        m_uiManager.ReAssignUIPlayers(m_Players, maxNumPlayers);
-        for (int i = playerIndex; i < m_Players.Count; i++)
+        if(playerIndex > -1)
         {
-            if(m_Players[i] != null && !inGame)
-                m_Players[i].transform.position = startPositions[i].position;
+            m_Players.RemoveAt(playerIndex);
+            m_uiManager.ReAssignUIPlayers(m_Players, maxNumPlayers);
+            for (int i = playerIndex; i < m_Players.Count; i++)
+            {
+                if (m_Players[i] != null && !inGame)
+                    m_Players[i].transform.position = startPositions[i].position;
+            }
         }
-        //networkManager.maxConnections--;
     }
 
     #endregion addAndRemovePlayers

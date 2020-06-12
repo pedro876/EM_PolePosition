@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.Events;
 
 namespace Mirror
 {
@@ -1385,7 +1386,10 @@ namespace Mirror
         /// </summary>
         /// <param name="conn">Connection to a server.</param>
         /// <param name="errorCode">Error code.</param>
-        public virtual void OnClientError(NetworkConnection conn, int errorCode) { }
+        public virtual void OnClientError(NetworkConnection conn, int errorCode)
+        {
+            
+        }
 
         /// <summary>
         /// Called on clients when a servers tells the client it is no longer ready.
@@ -1464,7 +1468,12 @@ namespace Mirror
         /// <summary>
         /// This is called when a client is stopped.
         /// </summary>
-        public virtual void OnStopClient() { }
+        /// 
+
+        [SerializeField] UnityEvent onConnectionFailed;
+        public virtual void OnStopClient() {
+            onConnectionFailed.Invoke();
+        }
 
         /// <summary>
         /// This is called when a host is stopped.

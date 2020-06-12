@@ -23,6 +23,7 @@ public class SetupPlayer : NetworkBehaviour
     private PolePositionManager m_PolePositionManager;
     private Rigidbody rb;
     private BoxCollider bc;
+    private CameraController mainCam;
     [SerializeField] WheelCollider[] wheelColls;
 
 
@@ -38,6 +39,7 @@ public class SetupPlayer : NetworkBehaviour
         m_UIManager = FindObjectOfType<UIManager>();
         rb = GetComponent<Rigidbody>();
         bc = GetComponent<BoxCollider>();
+        if (Camera.main != null) mainCam = Camera.main.gameObject.GetComponent<CameraController>();
     }
 
     /*
@@ -76,11 +78,6 @@ public class SetupPlayer : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        /*if(isServer && !m_PolePositionManager.admitsPlayers)
-        {
-            m_NetworkManager.StopClient();
-            return;
-        }*/
         if (isLocalPlayer)
         {
             //Al iniciarse un cliente, si es localPlayer, debe mandarse el nombre introducido al servidor
@@ -89,6 +86,11 @@ public class SetupPlayer : NetworkBehaviour
             {
                 m_NetworkManager.StopClient();
                 return;
+            }
+            else
+            {
+                ConfigureCamera();
+                m_UIManager.ActivateRoomHUD(isServer);
             }
         }
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
@@ -102,7 +104,7 @@ public class SetupPlayer : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
-        ConfigureCamera();
+        //ConfigureCamera();
     }
 
     #endregion
@@ -127,7 +129,7 @@ public class SetupPlayer : NetworkBehaviour
      */
     void ConfigureCamera()
     {
-        if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().SetFocus(this.gameObject);
+        mainCam.SetFocus(this.gameObject);
     }
 
     #endregion
