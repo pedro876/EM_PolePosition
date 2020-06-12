@@ -5,6 +5,7 @@ using System.Text;
 using Mirror;
 using UnityEngine;
 using System.Threading;
+using UnityEngine.UI;
 
 /*
  * Gestiona todos los datos relacionados con la carrera y los mantiene actualizamos para los jugadores.
@@ -24,7 +25,7 @@ public class PolePositionManager : NetworkBehaviour
 
     [Header("RaceConditions")]
     [SyncVar] public int maxNumPlayers=1;
-    public static int maxLaps = 3;
+    [SyncVar] public int maxLaps = 3;
     private int secondsLeft = 3;
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
     private readonly List<PlayerInfo> m_Ranking = new List<PlayerInfo>();
@@ -60,6 +61,22 @@ public class PolePositionManager : NetworkBehaviour
         {
             if (m_Players[i].isLocalPlayer) networkManager.StopClient();
         }
+    }
+
+    #endregion
+
+    #region IncrementDecrementLaps
+
+    public void IncrementLaps(Text refText)
+    {
+        if(maxLaps < 9) maxLaps++;
+        if (refText != null) refText.text = maxLaps.ToString();
+    }
+
+    public void DecrementLaps(Text refText)
+    {
+        if(maxLaps > 1) maxLaps--;
+        if (refText != null) refText.text = maxLaps.ToString();
     }
 
     #endregion

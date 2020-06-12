@@ -130,16 +130,17 @@ public class UIManager :  MonoBehaviour
 
     #endregion chooseNameHUDfuncs
 
-    #region mainMenuFuncs
+    #region mainMenuFuncs_TemporalMessage
 
     bool displayingMessage = false;
     void SetTemporalMessage(string message = "")
     {
+        StopCoroutine("TemporalMessageCoroutine");
         Debug.Log(message);
         if (message != "" && ! displayingMessage)
         {
             displayingMessage = true;
-            //errorField.SetActive(true);
+            errorField.SetActive(true);
             errorFieldText.text = message;
             StartCoroutine("TemporalMessageCoroutine");
         }
@@ -151,6 +152,9 @@ public class UIManager :  MonoBehaviour
         errorField.SetActive(false);
         errorFieldText.text = "";
         displayingMessage = false;
+        buttonHost.gameObject.SetActive(true);
+        buttonClient.gameObject.SetActive(true);
+        inputFieldIP.gameObject.SetActive(true);
     }
 
     #endregion
@@ -174,7 +178,7 @@ public class UIManager :  MonoBehaviour
     public void UpdateLap(PlayerInfo player)
     {
         if (player.isLocalPlayer)
-            textLaps.text = "LAP: "+ player.CurrentLap + "/" + PolePositionManager.maxLaps;
+            textLaps.text = "LAP: "+ player.CurrentLap + "/" + polePosition.maxLaps;
     }
 
     public void UpdateBestLap(PlayerInfo player)
@@ -215,8 +219,6 @@ public class UIManager :  MonoBehaviour
     #endregion
 
     #endregion gameHUDfuncs
-
-    #region roomHUDFuncs
 
     #region colorButtons
 
@@ -296,8 +298,6 @@ public class UIManager :  MonoBehaviour
             if(uiPlayers[j].textSlot) uiPlayers[j].textSlot.gameObject.SetActive(false);
         }
     }
-    #endregion
-
     #endregion
 
     #region rankingHUDfuncs

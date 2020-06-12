@@ -13,6 +13,7 @@ public class PlayerInfo : NetworkBehaviour
     #region references
 
     private UIManager uiManager;
+    private PolePositionManager polePosition;
     public CircuitProgress CircuitProgress { get; set; }
     private Rigidbody rb;
     [SerializeField] MeshRenderer carMeshRenderer;
@@ -67,6 +68,7 @@ public class PlayerInfo : NetworkBehaviour
      */
     private void Awake()
     {
+        polePosition = FindObjectOfType<PolePositionManager>();
         colorOptions = new Dictionary<string, Material>();
         for (int i = 0; i < colors.Length; i++) colorOptions.Add(ColorUtility.ToHtmlStringRGB(colors[i]), materials[i]);
     }
@@ -267,7 +269,9 @@ public class PlayerInfo : NetworkBehaviour
             }
             startTime = endTime;
         }
-        if (CurrentLap > PolePositionManager.maxLaps)
+
+        if(!polePosition) polePosition = FindObjectOfType<PolePositionManager>();
+        if (CurrentLap > polePosition.maxLaps)
             Finish = true;
     }
 
