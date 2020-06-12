@@ -39,6 +39,8 @@ public class PolePositionManager : NetworkBehaviour
     [Header("RoomProperties")]
     [SerializeField] float updatePlayersListInterval = 0.3f;
     [SyncVar] public bool admitsPlayers = true;
+    public void SetAdmitsPlayers(bool v) { admitsPlayers = v; }
+
 
     #endregion variables
 
