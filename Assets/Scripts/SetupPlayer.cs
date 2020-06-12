@@ -28,6 +28,7 @@ public class SetupPlayer : NetworkBehaviour
 
     #endregion variables
 
+    #region AwakeStart
     private void Awake()
     {
         m_PlayerInfo = GetComponent<PlayerInfo>();
@@ -51,6 +52,8 @@ public class SetupPlayer : NetworkBehaviour
             foreach (WheelCollider wc in wheelColls) wc.enabled = false;
         }
     }
+
+    #endregion
 
     #region Start & Stop Callbacks
 
@@ -94,6 +97,7 @@ public class SetupPlayer : NetworkBehaviour
 
     #endregion
 
+    #region ReleasePlayer
     /*
      * Permite a un jugador moverse, por ejemplo cuando acaba el countdown
      */
@@ -105,6 +109,9 @@ public class SetupPlayer : NetworkBehaviour
         rb.constraints = RigidbodyConstraints.None;
     }
 
+    #endregion
+
+    #region ConfigureCamera
     /*
      * Indica a la cámara que utilice a este objeto como target
      */
@@ -113,6 +120,9 @@ public class SetupPlayer : NetworkBehaviour
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().SetFocus(this.gameObject);
     }
 
+    #endregion
+
+    #region OnDestroyRemovePlayer
     /*
      * Al destruirse esta instancia, debe eliminarse de la lista de jugadores
      */
@@ -120,4 +130,6 @@ public class SetupPlayer : NetworkBehaviour
     {
         m_PolePositionManager.RemovePlayer(m_PlayerInfo);
     }
+
+    #endregion
 }

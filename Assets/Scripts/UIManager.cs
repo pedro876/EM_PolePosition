@@ -30,6 +30,8 @@ public class UIPlayer
 
 public class UIManager :  MonoBehaviour
 {
+    public Text debugText;
+
     #region variables
     public bool showGUI = true;
 
@@ -75,6 +77,8 @@ public class UIManager :  MonoBehaviour
 
     #endregion variables
 
+    #region AwakeStart
+
     private void Awake()
     {
         polePosition = FindObjectOfType<PolePositionManager>();
@@ -88,7 +92,7 @@ public class UIManager :  MonoBehaviour
         }
     }
 
-    public Text debugText;
+    
 
     private void Start()
     {
@@ -100,6 +104,7 @@ public class UIManager :  MonoBehaviour
         ActivateChooseNameHUD();
     }
 
+    #endregion
 
     #region chooseNameHUDfuncs
 
@@ -178,6 +183,11 @@ public class UIManager :  MonoBehaviour
 
     #region roomHUD
 
+    #region colorButtons
+
+    /*
+     * Añade funcionalidad a los botones de la interfaz
+     */
     public void SetColorButtonsFunctions(PlayerInfo localPlayer)
     {
         foreach (Button colorButton in colorButtons)
@@ -186,6 +196,13 @@ public class UIManager :  MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region readyNotReadyStartButtons
+
+    /*
+     * Añade funcionalidad a los botones de ready, not ready y start
+     */
     public void SetReadyButtonsFunctions(PlayerInfo localPlayer)
     {
         if (!polePosition) polePosition = FindObjectOfType<PolePositionManager>();
@@ -206,13 +223,21 @@ public class UIManager :  MonoBehaviour
         }
     }
 
+    #endregion
+
     #region playerList
 
+    /*
+     * Añade un slot en la lista de jugadores de la sala de espera para mostrar su información
+     */
     public void AddPlayerToRoomUI(PlayerInfo player, List<PlayerInfo> players)
     {
         player.uiPlayerIndex = players.Count-1;
     }
 
+    /*
+     * Reasigna el índice de slot para mostrar información para cada jugador
+     */
     public void ReAssingUIPlayers(List<PlayerInfo> players, int maxPlayers)
     {
         for (int i = 0; i < players.Count; i++)
@@ -220,6 +245,9 @@ public class UIManager :  MonoBehaviour
         RemoveLostPlayersFromUI(players, maxPlayers);
     }
 
+    /*
+     * Desactiva los slots de información que sobran, ya que es posible que un jugador salga de la partida
+     */
     public void RemoveLostPlayersFromUI(List<PlayerInfo> players, int maxPlayers)
     {
         for (int j = players.Count; j < maxPlayers; j++)

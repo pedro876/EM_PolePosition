@@ -43,6 +43,8 @@ public class PolePositionManager : NetworkBehaviour
 
     #endregion
 
+    #region AwakeStart
+
     private void Awake()
     {
         if (networkManager == null) networkManager = FindObjectOfType<NetworkManager>();
@@ -55,6 +57,8 @@ public class PolePositionManager : NetworkBehaviour
         if (m_Players.Count == 0) return;
         if(isServer) UpdateRaceProgress();
     }
+
+    #endregion
 
     #region roomUIUpdate
 
@@ -81,6 +85,8 @@ public class PolePositionManager : NetworkBehaviour
 
     #endregion
 
+    #region StartGameAndChangeToGameHUD
+
     public void StartGame()
     {
         
@@ -96,6 +102,8 @@ public class PolePositionManager : NetworkBehaviour
         m_uiManager.ActivateInGameHUD();
     }
 
+    #endregion
+
     #region addAndRemovePlayers
 
     /*Se encarga de añadir un jugador a la partida. Actualiza la interfaz de los juagdores restantes, y en caso de haber llegado al maximo de jugadores, 
@@ -108,8 +116,6 @@ public class PolePositionManager : NetworkBehaviour
         
         if (isServer)
         {
-
-
             m_uiManager.AddPlayerToRoomUI(player, m_Players);
 
             if (!orderCoroutineCalled)

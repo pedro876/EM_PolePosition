@@ -8,7 +8,9 @@ public class ChatSend : MonoBehaviour
 
     [SerializeField] UnityEvent onEnterDown;
     
-    // Update is called once per frame
+    /*
+     * Invoca un evento que mandará un mensaje por el chat
+     */
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return))

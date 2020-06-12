@@ -59,20 +59,24 @@ public class PlayerInfo : NetworkBehaviour
 
     #endregion
 
-    /*
-     * En caso de ser localPlayer, comienzan las corrutinas para actualizar el input y la comprobación de dirección contraria
-     */
+    #region AwakeStartUpdate
 
+    /*
+     * Se crean las entradas del diccionario que se usarán para saber qué material se le debe asignar al coche
+     * en función del color del botón pulsado
+     */
     private void Awake()
     {
         colorOptions = new Dictionary<string, Material>();
         for (int i = 0; i < colors.Length; i++) colorOptions.Add(ColorUtility.ToHtmlStringRGB(colors[i]), materials[i]);
     }
 
+    /*
+     * En caso de ser localPlayer, comienzan las corrutinas para actualizar el input y la comprobación de dirección contraria
+     */
     private void Start()
     {
-        
-        PlayerColor = Color.white;
+        PlayerColor = Color.white; //Por defecto el color del jugador es blanco
         if(uiManager == null) uiManager = FindObjectOfType<UIManager>();
         rb = GetComponent<Rigidbody>();
         CurrentLap = 0;
@@ -87,7 +91,7 @@ public class PlayerInfo : NetworkBehaviour
         }
         if (isServer && isLocalPlayer)
         {
-            ready = true;
+            ready = true; //Por defecto el host está listo para empezar
         }
     }
 
@@ -97,8 +101,13 @@ public class PlayerInfo : NetworkBehaviour
             mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
     }
 
+    #endregion
+
     #region uiUpdate
 
+    /*
+     * Actualiza la información del jugador en pantalla en la sala de espera
+     */
     public void UpdateRoomUI()
     {
         if (uiManager == null) uiManager = FindObjectOfType<UIManager>();
@@ -140,7 +149,9 @@ public class PlayerInfo : NetworkBehaviour
         PlayerColor = newColor;
     }
 
-    
+    /*
+     * Cambia el color del coche cuando la propiedad PlayerColor cambia
+     */
     void ChangeCarColor(Color oldColor, Color newColor)
     {
         string newCol = ColorUtility.ToHtmlStringRGB(newColor);
