@@ -110,17 +110,13 @@ public class PolePositionManager : NetworkBehaviour
         Reset();
     }
 
-    [Client]
-
-    private void OnDisable()
-    {
-        Reset();
-    }
-
     private void Reset()
     {
-        m_Players.Clear();
+        //m_Players.Clear();
+        maxNumPlayers = 4;
         m_Ranking.Clear();
+        inGame = false;
+        orderCoroutineCalled = false;
         admitsPlayers = true;
     }
 
@@ -136,6 +132,7 @@ public class PolePositionManager : NetworkBehaviour
 
         if (allReady)
         {
+            maxNumPlayers = m_Players.Count;
             secondsLeft = 3;
             inGame = true;
             admitsPlayers = false;
