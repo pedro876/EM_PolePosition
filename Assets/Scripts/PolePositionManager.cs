@@ -252,7 +252,7 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < m_Players.Count; i++)
         {
-            m_Players[i].LastArcLength = ComputeCarArcLength(i);
+            m_Players[i].arcLength = ComputeCarArcLength(i);
             if (m_Players[i].Finish)
             {
                 m_Ranking.Add(m_Players[i]);
@@ -326,7 +326,7 @@ public class PolePositionManager : NetworkBehaviour
         Vector3 carProj;
 
         float minArcL = this.m_CircuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
-
+        m_Players[ID].currentSegDir = m_CircuitController.GetSegment(segIdx);
         if (m_Players[ID].CircuitProgress.UpdateProgress(minArcL / m_CircuitController.CircuitLength))
             m_Players[ID].AddLap();
             

@@ -30,7 +30,7 @@ public class PlayerInfo : NetworkBehaviour
     [HideInInspector] [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap = 0;
     [HideInInspector] [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed = 0;
     [HideInInspector] [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap = "";
-    [HideInInspector] [SyncVar] public float LastArcLength;
+    [SyncVar(hook = nameof(SetWrongDir))] bool wrongDir = false;
     [SyncVar] public int uiPlayerIndex;
     [SyncVar] public bool ready = false;
 
@@ -49,8 +49,12 @@ public class PlayerInfo : NetworkBehaviour
     private float updateInputInterval = 0.1f;
 
     [Header("Wrong direction Variables")]
-    [SerializeField] private float checkDirInterval = 0.5f;
-    [SerializeField] private float wrongDirThreshold = 1.0f;
+    public Vector3 currentSegDir = Vector3.forward;
+    [SerializeField] float wrongDirAngle = 90f;
+    [SerializeField] float wrongDirMinSpeed = 1.0f;
+    [HideInInspector] public float arcLength;
+    ///[SerializeField] private float checkDirInterval = 0.5f;
+    //[SerializeField] private float wrongDirThreshold = 1.0f;
 
     [Header("Color")]
     [SerializeField] Color[] colors;
@@ -108,6 +112,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         if(isLocalPlayer)
             mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
+        CheckWrongDir();
     }
 
     #endregion
@@ -127,7 +132,7 @@ public class PlayerInfo : NetworkBehaviour
             mainCamera.SetFocus(this.gameObject);
 
             StartCoroutine("UpdateInputCoroutine");
-            StartCoroutine("WrongDirCoroutine");
+            //StartCoroutine("WrongDirCoroutine");
 
             uiManager.roomHUD.SetColorButtonsFunctions(this);
             uiManager.roomHUD.SetReadyButtonsFunctions(this);
@@ -261,10 +266,41 @@ public class PlayerInfo : NetworkBehaviour
 
     #region wrongDirection
 
+    [Server]
+    private void CheckWrongDir()
+    {
+        Debug.DrawLine(transform.position, (transform.position + currentSegDir.normalized*10f), Color.red);
+
+        bool rbCondition = Vector3.Angle(
+            Vector3.ProjectOnPlane(rb.velocity, Vector3.up).normalized,
+            currentSegDir) >
+            wrongDirAngle &&  rb.velocity.magnitude > wrongDirMinSpeed;
+
+        //Debug.Log("rbCondition: " + rbCondition);
+
+        bool camCondition = Vector3.Angle(
+            Vector3.ProjectOnPlane(mainCamera.transform.forward, Vector3.up).normalized,
+            currentSegDir) > wrongDirAngle;
+
+        //Debug.Log("camCondition: " + camCondition);
+
+        //Debug.Log("condition: " + (rbCondition && camCondition).ToString());
+
+        wrongDir = rbCondition && camCondition;
+    }
+
+    private void SetWrongDir(bool oldV, bool newV)
+    {
+        if(oldV != newV)
+        {
+            uiManager.gameHUD.backwardsText.gameObject.SetActive(newV);
+        }
+    }
+
     /*
      * Cada cierto tiempo se comprueba si el jugador va en dirección contraria para avisarle por la interfaz
      */
-    IEnumerator WrongDirCoroutine()
+    /*IEnumerator WrongDirCoroutine()
     {
         while (!Finish)
         {
@@ -274,7 +310,7 @@ public class PlayerInfo : NetworkBehaviour
             bool wrongDir = difference < -wrongDirThreshold;
             uiManager.gameHUD.backwardsText.gameObject.SetActive(wrongDir && Speed > 1.0f);
         }
-    }
+    }*/
 
     #endregion
 
@@ -345,7 +381,7 @@ public class PlayerInfoComparer : Comparer<PlayerInfo>
 {
     public override int Compare(PlayerInfo x, PlayerInfo y)
     {
-        if (x.LastArcLength < y.LastArcLength)
+        if (x.arcLength < y.arcLength)
             return 1;
         else return -1;
     }

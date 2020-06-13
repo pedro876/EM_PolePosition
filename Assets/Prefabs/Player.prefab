@@ -205,7 +205,6 @@ MonoBehaviour:
   CurrentLap: 0
   Speed: 0
   bestLap: 
-  LastArcLength: 0
   uiPlayerIndex: 0
   ready: 0
   permissionGranted: 0
@@ -213,8 +212,10 @@ MonoBehaviour:
   axisHorizontal: 0
   axisBrake: 0
   mustSave: 0
-  checkDirInterval: 0.5
-  wrongDirThreshold: 1
+  currentSegDir: {x: 0, y: 0, z: 1}
+  wrongDirAngle: 120
+  wrongDirMinSpeed: 1
+  arcLength: 0
   colors:
   - {r: 1, g: 0.27058825, b: 0.27058825, a: 1}
   - {r: 0.8901961, g: 0.4, b: 1, a: 1}

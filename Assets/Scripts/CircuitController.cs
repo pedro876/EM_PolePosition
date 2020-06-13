@@ -62,16 +62,21 @@ public class CircuitController : MonoBehaviour
             Vector3 carVec = (posIn - m_PathPos[i]);
             float dotProd = Vector3.Dot(carVec, pathVec);
 
-            if (dotProd < 0)
+            if(i == 23) Debug.Log(i + ": " + dotProd + " segLength: " + segLength);
+            const float margin = 0.5f;
+            if (dotProd < -margin) //el coche está antes del comienzo del segmento
                 continue;
 
-            if (dotProd > segLength)
+            if (dotProd > segLength + margin) //el coche ha pasado el fin del segmento
                 continue; // Passed
 
             Vector3 proj = m_PathPos[i] + dotProd * pathVec;
+            
             float dist = (posIn - proj).magnitude;
             if (dist < minDist)
             {
+                Debug.DrawLine(proj, proj + Vector3.up * 5.0f, Color.blue);
+                
                 minDist = dist;
                 minProj = proj;
                 minSegIdx = i;
