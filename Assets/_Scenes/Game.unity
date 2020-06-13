@@ -377,6 +377,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2356b61abd7af864eadff2e62f8c8586, type: 3}
+--- !u!114 &1097019315 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 326129658915908804, guid: 5c339809502a33749b546f6663bcfb75,
+    type: 3}
+  m_PrefabInstance: {fileID: 6415909393553272841}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1367256648, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1437761456 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1437761456, guid: 5c339809502a33749b546f6663bcfb75,
@@ -692,6 +704,10 @@ PrefabInstance:
       propertyPath: m_AssetId
       value: 5c339809502a33749b546f6663bcfb75
       objectReference: {fileID: 0}
+    - target: {fileID: 1437761456, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
+      propertyPath: scrollBar
+      value: 
+      objectReference: {fileID: 1097019315}
     - target: {fileID: 326129657401346219, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -706,6 +722,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_FontData.m_FontSize
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 326129657470838573, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_Value
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 326129657795286714, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
@@ -725,17 +746,17 @@ PrefabInstance:
     - target: {fileID: 326129657868244334, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 326129657868244334, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 326129657868244334, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 326129658140283720, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
@@ -795,6 +816,11 @@ PrefabInstance:
     - target: {fileID: 326129658386941845, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 326129658915908804, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_VerticalScrollbarVisibility
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 326129658961640998, guid: 5c339809502a33749b546f6663bcfb75,
