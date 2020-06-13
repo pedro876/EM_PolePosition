@@ -9,7 +9,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [Header("References")]
-    private Camera mainCamera;
+    [SerializeField] private Camera mainCamera;
     [SerializeField] private PolePositionManager polePosition;
     [SerializeField] private bool cinematicModeActive = false;
     [SerializeField] public GameObject m_Focus;
@@ -43,7 +43,7 @@ public class CameraController : MonoBehaviour
         if (!mainCamera) GetComponent<Camera>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (m_Focus != null)
         {
@@ -80,8 +80,12 @@ public class CameraController : MonoBehaviour
     {
         if (polePosition)
         {
-            transform.position = ComputePosition(!polePosition.inGame);
-            transform.LookAt(m_Focus.transform);
+            Vector3 newPos = ComputePosition(!polePosition.inGame);
+            transform.position = Vector3.Lerp(transform.position, newPos, Time.fixedDeltaTime * 20f);
+            //transform.position = newPos;
+            Quaternion newRot = Quaternion.LookRotation(m_Focus.transform.position - transform.position, Vector3.up);
+            //transform.LookAt(m_Focus.transform);
+            transform.rotation = Quaternion.Lerp(transform.rotation, newRot, Time.fixedDeltaTime * 20f);
         }
     }
 

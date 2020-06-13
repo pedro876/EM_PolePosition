@@ -104,6 +104,7 @@ public class PlayerController : NetworkBehaviour
         Vector3 dir = circuitController.GetSegment(segId);
         transform.forward = dir;
         m_Rigidbody.velocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
         m_PlayerInfo.SetSpeed(0);
     }
 

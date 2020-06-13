@@ -67,6 +67,7 @@ public class GameHUD : MonoBehaviour
 
     public void Reset()
     {
+        backwardsText.gameObject.SetActive(false);
         StopCoroutine("RemoveCountdown");
         countdownText.gameObject.SetActive(true);
         textLaps.text = "LAP: -/-";

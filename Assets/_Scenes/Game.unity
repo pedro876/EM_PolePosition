@@ -220,6 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fc15f5f776cf554aa9fc85af6de6d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 372009859}
   polePosition: {fileID: 1839589613}
   cinematicModeActive: 0
   m_Focus: {fileID: 0}

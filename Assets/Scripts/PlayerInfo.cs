@@ -54,6 +54,7 @@ public class PlayerInfo : NetworkBehaviour
     [SerializeField] float wrongDirAngle = 90f;
     [SerializeField] float wrongDirMinSpeed = 1.0f;
     [HideInInspector] public float arcLength;
+
     ///[SerializeField] private float checkDirInterval = 0.5f;
     //[SerializeField] private float wrongDirThreshold = 1.0f;
 
@@ -303,24 +304,13 @@ public class PlayerInfo : NetworkBehaviour
     [Server]
     private void CheckWrongDir()
     {
-        Debug.DrawLine(transform.position, (transform.position + currentSegDir.normalized*10f), Color.red);
-
+        
         bool rbCondition = Vector3.Angle(
             Vector3.ProjectOnPlane(rb.velocity, Vector3.up).normalized,
             currentSegDir) >
             wrongDirAngle &&  rb.velocity.magnitude > wrongDirMinSpeed;
 
-        //Debug.Log("rbCondition: " + rbCondition);
-
-        bool camCondition = Vector3.Angle(
-            Vector3.ProjectOnPlane(mainCamera.transform.forward, Vector3.up).normalized,
-            currentSegDir) > wrongDirAngle;
-
-        //Debug.Log("camCondition: " + camCondition);
-
-        //Debug.Log("condition: " + (rbCondition && camCondition).ToString());
-
-        wrongDir = rbCondition && camCondition;
+        wrongDir = rbCondition;
     }
 
     private void SetWrongDir(bool oldV, bool newV)
