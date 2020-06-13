@@ -17,7 +17,7 @@ public class CustomChat : NetworkBehaviour
 
     void UpdateScrollBar()
     {
-        //scrollBar.verticalScrollbar.value = 0f;
+        scrollBar.verticalScrollbar.value = 0f;
         scrollBar.verticalScrollbar.onValueChanged.RemoveAllListeners();
     }
 
