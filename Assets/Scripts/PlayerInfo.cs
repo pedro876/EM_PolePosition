@@ -115,7 +115,7 @@ public class PlayerInfo : NetworkBehaviour
     [Client]
     private void Update()
     {
-        if(isLocalPlayer)
+        if(isLocalPlayer && polePosition.inGame)
             mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
         CheckWrongDir();
 
