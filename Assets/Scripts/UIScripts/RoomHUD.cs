@@ -36,7 +36,7 @@ public class RoomHUD : MonoBehaviour
 
     private void Awake()
     {
-        foreach (GameObject option in hostOptions) option.SetActive(false);
+        //foreach (GameObject option in hostOptions) option.SetActive(false);
         foreach (UIPlayer uiP in uiPlayers)
         {
             uiP.SetReady(false, Color.white);

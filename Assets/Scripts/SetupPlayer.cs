@@ -77,6 +77,11 @@ public class SetupPlayer : NetworkBehaviour
         base.OnStartClient();
         GetRefs();
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
+        if (isLocalPlayer)
+        {
+            //Al iniciarse un cliente, si es localPlayer, debe mandarse el nombre introducido al servidor
+            m_PlayerInfo.CmdChangeName(m_UIManager.chooseNameHUD.playerName);
+        }
     }
 
     /// <summary>
@@ -84,13 +89,13 @@ public class SetupPlayer : NetworkBehaviour
     /// <para>This happens after OnStartClient(), as it is triggered by an ownership message from the server. This is an appropriate place to activate components or functionality that should only be active for the local player, such as cameras and input.</para>
     /// </summary>
     /// 
-    public override void OnStartLocalPlayer()
+    /*public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
         //Al iniciarse un cliente, si es localPlayer, debe mandarse el nombre introducido al servidor
         GetRefs();
-        m_PlayerInfo.CmdChangeName(m_UIManager.chooseNameHUD.playerName);
-    }
+        
+    }*/
 
     #endregion
 
