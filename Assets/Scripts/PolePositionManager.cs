@@ -107,6 +107,21 @@ public class PolePositionManager : NetworkBehaviour
     private void OnEnable()
     {
         StartCoroutine("UpdateRoomUICoroutine");
+        Reset();
+    }
+
+    [Client]
+
+    private void OnDisable()
+    {
+        Reset();
+    }
+
+    private void Reset()
+    {
+        m_Players.Clear();
+        m_Ranking.Clear();
+        admitsPlayers = true;
     }
 
     #endregion
@@ -123,7 +138,6 @@ public class PolePositionManager : NetworkBehaviour
         {
             secondsLeft = 3;
             inGame = true;
-            maxNumPlayers = m_Players.Count;
             admitsPlayers = false;
             StopCoroutine("DecreaseCountdownCoroutine");
             StartCoroutine("DecreaseCountdownCoroutine");

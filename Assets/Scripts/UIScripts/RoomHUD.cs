@@ -33,6 +33,8 @@ public class RoomHUD : MonoBehaviour
     [SerializeField] private Button readyButton;
     [SerializeField] private Button notReadyButton;
     [SerializeField] private Button startButton;
+    [SerializeField] private Button openRoomButton;
+    [SerializeField] private Button closeRoomButton;
 
     private void Awake()
     {
@@ -42,6 +44,19 @@ public class RoomHUD : MonoBehaviour
             uiP.SetReady(false, Color.white);
             uiP.textSlot.gameObject.SetActive(false);
         }
+    }
+
+    public void Reset()
+    {
+        readyButton.gameObject.SetActive(true);
+        notReadyButton.gameObject.SetActive(false);
+        openRoomButton.gameObject.SetActive(false);
+        closeRoomButton.gameObject.SetActive(true);
+    }
+
+    private void OnEnable()
+    {
+        Reset();
     }
 
     public void ActivateRoomHostOptions(bool active)
