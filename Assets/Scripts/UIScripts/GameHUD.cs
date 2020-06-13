@@ -67,6 +67,8 @@ public class GameHUD : MonoBehaviour
 
     public void Reset()
     {
+        StopCoroutine("RemoveCountdown");
+        countdownText.gameObject.SetActive(true);
         textLaps.text = "LAP: -/-";
         textSpeed.text = "Speed 0 Km/h";
         bestLapText.text = "Best lap: --:--:--";
