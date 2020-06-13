@@ -63,11 +63,11 @@ public class RoomHUD : MonoBehaviour
         Reset();
     }
 
-    /*private void OnDisable()
+    private void OnDisable()
     {
         chat.Reset();
         chatInput.text = "";
-    }*/
+    }
 
     public void ActivateRoomHostOptions(bool active)
     {
