@@ -10,7 +10,6 @@ using UnityEngine.UI;
 /*
  * Se encarga de dar interactividad a la interfaz
  */
-
 public class UIManager :  MonoBehaviour
 {
     public Text debugText;
@@ -37,12 +36,6 @@ public class UIManager :  MonoBehaviour
 
     [Header("Ranking HUD")]
     [SerializeField] public RankingHUD rankingHUD;
-    /*[SerializeField] private GameObject rankingHUD;
-    [SerializeField] private Text[] playerTexts;
-    [SerializeField] private Text[] timeTexts;
-    [SerializeField] private Button returnButton;
-    private int textIndex = 0;
-    */
 
     #endregion
 
@@ -74,9 +67,6 @@ public class UIManager :  MonoBehaviour
         if(polePosition && polePosition.isActiveAndEnabled) polePosition.StopCoroutine("UpdateRoomUICoroutine");
     }
 
-    /*
-     * Al iniciar el juego, guarda el nombre introducido en la interfaz si no está vacío
-     */
     public void ActivateMainMenu()
     {
         mainMenuHUD.HideNetworkButtons(false);
@@ -124,15 +114,4 @@ public class UIManager :  MonoBehaviour
     }
 
     #endregion changeState
-
-    #region hostClientServerFuncs
-
-    /*
-     * Tratará de conectar a localhost por defecto, si el inputField de la IP no está vacío lo utilizará en lugar de localhost
-     */
-    
-
-    
-
-    #endregion hostClientServerFuncs
 }

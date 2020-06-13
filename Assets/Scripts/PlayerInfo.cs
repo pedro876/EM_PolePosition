@@ -144,7 +144,7 @@ public class PlayerInfo : NetworkBehaviour
      */
     public void UpdateRoomUI()
     {
-        if (uiManager == null) uiManager = FindObjectOfType<UIManager>();
+        GetRefs();
         uiManager.roomHUD.uiPlayers[uiPlayerIndex].textSlot.gameObject.SetActive(true);
         uiManager.roomHUD.uiPlayers[uiPlayerIndex].textSlot.text = PlayerName;
         uiManager.roomHUD.uiPlayers[uiPlayerIndex].SetReady(ready, PlayerColor);

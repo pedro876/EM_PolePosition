@@ -11,20 +11,40 @@ public class RankingHUD : MonoBehaviour
     [SerializeField] private Button returnButton;
     private int textIndex = 0;
 
-    private void Awake()
+    /*private void Awake()
     {
         foreach (Text t in playerTexts) t.gameObject.SetActive(false);
-    }
+    }*/
 
     public void AddPlayerToRanking(string newName, string bestTime)
     {
         if (textIndex < 4)
         {
+            Debug.Log("Adding " + newName + " to ranking");
+
             playerTexts[textIndex].gameObject.SetActive(true);
             playerTexts[textIndex].text = newName;
             timeTexts[textIndex].gameObject.SetActive(true);
             timeTexts[textIndex].text = bestTime == "00:00:00" || bestTime == "" ? "--:--:--" : bestTime;
             textIndex++;
+            FindObjectOfType<UIManager>().debugText.text = textIndex.ToString();
         }
+    }
+
+    public void Reset()
+    {
+        textIndex = 0;
+        foreach (Text t in timeTexts)
+            t.text = "--:--:--";
+        foreach (Text t in playerTexts)
+        {
+            t.text = "";
+            t.gameObject.SetActive(false);
+        }
+    }
+
+    private void OnDisable()
+    {
+        Reset();
     }
 }

@@ -64,4 +64,16 @@ public class GameHUD : MonoBehaviour
         yield return new WaitForSeconds(2);
         countdownText.gameObject.SetActive(false);
     }
+
+    public void Reset()
+    {
+        textLaps.text = "LAP: -/-";
+        textSpeed.text = "Speed 0 Km/h";
+        bestLapText.text = "Best lap: --:--:--";
+    }
+
+    private void OnDisable()
+    {
+        Reset();
+    }
 }

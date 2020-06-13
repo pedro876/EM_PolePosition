@@ -36,6 +36,9 @@ public class MainMenuHUD : MonoBehaviour
         tempFieldText.text = "";
     }
 
+    /*
+     * Tratará de conectar a localhost por defecto, si el inputField de la IP no está vacío lo utilizará en lugar de localhost
+     */
     public void UpdateNetworkAdress()
     {
         if (inputFieldIP.text != "")

@@ -38,7 +38,7 @@ public class PolePositionManager : NetworkBehaviour
 
     [Header("RoomProperties")]
     [SerializeField] private float updatePlayersListInterval = 0.3f;
-    [SyncVar] [SerializeField] private bool admitsPlayers = true;
+    [SerializeField] private bool admitsPlayers = true;
     [Server] public void SetAdmitsPlayers(bool v) { admitsPlayers = v; }
 
 
@@ -146,24 +146,27 @@ public class PolePositionManager : NetworkBehaviour
     *corrutina que se encargara de mostrar el orden de los jugadores hasta que termine la misma.
     */
     object addPlayerLock = new object();
-    [Server]
+
     public void AddPlayer(PlayerInfo player)
     {
         lock (addPlayerLock)
         {
-            if (!admitsPlayers)
+            if (!admitsPlayers && isServer)
             {
                 player.connectionToClient.Disconnect();
                 return;
             }
             m_Players.Add(player);
-            player.permissionGranted = true;
-            player.transform.position = startPositions[m_Players.Count - 1].position;
-            m_uiManager.roomHUD.AddPlayerToRoomUI(player, m_Players);
-            if (!orderCoroutineCalled)
+            if (isServer)
             {
-                orderCoroutineCalled = true;
-                StartCoroutine("SortRaceOrderCoroutine");
+                player.permissionGranted = true;
+                player.transform.position = startPositions[m_Players.Count - 1].position;
+                m_uiManager.roomHUD.AddPlayerToRoomUI(player, m_Players);
+                if (!orderCoroutineCalled)
+                {
+                    orderCoroutineCalled = true;
+                    StartCoroutine("SortRaceOrderCoroutine");
+                }
             }
         }
     }
@@ -299,7 +302,6 @@ public class PolePositionManager : NetworkBehaviour
     [Server]
     IEnumerator WaitingLastPlayer()
     {
-        Debug.Log("Waiting for last player");
         yield return new WaitForSeconds(lastPlayerGracePeriod);
         if (m_Players.Count != 0)
             m_Players[0].Finish = true;

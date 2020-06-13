@@ -9,6 +9,9 @@ public class ChooseNameHUD : MonoBehaviour
     [SerializeField] private InputField inputFieldName;
     public string playerName = "PLAYER";
 
+    /*
+     * Al iniciar el juego, guarda el nombre introducido en la interfaz si no está vacío
+     */
     private void OnDisable()
     {
         if (!inputFieldName.text.Equals(""))
