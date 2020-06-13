@@ -121,9 +121,11 @@ public class PolePositionManager : NetworkBehaviour
 
         if (allReady)
         {
+            secondsLeft = 3;
             inGame = true;
             maxNumPlayers = m_Players.Count;
             admitsPlayers = false;
+            StopCoroutine("DecreaseCountdownCoroutine");
             StartCoroutine("DecreaseCountdownCoroutine");
             RpcUpdateCountdownUI(secondsLeft);
             RpcChangeUIFromRoomToGame();
@@ -204,7 +206,6 @@ public class PolePositionManager : NetworkBehaviour
             {
                 player.GetComponent<SetupPlayer>().ReleasePlayer();
             }
-            secondsLeft = 3;
         }
     }
 
