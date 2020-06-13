@@ -35,6 +35,9 @@ public class RoomHUD : MonoBehaviour
     [SerializeField] private Button startButton;
     [SerializeField] private Button openRoomButton;
     [SerializeField] private Button closeRoomButton;
+    [SerializeField] public InputField chatInput;
+    [SerializeField] private CustomChat chat;
+    
 
     private void Awake()
     {
@@ -44,6 +47,7 @@ public class RoomHUD : MonoBehaviour
             uiP.SetReady(false, Color.white);
             uiP.textSlot.gameObject.SetActive(false);
         }
+        chat = FindObjectOfType<CustomChat>();
     }
 
     public void Reset()
@@ -58,6 +62,12 @@ public class RoomHUD : MonoBehaviour
     {
         Reset();
     }
+
+    /*private void OnDisable()
+    {
+        chat.Reset();
+        chatInput.text = "";
+    }*/
 
     public void ActivateRoomHostOptions(bool active)
     {

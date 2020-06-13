@@ -14,6 +14,7 @@ public class PlayerInfo : NetworkBehaviour
 
     private UIManager uiManager;
     private PolePositionManager polePosition;
+    private CustomChat chat;
     private CameraController mainCamera;
     public CircuitProgress CircuitProgress { get; set; }
     private Rigidbody rb;
@@ -61,6 +62,9 @@ public class PlayerInfo : NetworkBehaviour
     [SerializeField] Material[] materials;
     Dictionary<string, Material> colorOptions;
 
+    [Header("CHAT")]
+    
+
     //BEST LAP
     private DateTime startTime;
     private TimeSpan bestLapSpan;
@@ -82,6 +86,7 @@ public class PlayerInfo : NetworkBehaviour
     void GetRefs()
     {
         if (!mainCamera) mainCamera = Camera.main.GetComponent<CameraController>();
+        if (!chat) chat = FindObjectOfType<CustomChat>();
         if (!polePosition)polePosition = FindObjectOfType<PolePositionManager>();
         if (!uiManager) uiManager = FindObjectOfType<UIManager>();
         if (!rb) rb = GetComponent<Rigidbody>();
@@ -113,6 +118,35 @@ public class PlayerInfo : NetworkBehaviour
         if(isLocalPlayer)
             mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
         CheckWrongDir();
+
+        CheckSendChat();
+    }
+
+    #endregion
+
+    #region Chat
+
+    void CheckSendChat()
+    {
+        if (Input.GetKeyDown(KeyCode.Return) && isLocalPlayer)
+        {
+            string message = uiManager.roomHUD.chatInput.text;
+            if(message != "") CmdSendMessage(message);
+            uiManager.roomHUD.chatInput.text = "";
+        }
+    }
+
+    [Command]
+    public void CmdSendMessage(string message)
+    {
+        //CAMBIAR COLOR
+        //PONER NOMBRE
+        //message = "\n" + message;
+        string color = ColorUtility.ToHtmlStringRGBA(PlayerColor);
+
+        message =$"<color=#{color}> {PlayerName}: </color> {message}"+"\n";
+
+        chat.chatHistory += message;
     }
 
     #endregion

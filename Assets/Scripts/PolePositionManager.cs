@@ -112,7 +112,6 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Reset()
     {
-        //m_Players.Clear();
         maxNumPlayers = 4;
         m_Ranking.Clear();
         inGame = false;
@@ -142,7 +141,6 @@ public class PolePositionManager : NetworkBehaviour
             RpcChangeUIFromRoomToGame();
         }
     }
-
 
     [ClientRpc]
     void RpcChangeUIFromRoomToGame()
