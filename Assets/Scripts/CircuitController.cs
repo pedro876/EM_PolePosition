@@ -63,7 +63,7 @@ public class CircuitController : MonoBehaviour
             float dotProd = Vector3.Dot(carVec, pathVec);
 
             if(i == 23) Debug.Log(i + ": " + dotProd + " segLength: " + segLength);
-            const float margin = 0.5f;
+            const float margin = 1.0f;
             if (dotProd < -margin) //el coche está antes del comienzo del segmento
                 continue;
 
