@@ -8,15 +8,15 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    [Header("References")]
     private Camera mainCamera;
-    private UIManager uiManager;
+    [SerializeField] private PolePositionManager polePosition;
     [SerializeField] private bool cinematicModeActive = false;
     [SerializeField] public GameObject m_Focus;
     [SerializeField] public CircuitController m_Circuit;
 
     private Vector3 originalPosition = new Vector3(0f, 2.82f, -10f);
     private Quaternion originalRotation = Quaternion.identity;
-
 
     [Header("Cinematic mode")]
     [SerializeField] public Vector3 m_offset = new Vector3(10, 10, 10);
@@ -32,14 +32,15 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
-        //originalPosition = transform.position;
-        //originalRotation = transform.rotation;
+        GetRefs();
+        originalPosition = transform.position;
+        originalRotation = transform.rotation;
     }
 
-    void Start()
+    void GetRefs()
     {
-        mainCamera = this.GetComponent<Camera>();
-        uiManager = FindObjectOfType<UIManager>();
+        if (!polePosition) FindObjectOfType<PolePositionManager>();
+        if (!mainCamera) GetComponent<Camera>();
     }
 
     void Update()
@@ -55,19 +56,34 @@ public class CameraController : MonoBehaviour
     public void SetFocus(GameObject focus)
     {
         m_Focus = focus;
-        if (!cinematicModeActive)
-            transform.position = ComputePosition(true);
+        if (m_Focus)
+        {
+            if (!cinematicModeActive)
+                transform.position = ComputePosition(true);
+        } else Reset();
     }
 
-    public void ResetCamera()
+    public void Reset()
     {
+        Debug.Log("cam reset");
         m_Focus = null;
         transform.position = originalPosition;
         transform.rotation = originalRotation;
-        Debug.Log("Reset cam");
     }
 
     #region playMode
+
+    /*
+     * Modo de vista de cámara que permite una visión trasera del coche
+     */
+    void PlayMode()
+    {
+        if (polePosition)
+        {
+            transform.position = ComputePosition(!polePosition.inGame);
+            transform.LookAt(m_Focus.transform);
+        }
+    }
 
     /*
      * Esta función calcula una posición para la cámara que se mantenga dentro de un rango con una elevación constante respecto al jugador
@@ -87,13 +103,6 @@ public class CameraController : MonoBehaviour
         
         from.y = elevationOptions[currentOption];
         return from;
-    }
-
-    void PlayMode()
-    {
-        if (!uiManager) uiManager = FindObjectOfType<UIManager>();
-        transform.position = ComputePosition(!uiManager.inGame());
-        transform.LookAt(m_Focus.transform);
     }
 
     #endregion

@@ -14,6 +14,7 @@ public class PlayerInfo : NetworkBehaviour
 
     private UIManager uiManager;
     private PolePositionManager polePosition;
+    private CameraController mainCamera;
     public CircuitProgress CircuitProgress { get; set; }
     private Rigidbody rb;
     [SerializeField] MeshRenderer carMeshRenderer;
@@ -22,9 +23,9 @@ public class PlayerInfo : NetworkBehaviour
 
     #region NetVariables
 
+    [SyncVar] public int ID;
     [SyncVar] public string PlayerName;
     [SyncVar(hook = nameof(ChangeCarColor))] [SerializeField] Color PlayerColor;
-    [SyncVar] public int ID;
     [SyncVar(hook = nameof(FinishCircuit))] public bool Finish;
     [HideInInspector] [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
     [HideInInspector] [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
@@ -32,6 +33,8 @@ public class PlayerInfo : NetworkBehaviour
     [HideInInspector] [SyncVar] public float LastArcLength;
     [SyncVar] public int uiPlayerIndex;
     [SyncVar] public bool ready = false;
+
+    [SyncVar(hook = nameof(OnPermissionGranted))] public bool permissionGranted = false;
 
     #endregion
 
@@ -68,38 +71,68 @@ public class PlayerInfo : NetworkBehaviour
      */
     private void Awake()
     {
-        polePosition = FindObjectOfType<PolePositionManager>();
-        colorOptions = new Dictionary<string, Material>();
-        for (int i = 0; i < colors.Length; i++) colorOptions.Add(ColorUtility.ToHtmlStringRGB(colors[i]), materials[i]);
-    }
-
-    /*
-     * En caso de ser localPlayer, comienzan las corrutinas para actualizar el input y la comprobación de dirección contraria
-     */
-    private void Start()
-    {
-        if(uiManager == null) uiManager = FindObjectOfType<UIManager>();
-        rb = GetComponent<Rigidbody>();
+        GetRefs();
         CurrentLap = 0;
-        CircuitProgress = new CircuitProgress();
-        if (this.isLocalPlayer)
-        {
-            StartCoroutine("UpdateInputCoroutine");
-            StartCoroutine("WrongDirCoroutine");
-
-            uiManager.SetColorButtonsFunctions(this);
-            uiManager.SetReadyButtonsFunctions(this);
-        }
-        if (isServer && isLocalPlayer)
-            ready = true; //Por defecto el host está listo para empezar
-        if (isServer)
-            PlayerColor = Color.white; //Por defecto el color del jugador es blanco
     }
 
+    void GetRefs()
+    {
+        if (!mainCamera) mainCamera = Camera.main.GetComponent<CameraController>();
+        if (!polePosition)polePosition = FindObjectOfType<PolePositionManager>();
+        if (!uiManager) uiManager = FindObjectOfType<UIManager>();
+        if (!rb) rb = GetComponent<Rigidbody>();
+        if (CircuitProgress == null) CircuitProgress = new CircuitProgress();
+        if (colorOptions == null)
+        {
+            colorOptions = new Dictionary<string, Material>();
+            for (int i = 0; i < colors.Length; i++) colorOptions.Add(ColorUtility.ToHtmlStringRGB(colors[i]), materials[i]);
+        }
+    }
+
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+        //Por defecto el host está listo para empezar
+        if (isServer) ready = true;
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        //Por defecto el color del jugador es blanco
+        PlayerColor = Color.white;
+    }
+
+    [Client]
     private void Update()
     {
         if(isLocalPlayer)
             mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
+    }
+
+    #endregion
+
+    #region PermissionGranted
+
+    /*
+     * En caso de ser localPlayer, comienzan las corrutinas para actualizar el input y la comprobación de dirección contraria
+     */
+    [Client]
+    void OnPermissionGranted(bool ov, bool nv)
+    {
+        if (nv && isLocalPlayer)
+        {
+            GetRefs();
+
+            mainCamera.SetFocus(this.gameObject);
+
+            StartCoroutine("UpdateInputCoroutine");
+            StartCoroutine("WrongDirCoroutine");
+
+            uiManager.roomHUD.SetColorButtonsFunctions(this);
+            uiManager.roomHUD.SetReadyButtonsFunctions(this);
+            uiManager.ActivateRoomHUD();
+        }
     }
 
     #endregion
@@ -112,9 +145,9 @@ public class PlayerInfo : NetworkBehaviour
     public void UpdateRoomUI()
     {
         if (uiManager == null) uiManager = FindObjectOfType<UIManager>();
-        uiManager.uiPlayers[uiPlayerIndex].textSlot.gameObject.SetActive(true);
-        uiManager.uiPlayers[uiPlayerIndex].textSlot.text = PlayerName;
-        uiManager.uiPlayers[uiPlayerIndex].SetReady(ready, PlayerColor);
+        uiManager.roomHUD.uiPlayers[uiPlayerIndex].textSlot.gameObject.SetActive(true);
+        uiManager.roomHUD.uiPlayers[uiPlayerIndex].textSlot.text = PlayerName;
+        uiManager.roomHUD.uiPlayers[uiPlayerIndex].SetReady(ready, PlayerColor);
     }
 
     #endregion
@@ -173,7 +206,7 @@ public class PlayerInfo : NetworkBehaviour
 
     void ChangeSpeedUI(float oldVal, float newVal)
     {
-        uiManager.UpdateSpeed(this);
+        uiManager.gameHUD.UpdateSpeed(this);
     }
 
     #endregion
@@ -239,7 +272,7 @@ public class PlayerInfo : NetworkBehaviour
             yield return new WaitForSeconds(checkDirInterval);
             float difference = LastArcLength - localLastArcLength;
             bool wrongDir = difference < -wrongDirThreshold;
-            uiManager.backwardsText.gameObject.SetActive(wrongDir && Speed > 1.0f);
+            uiManager.gameHUD.backwardsText.gameObject.SetActive(wrongDir && Speed > 1.0f);
         }
     }
 
@@ -252,9 +285,9 @@ public class PlayerInfo : NetworkBehaviour
      * Reinicia los contadores para los tiempos de vuelta
      * En caso de llegar al máximo de vueltas pone Finish a true para avisar de que ha terminado
      */
+    [Server]
     public void AddLap()
     {
-        
         CurrentLap++;
         if (CurrentLap == 1)
             startTime = DateTime.Now;
@@ -270,14 +303,13 @@ public class PlayerInfo : NetworkBehaviour
             startTime = endTime;
         }
 
-        if(!polePosition) polePosition = FindObjectOfType<PolePositionManager>();
-        if (CurrentLap > polePosition.maxLaps)
-            Finish = true;
+        if (CurrentLap > polePosition.maxLaps) Finish = true;
     }
 
     /*
      * Convierte a una string formateada el valor de la mejor vuelta
      */
+    [Server]
     void ComputeBestTime()
     {
         string minutes = bestLapSpan.Minutes.ToString();
@@ -292,14 +324,16 @@ public class PlayerInfo : NetworkBehaviour
         bestLap = minutes + ":" + seconds + ":" + milliseconds;
     }
 
+    [Client]
     private void UpdateBestLapUI(string oldVal, string newVal)
     {
-        uiManager.UpdateBestLap(this);
+        uiManager.gameHUD.UpdateBestLap(this);
     }
 
+    [Client]
     private void UpdateLapUI(int oldVal, int newVal)
     {
-        uiManager.UpdateLap(this);
+        uiManager.gameHUD.UpdateLap(this);
     }
 
     #endregion updateLap

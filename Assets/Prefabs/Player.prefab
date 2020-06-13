@@ -61,7 +61,7 @@ WheelCollider:
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
     m_Stiffness: 1.1
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &1508097745644926054
 GameObject:
   m_ObjectHideFlags: 0
@@ -114,7 +114,7 @@ Rigidbody:
   m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 122
   m_CollisionDetection: 3
@@ -127,7 +127,7 @@ BoxCollider:
   m_GameObject: {fileID: 1508097745644926054}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1.0799457, y: 0.22, z: 2.45}
   m_Center: {x: -0.005710423, y: 0.33, z: -0.028551817}
@@ -198,9 +198,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   carMeshRenderer: {fileID: 3124799276312422027}
+  ID: 0
   PlayerName: 
   PlayerColor: {r: 0, g: 0, b: 0, a: 0}
-  ID: 0
   Finish: 0
   CurrentLap: 0
   Speed: 0
@@ -208,6 +208,7 @@ MonoBehaviour:
   LastArcLength: 0
   uiPlayerIndex: 0
   ready: 0
+  permissionGranted: 0
   axisVertical: 0
   axisHorizontal: 0
   axisBrake: 0
@@ -601,7 +602,7 @@ WheelCollider:
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
     m_Stiffness: 1.1
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &5703065227131910028
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,7 +855,7 @@ WheelCollider:
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
     m_Stiffness: 1.1
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &8856475019997471047
 GameObject:
   m_ObjectHideFlags: 0
@@ -916,4 +917,4 @@ WheelCollider:
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
     m_Stiffness: 1.1
-  m_Enabled: 1
+  m_Enabled: 0

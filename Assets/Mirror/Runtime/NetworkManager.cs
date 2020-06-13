@@ -1470,10 +1470,7 @@ namespace Mirror
         /// </summary>
         /// 
 
-        [SerializeField] UnityEvent onConnectionFailed;
-        public virtual void OnStopClient() {
-            onConnectionFailed.Invoke();
-        }
+        public virtual void OnStopClient() { }
 
         /// <summary>
         /// This is called when a host is stopped.

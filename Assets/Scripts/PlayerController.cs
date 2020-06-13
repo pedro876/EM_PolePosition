@@ -17,7 +17,7 @@ using Mirror;
 
 public class PlayerController : NetworkBehaviour
 {
-    #region Variables
+    #region Vars
 
     [Header("Movement")] public List<AxleInfo> axleInfos;
     public float forwardMotorTorque = 100000;
@@ -35,8 +35,6 @@ public class PlayerController : NetworkBehaviour
     private Rigidbody m_Rigidbody;
     private float m_SteerHelper = 0.8f;
 
-    public delegate void OnSpeedChangeDelegate(float newVal);
-
     [Header("Save Player Options")]
     [SerializeField] CircuitController circuitController;
     [SerializeField] float saveTime = 1.0f;
@@ -44,22 +42,74 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] float angleRange = 30f;
     bool coroutineCalled = false;
 
-    #endregion Variables
+    #endregion
 
     #region Unity Callbacks
     public void Awake()
     {
-        m_Rigidbody = GetComponent<Rigidbody>();
-        m_PlayerInfo = GetComponent<PlayerInfo>();
-        circuitController = FindObjectOfType<CircuitController>();
+        GetRefs();
     }
 
+    void GetRefs()
+    {
+        if(m_Rigidbody == null)m_Rigidbody = GetComponent<Rigidbody>();
+        if(m_PlayerInfo == null) m_PlayerInfo = GetComponent<PlayerInfo>();
+        if(!circuitController) circuitController = FindObjectOfType<CircuitController>();
+    }
+
+    [Server]
     public void Update()
     {
         m_PlayerInfo.SetSpeed(m_Rigidbody.velocity.magnitude);
         CheckMustSave();
     }
 
+    #endregion
+
+    #region savePlayerMethods
+    private void CheckMustSave()
+    {
+        if (m_PlayerInfo.mustSave)
+        {
+            SavePlayer();
+            m_PlayerInfo.mustSave = false;
+        }
+        else if (!coroutineCalled && m_PlayerInfo.Speed < speedThreshold)
+        {
+            if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
+            {
+                StartCoroutine("SavePlayerDelay");
+                coroutineCalled = true;
+            }
+        }
+    }
+
+    IEnumerator SavePlayerDelay()
+    {
+        yield return new WaitForSeconds(saveTime);
+        if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
+        {
+            SavePlayer();
+        }
+        coroutineCalled = false;
+    }
+
+    void SavePlayer()
+    {
+        int segId;
+        Vector3 posProj;
+        float dist;
+        float arcLen = circuitController.ComputeClosestPointArcLength(transform.position, out segId, out posProj, out dist);
+        transform.position = posProj;
+        Vector3 dir = circuitController.GetSegment(segId);
+        transform.forward = dir;
+        m_Rigidbody.velocity = Vector3.zero;
+        m_PlayerInfo.SetSpeed(0);
+    }
+
+    #endregion savePlayerMethods
+
+    #region Movement
 
     public void FixedUpdate()
     {
@@ -121,49 +171,6 @@ public class PlayerController : NetworkBehaviour
     }
 
     #endregion
-
-    #region savePlayerMethods
-    private void CheckMustSave()
-    {
-        if (m_PlayerInfo.mustSave)
-        {
-            SavePlayer();
-            m_PlayerInfo.mustSave = false;
-        }
-        else if (!coroutineCalled && m_PlayerInfo.Speed < speedThreshold)
-        {
-            if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
-            {
-                StartCoroutine("SavePlayerDelay");
-                coroutineCalled = true;
-            }
-        }
-    }
-
-    IEnumerator SavePlayerDelay()
-    {
-        yield return new WaitForSeconds(saveTime);
-        if (Vector3.Angle(-transform.up, Vector3.up) < angleRange)
-        {
-            SavePlayer();
-        }
-        coroutineCalled = false;
-    }
-
-    void SavePlayer()
-    {
-        int segId;
-        Vector3 posProj;
-        float dist;
-        float arcLen = circuitController.ComputeClosestPointArcLength(transform.position, out segId, out posProj, out dist);
-        transform.position = posProj;
-        Vector3 dir = circuitController.GetSegment(segId);
-        transform.forward = dir;
-        m_Rigidbody.velocity = Vector3.zero;
-        m_PlayerInfo.SetSpeed(0);
-    }
-
-    #endregion savePlayerMethods
 
     #region Methods
 

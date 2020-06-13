@@ -13,15 +13,14 @@ using UnityEngine.UI;
 
 public class PolePositionManager : NetworkBehaviour
 {
-    #region variables
+    #region Vars
 
-    [SerializeField] UIManager m_uiManager;
-    public NetworkManager networkManager;
-    private CircuitController m_CircuitController;
-    //private GameObject[] m_DebuggingSpheres;
+    [SerializeField] private UIManager m_uiManager;
+    [SerializeField] private CustomNetworkManager networkManager;
+    [SerializeField] private CircuitController m_CircuitController;
 
     [Header("RaceStartPos")]
-    [SerializeField] Transform[] startPositions;
+    [SerializeField] private Transform[] startPositions;
 
     [Header("RaceConditions")]
     [SyncVar] public int maxNumPlayers=1;
@@ -34,45 +33,49 @@ public class PolePositionManager : NetworkBehaviour
     [SerializeField] private float progressInterval = 0.1f;
     [SerializeField] private float lastPlayerGracePeriod = 20f;
     private string myRaceOrder;
-    bool orderCoroutineCalled = false;
-    bool inGame = false;
+    private bool orderCoroutineCalled = false;
+    [SyncVar] [HideInInspector] public bool inGame = false;
 
     [Header("RoomProperties")]
-    [SerializeField] float updatePlayersListInterval = 0.3f;
-    [SyncVar] public bool admitsPlayers = true;
-    public void SetAdmitsPlayers(bool v) { admitsPlayers = v; }
+    [SerializeField] private float updatePlayersListInterval = 0.3f;
+    [SyncVar] [SerializeField] private bool admitsPlayers = true;
+    [Server] public void SetAdmitsPlayers(bool v) { admitsPlayers = v; }
 
 
-    #endregion variables
+    #endregion
 
     #region AwakeStartUpdate
 
     private void Awake()
     {
-        if (networkManager == null) networkManager = FindObjectOfType<NetworkManager>();
+        GetRefs();
+    }
+
+    void GetRefs()
+    {
+        if (networkManager == null) networkManager = FindObjectOfType<CustomNetworkManager>();
         if (m_CircuitController == null) m_CircuitController = FindObjectOfType<CircuitController>();
     }
 
+    [Server]
     private void Update()
     {
         if (m_Players.Count == 0) return;
-        if(isServer) UpdateRaceProgress();
-        for(int i = maxNumPlayers; i < m_Players.Count; i++)
-        {
-            if (m_Players[i].isLocalPlayer) networkManager.StopClient();
-        }
+        UpdateRaceProgress();
     }
 
     #endregion
 
     #region IncrementDecrementLaps
 
+    [Server]
     public void IncrementLaps(Text refText)
     {
         if(maxLaps < 9) maxLaps++;
         if (refText != null) refText.text = maxLaps.ToString();
     }
 
+    [Server]
     public void DecrementLaps(Text refText)
     {
         if(maxLaps > 1) maxLaps--;
@@ -83,6 +86,7 @@ public class PolePositionManager : NetworkBehaviour
 
     #region roomUIUpdate
 
+    [Client]
     IEnumerator UpdateRoomUICoroutine()
     {
         while (true)
@@ -94,11 +98,12 @@ public class PolePositionManager : NetworkBehaviour
                     player.UpdateRoomUI();
                 }
             }
-            m_uiManager.RemoveLostPlayersFromUI(m_Players, maxNumPlayers);
+            m_uiManager.roomHUD.RemoveLostPlayersFromUI(m_Players, maxNumPlayers);
             yield return new WaitForSeconds(updatePlayersListInterval);
         }
     }
 
+    [Client]
     private void OnEnable()
     {
         StartCoroutine("UpdateRoomUICoroutine");
@@ -108,6 +113,7 @@ public class PolePositionManager : NetworkBehaviour
 
     #region StartGameAndChangeToGameHUD
 
+    [Server]
     public void StartGame()
     {
         bool allReady = true;
@@ -117,8 +123,6 @@ public class PolePositionManager : NetworkBehaviour
         {
             inGame = true;
             maxNumPlayers = m_Players.Count;
-            //networkManager.maxConnections = maxNumPlayers;
-            //networkManager.maxConnections = 0;
             admitsPlayers = false;
             StartCoroutine("DecreaseCountdownCoroutine");
             RpcUpdateCountdownUI(secondsLeft);
@@ -140,16 +144,22 @@ public class PolePositionManager : NetworkBehaviour
     /*Se encarga de añadir un jugador a la partida. Actualiza la interfaz de los juagdores restantes, y en caso de haber llegado al maximo de jugadores, 
     *llama a la corrutina que hace comenzar la cuenta atras previa a la carrera. Cuando se añade el primer jugador a la partida, hará comenzar una 
     *corrutina que se encargara de mostrar el orden de los jugadores hasta que termine la misma.
-    **/
+    */
+    object addPlayerLock = new object();
+    [Server]
     public void AddPlayer(PlayerInfo player)
     {
-        m_Players.Add(player);
-        
-        if (isServer)
+        lock (addPlayerLock)
         {
+            if (!admitsPlayers)
+            {
+                player.connectionToClient.Disconnect();
+                return;
+            }
+            m_Players.Add(player);
+            player.permissionGranted = true;
             player.transform.position = startPositions[m_Players.Count - 1].position;
-            m_uiManager.AddPlayerToRoomUI(player, m_Players);
-
+            m_uiManager.roomHUD.AddPlayerToRoomUI(player, m_Players);
             if (!orderCoroutineCalled)
             {
                 orderCoroutineCalled = true;
@@ -161,15 +171,18 @@ public class PolePositionManager : NetworkBehaviour
     /*Elimina un jugador y actualiza en la interfaz el número de jugadores restantes en caso de no haber empezado la partida.*/
     public void RemovePlayer(PlayerInfo player)
     {
-        int playerIndex = m_Players.IndexOf(player);
-        if(playerIndex > -1)
+        lock (addPlayerLock)
         {
-            m_Players.RemoveAt(playerIndex);
-            m_uiManager.ReAssignUIPlayers(m_Players, maxNumPlayers);
-            for (int i = playerIndex; i < m_Players.Count; i++)
+            int playerIndex = m_Players.IndexOf(player);
+            if (playerIndex > -1)
             {
-                if (m_Players[i] != null && !inGame)
-                    m_Players[i].transform.position = startPositions[i].position;
+                m_Players.RemoveAt(playerIndex);
+                m_uiManager.roomHUD.ReAssignUIPlayers(m_Players, maxNumPlayers);
+                for (int i = playerIndex; i < m_Players.Count; i++)
+                {
+                    if (m_Players[i] != null && !inGame)
+                        m_Players[i].transform.position = startPositions[i].position;
+                }
             }
         }
     }
@@ -178,6 +191,7 @@ public class PolePositionManager : NetworkBehaviour
 
     #region countdown
     /*Cuando la cuenta atras llega a 0 libera los playerControllers para que los coches se puedan empezar a mover.*/
+    [Server]
     void UpdateCountdownUI()
     {
         RpcUpdateCountdownUI(secondsLeft);
@@ -190,6 +204,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    [Client]
     IEnumerator DecreaseCountdownCoroutine()
     {
         while (secondsLeft > 0)
@@ -204,7 +219,7 @@ public class PolePositionManager : NetworkBehaviour
     [ClientRpc]
     void RpcUpdateCountdownUI(int seconds)
     {
-        m_uiManager.UpdateCountdownText(seconds);
+        m_uiManager.gameHUD.UpdateCountdownText(seconds);
     }
 
     #endregion countdown
@@ -215,7 +230,7 @@ public class PolePositionManager : NetworkBehaviour
     [ClientRpc]
     void RpcAddPlayerToRanking(string pName, string bestTime)
     {
-        m_uiManager.AddPlayerToRanking(pName, bestTime);
+        m_uiManager.rankingHUD.AddPlayerToRanking(pName, bestTime);
     }
 
     #endregion
@@ -227,6 +242,7 @@ public class PolePositionManager : NetworkBehaviour
     *Si todos los jugadores menos uno han terminado, se le dará un tiempo de gracia para intentar terminar la carrera. Esto no se 
     *aplicará cuando solo haya un corredor.
     **/
+    [Server]
     public void UpdateRaceProgress()
     {
         for (int i = 0; i < m_Players.Count; i++)
@@ -244,6 +260,7 @@ public class PolePositionManager : NetworkBehaviour
             StartCoroutine("WaitingLastPlayer");
     }
 
+    [Server]
     IEnumerator SortRaceOrderCoroutine()
     {
         while (m_Ranking.Count < maxNumPlayers)
@@ -253,6 +270,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    [Server]
     void SortRaceOrder()
     {
         m_Players.Sort(new PlayerInfoComparer());
@@ -271,22 +289,25 @@ public class PolePositionManager : NetworkBehaviour
     [ClientRpc]
     void RpcUpdateRaceProgressUI(string raceOrder)
     {
-        m_uiManager.UpdatePosition(raceOrder);
+        m_uiManager.gameHUD.UpdatePosition(raceOrder);
     }
 
     #endregion
 
     #region lastPlayer
 
+    [Server]
     IEnumerator WaitingLastPlayer()
     {
+        Debug.Log("Waiting for last player");
         yield return new WaitForSeconds(lastPlayerGracePeriod);
         if (m_Players.Count != 0)
             m_Players[0].Finish = true;
-            //m_Players[0].AddLap();
     }
 
     #endregion
+
+    #region CarArcLength
 
     /*Se encarga de calcular la distancia recorrida desde el inicio de la carrera, teniendo en cuenta el número de vueltas.*/
     float ComputeCarArcLength(int ID)
@@ -311,4 +332,6 @@ public class PolePositionManager : NetworkBehaviour
         
         return minArcL;
     }
+
+    #endregion
 }

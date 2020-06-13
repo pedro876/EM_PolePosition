@@ -9,50 +9,48 @@ using Random = System.Random;
 */
 
 /*
- * 
+ * Gestiona la configuración incial del jugador al unirse a una partida
  */
 
 public class SetupPlayer : NetworkBehaviour
 {
-    #region variables
+    #region Vars
 
     private UIManager m_UIManager;
-    private NetworkManager m_NetworkManager;
     private PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
     private PolePositionManager m_PolePositionManager;
     private Rigidbody rb;
     private BoxCollider bc;
-    private CameraController mainCam;
     [SerializeField] WheelCollider[] wheelColls;
 
-
-    #endregion variables
+    #endregion
 
     #region AwakeStart
     private void Awake()
     {
-        m_PlayerInfo = GetComponent<PlayerInfo>();
-        m_PlayerController = GetComponent<PlayerController>();
-        m_NetworkManager = FindObjectOfType<NetworkManager>();
-        m_PolePositionManager = FindObjectOfType<PolePositionManager>();
-        m_UIManager = FindObjectOfType<UIManager>();
-        rb = GetComponent<Rigidbody>();
-        bc = GetComponent<BoxCollider>();
-        if (Camera.main != null) mainCam = Camera.main.gameObject.GetComponent<CameraController>();
+        GetRefs();
+    }
+
+    void GetRefs()
+    {
+        if(!m_PlayerInfo) m_PlayerInfo = GetComponent<PlayerInfo>();
+        if(!m_PlayerController) m_PlayerController = GetComponent<PlayerController>();
+        if(!m_PolePositionManager) m_PolePositionManager = FindObjectOfType<PolePositionManager>();
+        if(!m_UIManager) m_UIManager = FindObjectOfType<UIManager>();
+        if(!rb) rb = GetComponent<Rigidbody>();
+        if(!bc) bc = GetComponent<BoxCollider>();
     }
 
     /*
      * En caso de no ser el servidor, no se simulan físicas y se desactivan los colliders
      */
+    [Server]
     void Start()
     {
-        if (!isServer)
-        {
-            rb.isKinematic = true;
-            bc.enabled = false;
-            foreach (WheelCollider wc in wheelColls) wc.enabled = false;
-        }
+        rb.isKinematic = false;
+        bc.enabled = true;
+        foreach (WheelCollider wc in wheelColls) wc.enabled = true;
     }
 
     #endregion
@@ -68,7 +66,6 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartServer();
         m_PlayerInfo.ID = connectionToClient.connectionId;
-        Debug.Log("Server iniciado");
     }
 
     /// <summary>
@@ -78,21 +75,7 @@ public class SetupPlayer : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        if (isLocalPlayer)
-        {
-            //Al iniciarse un cliente, si es localPlayer, debe mandarse el nombre introducido al servidor
-            m_PlayerInfo.CmdChangeName(m_UIManager.playerName);
-            if (!m_PolePositionManager.admitsPlayers)
-            {
-                m_NetworkManager.StopClient();
-                return;
-            }
-            else
-            {
-                ConfigureCamera();
-                m_UIManager.ActivateRoomHUD(isServer);
-            }
-        }
+        GetRefs();
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
     }
 
@@ -101,10 +84,12 @@ public class SetupPlayer : NetworkBehaviour
     /// <para>This happens after OnStartClient(), as it is triggered by an ownership message from the server. This is an appropriate place to activate components or functionality that should only be active for the local player, such as cameras and input.</para>
     /// </summary>
     /// 
-
     public override void OnStartLocalPlayer()
     {
-        //ConfigureCamera();
+        base.OnStartLocalPlayer();
+        //Al iniciarse un cliente, si es localPlayer, debe mandarse el nombre introducido al servidor
+        GetRefs();
+        m_PlayerInfo.CmdChangeName(m_UIManager.chooseNameHUD.playerName);
     }
 
     #endregion
@@ -113,23 +98,11 @@ public class SetupPlayer : NetworkBehaviour
     /*
      * Permite a un jugador moverse, por ejemplo cuando acaba el countdown
      */
+    [Server]
     public void ReleasePlayer()
     {
-        if (isServer)
-            m_PlayerController.enabled = true;
-
+        m_PlayerController.enabled = true;
         rb.constraints = RigidbodyConstraints.None;
-    }
-
-    #endregion
-
-    #region ConfigureCamera
-    /*
-     * Indica a la cámara que utilice a este objeto como target
-     */
-    void ConfigureCamera()
-    {
-        mainCam.SetFocus(this.gameObject);
     }
 
     #endregion
