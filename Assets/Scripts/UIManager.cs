@@ -70,6 +70,7 @@ public class UIManager :  MonoBehaviour
     public void ActivateMainMenu()
     {
         mainMenuHUD.HideNetworkButtons(false);
+        rankingHUD.Reset();
 
         chooseNameHUD.gameObject.SetActive(false);
         mainMenuHUD.gameObject.SetActive(true);
