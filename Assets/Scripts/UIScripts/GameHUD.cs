@@ -72,6 +72,11 @@ public class GameHUD : MonoBehaviour
         bestLapText.text = "Best lap: --:--:--";
     }
 
+    private void OnEnable()
+    {
+        Reset();
+    }
+
     private void OnDisable()
     {
         Reset();

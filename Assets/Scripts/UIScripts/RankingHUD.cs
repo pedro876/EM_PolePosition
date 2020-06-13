@@ -27,7 +27,6 @@ public class RankingHUD : MonoBehaviour
             timeTexts[textIndex].gameObject.SetActive(true);
             timeTexts[textIndex].text = bestTime == "00:00:00" || bestTime == "" ? "--:--:--" : bestTime;
             textIndex++;
-            FindObjectOfType<UIManager>().debugText.text = textIndex.ToString();
         }
     }
 

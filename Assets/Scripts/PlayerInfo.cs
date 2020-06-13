@@ -27,9 +27,9 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar] public string PlayerName;
     [SyncVar(hook = nameof(ChangeCarColor))] [SerializeField] Color PlayerColor;
     [SyncVar(hook = nameof(FinishCircuit))] public bool Finish;
-    [HideInInspector] [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap;
-    [HideInInspector] [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed;
-    [HideInInspector] [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap;
+    [HideInInspector] [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLap = 0;
+    [HideInInspector] [SyncVar(hook = nameof(ChangeSpeedUI))] public float Speed = 0;
+    [HideInInspector] [SyncVar(hook = nameof(UpdateBestLapUI))] public string bestLap = "";
     [HideInInspector] [SyncVar] public float LastArcLength;
     [SyncVar] public int uiPlayerIndex;
     [SyncVar] public bool ready = false;

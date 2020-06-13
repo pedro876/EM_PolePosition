@@ -204,6 +204,7 @@ public class PolePositionManager : NetworkBehaviour
             {
                 player.GetComponent<SetupPlayer>().ReleasePlayer();
             }
+            secondsLeft = 3;
         }
     }
 
