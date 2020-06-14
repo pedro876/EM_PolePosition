@@ -31,7 +31,6 @@ public class PlayerController : NetworkBehaviour
     private float CurrentRotation { get; set; }
 
     private PlayerInfo m_PlayerInfo;
-
     private Rigidbody m_Rigidbody;
     private float m_SteerHelper = 0.8f;
 
@@ -106,7 +105,10 @@ public class PlayerController : NetworkBehaviour
         m_Rigidbody.velocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;
         m_PlayerInfo.SetSpeed(0);
+        m_PlayerInfo.RpcResetCam();
     }
+
+
 
     #endregion savePlayerMethods
 

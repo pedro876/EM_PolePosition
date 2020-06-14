@@ -230,10 +230,12 @@ MonoBehaviour:
   m_Elevation: 5
   m_Following: 0.8
   currentOption: 0
+  lerpMultiplier: 20
   distanceOptions:
   - 5
   elevationOptions:
   - 1.9
+  strictBehindFlag: 1
 --- !u!4 &473049863 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3251817753896173946, guid: 2356b61abd7af864eadff2e62f8c8586,
@@ -473,6 +475,7 @@ MonoBehaviour:
   m_uiManager: {fileID: 646748519}
   networkManager: {fileID: 2140735092}
   m_CircuitController: {fileID: 2100276569}
+  mainCamera: {fileID: 372009861}
   startPositions:
   - {fileID: 331620222}
   - {fileID: 232228711}
@@ -728,7 +731,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1116434550, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
       propertyPath: m_Text
-      value: clasification lap
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1154212841, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target

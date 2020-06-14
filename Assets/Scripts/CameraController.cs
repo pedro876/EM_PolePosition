@@ -27,8 +27,14 @@ public class CameraController : MonoBehaviour
 
     [Header("Play mode")]
     [SerializeField] int currentOption = 0;
+    [SerializeField] float lerpMultiplier = 20f;
+    [SerializeField] float lerpStrictBehindMultiplier = 30f;
+    [SerializeField] float strictBehindTime = 1.0f;
     [SerializeField] float[] distanceOptions;
     [SerializeField] float[] elevationOptions;
+    public bool strictBehindFlag = true;
+    private bool settingBehind = false;
+    
 
     private void Awake()
     {
@@ -80,13 +86,29 @@ public class CameraController : MonoBehaviour
     {
         if (polePosition)
         {
-            Vector3 newPos = ComputePosition(!polePosition.inGame);
-            transform.position = Vector3.Lerp(transform.position, newPos, Time.fixedDeltaTime * 20f);
-            //transform.position = newPos;
+            float localLerp = lerpMultiplier;
+            if (strictBehindFlag) Debug.Log("strict behing");
+            Vector3 newPos = ComputePosition(!polePosition.inGame || settingBehind);
             Quaternion newRot = Quaternion.LookRotation(m_Focus.transform.position - transform.position, Vector3.up);
-            //transform.LookAt(m_Focus.transform);
-            transform.rotation = Quaternion.Lerp(transform.rotation, newRot, Time.fixedDeltaTime * 20f);
+            if (strictBehindFlag)
+            {
+                settingBehind = true;
+                strictBehindFlag = false;
+                StopCoroutine("StrictBehindCoroutine");
+                StartCoroutine("StrictBehindCoroutine");
+            }
+            if(settingBehind) localLerp = lerpStrictBehindMultiplier;
+            transform.position = Vector3.Lerp(transform.position, newPos, Time.fixedDeltaTime * localLerp);
+            transform.rotation = Quaternion.Lerp(transform.rotation, newRot, Time.fixedDeltaTime * localLerp);
+            //strictBehindFlag = false;
         }
+    }
+
+    IEnumerator StrictBehindCoroutine()
+    {
+        yield return new WaitForSeconds(strictBehindTime);
+        settingBehind = false;
+        Debug.Log("setting behind to false");
     }
 
     /*
@@ -94,6 +116,8 @@ public class CameraController : MonoBehaviour
      */
     Vector3 ComputePosition(bool strictBehind = false)
     {
+        
+
         Vector3 from = transform.position;
         Vector3 to = m_Focus.transform.position;
         if (!strictBehind)

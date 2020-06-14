@@ -11,7 +11,7 @@ public class PlayerInfo : NetworkBehaviour
 {
 
     #region references
-
+    [SerializeField] CustomNetworkManager networkManager;
     private UIManager uiManager;
     private PolePositionManager polePosition;
     private CustomChat chat;
@@ -86,6 +86,7 @@ public class PlayerInfo : NetworkBehaviour
 
     void GetRefs()
     {
+        if (!networkManager) networkManager = FindObjectOfType<CustomNetworkManager>();
         if (!mainCamera) mainCamera = Camera.main.GetComponent<CameraController>();
         if (!chat) chat = FindObjectOfType<CustomChat>();
         if (!polePosition)polePosition = FindObjectOfType<PolePositionManager>();
@@ -122,6 +123,30 @@ public class PlayerInfo : NetworkBehaviour
 
         CheckSendChat();
     }
+
+    #endregion
+
+    #region CameraReset
+
+    [ClientRpc]
+    public void RpcResetCam()
+    {
+        if (isLocalPlayer)
+        {
+            Debug.Log("reset camera");
+            if (!mainCamera) mainCamera = Camera.main.GetComponent<CameraController>();
+            mainCamera.strictBehindFlag = true;
+            /*StopCoroutine("ResetCamCoroutine");
+            StartCoroutine("ResetCamCoroutine");*/
+
+        }
+    }
+
+    /*IEnumerator ResetCamCoroutine()
+    {
+        //yield return new WaitForSeconds(networkManager.serverTickRate * 2f + 0.05f);
+        mainCamera.strictBehindFlag = true;
+    }*/
 
     #endregion
 

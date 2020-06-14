@@ -18,6 +18,7 @@ public class PolePositionManager : NetworkBehaviour
     [SerializeField] private UIManager m_uiManager;
     [SerializeField] private CustomNetworkManager networkManager;
     [SerializeField] private CircuitController m_CircuitController;
+    [SerializeField] private CameraController mainCamera;
 
     [Header("RaceStartPos")]
     [SerializeField] private Transform[] startPositions;
@@ -58,6 +59,7 @@ public class PolePositionManager : NetworkBehaviour
 
     void GetRefs()
     {
+        if (!mainCamera) mainCamera = Camera.main.GetComponent<CameraController>();
         if (networkManager == null) networkManager = FindObjectOfType<CustomNetworkManager>();
         if (m_CircuitController == null) m_CircuitController = FindObjectOfType<CircuitController>();
     }
@@ -70,6 +72,8 @@ public class PolePositionManager : NetworkBehaviour
     }
 
     #endregion
+
+    
 
     #region IncrementDecrementLaps
 
@@ -181,6 +185,8 @@ public class PolePositionManager : NetworkBehaviour
             {
                 player.permissionGranted = true;
                 player.transform.position = startPositions[m_Players.Count - 1].position;
+                player.transform.rotation = startPositions[m_Players.Count - 1].rotation;
+                player.RpcResetCam();
                 m_uiManager.roomHUD.AddPlayerToRoomUI(player, m_Players);
                 if (!orderCoroutineCalled)
                 {
@@ -206,6 +212,8 @@ public class PolePositionManager : NetworkBehaviour
                     if (m_Players[i] != null && !inGame)
                         m_Players[i].transform.position = startPositions[i].position;
                 }
+                maxNumPlayers = m_Players.Count;
+                CheckFinishClasificationLap();
             }
         }
     }
@@ -368,9 +376,12 @@ public class PolePositionManager : NetworkBehaviour
         int clasificationLayer = LayerMask.NameToLayer("Clasification");
         foreach (PlayerInfo player in m_Players)
         {
+            Collider[] playerColliders = player.GetComponentsInChildren<Collider>();
+            foreach (Collider c in playerColliders) c.gameObject.layer = clasificationLayer;
             player.gameObject.layer = clasificationLayer;
             player.transform.position = startPositions[0].position;
             player.transform.rotation = startPositions[0].rotation;
+            player.RpcResetCam();
         }
         secondsLeft = 4;
     }
@@ -378,6 +389,7 @@ public class PolePositionManager : NetworkBehaviour
     [ClientRpc]
     private void RpcHideUIClasificationLap(bool hide)
     {
+        
         m_uiManager.gameHUD.HideLapsAndRaceOrder(hide);
     }
 
@@ -389,7 +401,9 @@ public class PolePositionManager : NetworkBehaviour
         foreach (PlayerInfo player in m_Players)
         {
             player.CurrentLap = 0;
-            player.bestLap = "";
+            player.bestLap = "--:--:--";
+            Collider[] playerColliders = player.GetComponentsInChildren<Collider>();
+            foreach (Collider c in playerColliders) c.gameObject.layer = raceLayer;
             player.gameObject.layer = raceLayer;
         }
         RpcHideUIClasificationLap(false);
@@ -402,14 +416,21 @@ public class PolePositionManager : NetworkBehaviour
     {
         player.transform.position = startPositions[finishedPlayersCount].position;
         player.transform.rotation = startPositions[finishedPlayersCount].rotation;
+        player.RpcResetCam();
         player.GetComponent<SetupPlayer>().BlockPlayer();
         finishedPlayersCount++;
+        CheckFinishClasificationLap();
+        
 
+    }
+
+    [Server]
+    void CheckFinishClasificationLap()
+    {
         if (finishedPlayersCount == maxNumPlayers)
         {
             ClasificationLapFinished();
         }
-
     }
 
 

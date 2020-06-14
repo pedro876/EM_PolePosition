@@ -37,7 +37,18 @@ public class GameHUD : MonoBehaviour
     public void UpdateLap(PlayerInfo player)
     {
         if (player.isLocalPlayer)
-            textLaps.text = "LAP: " + player.CurrentLap + "/" + polePosition.maxLaps;
+        {
+            if(player.CurrentLap == 0)
+            {
+                textLaps.text = "LAP: -/-";
+            }
+            else
+            {
+                textLaps.text = "LAP: " + player.CurrentLap + "/" + polePosition.maxLaps;
+            }
+            
+        }
+            
     }
 
     public void UpdateBestLap(PlayerInfo player)
