@@ -709,6 +709,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: MaterialRefs
       objectReference: {fileID: 0}
+    - target: {fileID: 5654126097733858320, guid: daf48e148aba0c1459ec345bf1c41dfb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5654126097733858322, guid: daf48e148aba0c1459ec345bf1c41dfb,
         type: 3}
       propertyPath: m_LocalPosition.x
