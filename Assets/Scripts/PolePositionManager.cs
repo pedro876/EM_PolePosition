@@ -48,7 +48,9 @@ public class PolePositionManager : NetworkBehaviour
     [SerializeField] private bool admitsPlayers = true;
     [Server] public void SetAdmitsPlayers(bool v) { admitsPlayers = v; }
 
+    object addPlayerLock = new object();
 
+    
     #endregion
 
     #region AwakeStartUpdate
@@ -168,8 +170,6 @@ public class PolePositionManager : NetworkBehaviour
     *llama a la corrutina que hace comenzar la cuenta atras previa a la carrera. Cuando se añade el primer jugador a la partida, hará comenzar una 
     *corrutina que se encargara de mostrar el orden de los jugadores hasta que termine la misma.
     */
-    object addPlayerLock = new object();
-
     public void AddPlayer(PlayerInfo player)
     {
         lock (addPlayerLock)
