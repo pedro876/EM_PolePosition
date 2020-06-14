@@ -429,6 +429,34 @@ public class PlayerInfo : NetworkBehaviour
 
     #endregion updateLap
 
+    #region clasificationLap
+    [ClientRpc]
+    public void RpcActivateWaitingUI()
+    {
+        if (isLocalPlayer)
+            uiManager.gameHUD.HideWaitingText(false);
+    }
+
+    public void SetTransparency(bool transparent)
+    {
+        float transparency = transparent ? 0.3f : 1f;
+
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (var mesh in renderers)
+        {
+            Material[] mats = mesh.materials;
+            foreach (var m in mats)
+            {
+                m.color = new Color(m.color.r, m.color.g, m.color.b, transparency);
+            }
+
+            mesh.materials = mats;
+        }
+
+    }
+
+    #endregion
+
     public override string ToString() { return PlayerName; }
 }
 

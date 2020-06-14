@@ -14,6 +14,8 @@ public class GameHUD : MonoBehaviour
     [SerializeField] public Text countdownText;
     [SerializeField] public Text backwardsText;
     [SerializeField] public Text bestLapText;
+    [SerializeField] public Text waitingText;
+
 
     public void HideLapsAndRaceOrder(bool hide)
     {
@@ -21,6 +23,11 @@ public class GameHUD : MonoBehaviour
         textPosition.transform.parent.gameObject.SetActive(!hide);
         bestLapText.transform.parent.gameObject.SetActive(!hide);
         if (!hide) Reset();
+    }
+
+    public void HideWaitingText(bool hide)
+    {
+        waitingText.gameObject.SetActive(!hide);
     }
 
     public void UpdateSpeed(PlayerInfo player)
@@ -95,6 +102,7 @@ public class GameHUD : MonoBehaviour
         textLaps.text = "LAP: -/-";
         textSpeed.text = "Speed 0 Km/h";
         bestLapText.text = "Best lap: --:--:--";
+        waitingText.gameObject.SetActive(false);
     }
 
     private void OnEnable()

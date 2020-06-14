@@ -5,6 +5,7 @@ using System.Text;
 using Mirror;
 using UnityEngine;
 using System.Threading;
+using Mirror.Examples.Basic;
 using UnityEngine.UI;
 
 /*
@@ -370,6 +371,7 @@ public class PolePositionManager : NetworkBehaviour
     [Server]
     public void StartClasificationLap()
     {
+        RpcTransparentPlayer(true);
         RpcHideUIClasificationLap(true);
         int clasificationLayer = LayerMask.NameToLayer("Clasification");
         foreach (PlayerInfo player in m_Players)
@@ -394,6 +396,7 @@ public class PolePositionManager : NetworkBehaviour
     [Server]
     public void ClasificationLapFinished()
     {
+        RpcTransparentPlayer(false);
         clasificationLap = false;
         int raceLayer = LayerMask.NameToLayer("Default");
         finishedPlayersCount = 0;
@@ -406,8 +409,16 @@ public class PolePositionManager : NetworkBehaviour
             player.gameObject.layer = raceLayer;
         }
         RpcHideUIClasificationLap(false);
+        RpcDisableWaitingUI();
         StartGame();
 
+    }
+
+    [ClientRpc]
+    void RpcDisableWaitingUI()
+    {
+        Debug.Log("desactivando");
+        m_uiManager.gameHUD.HideWaitingText(true);
     }
 
     [Server]
@@ -417,10 +428,10 @@ public class PolePositionManager : NetworkBehaviour
         player.transform.rotation = startPositions[finishedPlayersCount].rotation;
         player.RpcResetCam();
         player.GetComponent<SetupPlayer>().BlockPlayer();
+        if(maxNumPlayers-finishedPlayersCount>1) player.RpcActivateWaitingUI();
         finishedPlayersCount++;
         CheckFinishClasificationLap();
         
-
     }
 
     [Server]
@@ -429,6 +440,16 @@ public class PolePositionManager : NetworkBehaviour
         if (finishedPlayersCount == maxNumPlayers && clasificationLap)
         {
             ClasificationLapFinished();
+        }
+    }
+
+    [ClientRpc]
+    void RpcTransparentPlayer(bool transparent)
+    {
+        foreach (PlayerInfo player in m_Players)
+        {
+            if (!player.isLocalPlayer)
+                player.SetTransparency(transparent);
         }
     }
 
