@@ -39,8 +39,13 @@ public class CircuitProgress
         numCheckpoints = _numCheckpoints;
         //currentCheckpoint = numCheckpoints - 2; //penúltimo
         checkpoints = new List<Checkpoint>(numCheckpoints);
+        Initialize();
+        
+    }
 
-        for (int i=0; i < numCheckpoints; i++)
+    public void Initialize()
+    {
+        for (int i = 0; i < numCheckpoints; i++)
         {
             checkpoints.Add(new Checkpoint());
             checkpoints[i].visited = true;
