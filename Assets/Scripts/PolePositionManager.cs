@@ -29,6 +29,11 @@ public class PolePositionManager : NetworkBehaviour
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
     private readonly List<PlayerInfo> m_Ranking = new List<PlayerInfo>();
 
+    [Header("ClasificationLap")]
+    public bool clasificationLap = false;
+    [Server] public void SetClasificationLap(bool v) { clasificationLap = v; }
+    private int finishedPlayersCount = 0;
+
     [Header("RaceProgress")]
     [SerializeField] private float progressInterval = 0.1f;
     [SerializeField] private float lastPlayerGracePeriod = 20f;
@@ -112,6 +117,8 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Reset()
     {
+        clasificationLap = false;
+        finishedPlayersCount = 0;
         maxNumPlayers = 4;
         m_Ranking.Clear();
         inGame = false;
@@ -131,14 +138,16 @@ public class PolePositionManager : NetworkBehaviour
 
         if (allReady)
         {
+            
             maxNumPlayers = m_Players.Count;
-            secondsLeft = 3;
             inGame = true;
             admitsPlayers = false;
+            RpcChangeUIFromRoomToGame();
+            secondsLeft = 3;
+            if (clasificationLap) StartClasificationLap();
             StopCoroutine("DecreaseCountdownCoroutine");
             StartCoroutine("DecreaseCountdownCoroutine");
             RpcUpdateCountdownUI(secondsLeft);
-            RpcChangeUIFromRoomToGame();
         }
     }
 
@@ -290,13 +299,15 @@ public class PolePositionManager : NetworkBehaviour
         m_Players.Sort(new PlayerInfoComparer());
 
         myRaceOrder = "";
-        for(int i = 0; i < m_Players.Count; i++)
+        if (!clasificationLap)
         {
-            myRaceOrder += m_Players[i].PlayerName;
-            if (i < m_Players.Count - 1)
-                myRaceOrder += "\n";
+            for (int i = 0; i < m_Players.Count; i++)
+            {
+                myRaceOrder += m_Players[i].PlayerName;
+                if (i < m_Players.Count - 1)
+                    myRaceOrder += "\n";
+            }
         }
-
         RpcUpdateRaceProgressUI(myRaceOrder);
     }
 
@@ -345,6 +356,62 @@ public class PolePositionManager : NetworkBehaviour
         
         return minArcL;
     }
+
+    #endregion
+
+    #region ClasificationLap
+
+    [Server]
+    public void StartClasificationLap()
+    {
+        RpcHideUIClasificationLap(true);
+        int clasificationLayer = LayerMask.NameToLayer("Clasification");
+        foreach (PlayerInfo player in m_Players)
+        {
+            player.gameObject.layer = clasificationLayer;
+            player.transform.position = startPositions[0].position;
+            player.transform.rotation = startPositions[0].rotation;
+        }
+        secondsLeft = 4;
+    }
+
+    [ClientRpc]
+    private void RpcHideUIClasificationLap(bool hide)
+    {
+        m_uiManager.gameHUD.HideLapsAndRaceOrder(hide);
+    }
+
+    [Server]
+    public void ClasificationLapFinished()
+    {
+        clasificationLap = false;
+        int raceLayer = LayerMask.NameToLayer("Default");
+        foreach (PlayerInfo player in m_Players)
+        {
+            player.CurrentLap = 0;
+            player.bestLap = "";
+            player.gameObject.layer = raceLayer;
+        }
+        RpcHideUIClasificationLap(false);
+        StartGame();
+
+    }
+
+    [Server]
+    public void PlayerFinishedClasificationLap(PlayerInfo player)
+    {
+        player.transform.position = startPositions[finishedPlayersCount].position;
+        player.transform.rotation = startPositions[finishedPlayersCount].rotation;
+        player.GetComponent<SetupPlayer>().BlockPlayer();
+        finishedPlayersCount++;
+
+        if (finishedPlayersCount == maxNumPlayers)
+        {
+            ClasificationLapFinished();
+        }
+
+    }
+
 
     #endregion
 }

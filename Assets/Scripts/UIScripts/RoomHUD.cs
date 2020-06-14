@@ -28,6 +28,8 @@ public class RoomHUD : MonoBehaviour
 
     [Header("Waiting Room")]
     [SerializeField] public GameObject[] hostOptions;
+    [SerializeField] public Button noClasificationLapButton;
+    [SerializeField] public Button yesClasificationLapButton;
     [SerializeField] public UIPlayer[] uiPlayers;
     [SerializeField] private Button[] colorButtons;
     [SerializeField] private Button readyButton;
@@ -72,6 +74,8 @@ public class RoomHUD : MonoBehaviour
     public void ActivateRoomHostOptions(bool active)
     {
         foreach (GameObject option in hostOptions) option.SetActive(active);
+        noClasificationLapButton.gameObject.SetActive(true);
+        yesClasificationLapButton.gameObject.SetActive(false);
     }
 
     /*

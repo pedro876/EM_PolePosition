@@ -17,8 +17,10 @@ public class GameHUD : MonoBehaviour
 
     public void HideLapsAndRaceOrder(bool hide)
     {
-        textLaps.gameObject.SetActive(!hide);
-        textPosition.gameObject.SetActive(!hide);
+        textLaps.transform.parent.gameObject.SetActive(!hide);
+        textPosition.transform.parent.gameObject.SetActive(!hide);
+        bestLapText.transform.parent.gameObject.SetActive(!hide);
+        if (!hide) Reset();
     }
 
     public void UpdateSpeed(PlayerInfo player)
@@ -76,7 +78,6 @@ public class GameHUD : MonoBehaviour
 
     public void Reset()
     {
-        HideLapsAndRaceOrder(false);
         backwardsText.gameObject.SetActive(false);
         StopCoroutine("RemoveCountdown");
         countdownText.gameObject.SetActive(true);

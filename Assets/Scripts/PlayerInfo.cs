@@ -363,7 +363,13 @@ public class PlayerInfo : NetworkBehaviour
             startTime = endTime;
         }
 
-        if (CurrentLap > polePosition.maxLaps) Finish = true;
+        if (!polePosition.clasificationLap && CurrentLap > polePosition.maxLaps) Finish = true;
+        else if (polePosition.clasificationLap && CurrentLap == 2)
+        {
+            polePosition.PlayerFinishedClasificationLap(this);
+            CircuitProgress.Initialize();
+        }
+        
     }
 
     /*
