@@ -15,6 +15,11 @@ public class GameHUD : MonoBehaviour
     [SerializeField] public Text backwardsText;
     [SerializeField] public Text bestLapText;
 
+    public void HideLapsAndRaceOrder(bool hide)
+    {
+        textLaps.gameObject.SetActive(!hide);
+        textPosition.gameObject.SetActive(!hide);
+    }
 
     public void UpdateSpeed(PlayerInfo player)
     {
@@ -71,6 +76,7 @@ public class GameHUD : MonoBehaviour
 
     public void Reset()
     {
+        HideLapsAndRaceOrder(false);
         backwardsText.gameObject.SetActive(false);
         StopCoroutine("RemoveCountdown");
         countdownText.gameObject.SetActive(true);
