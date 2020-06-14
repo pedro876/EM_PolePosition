@@ -73,8 +73,6 @@ public class PolePositionManager : NetworkBehaviour
 
     #endregion
 
-    
-
     #region IncrementDecrementLaps
 
     [Server]
@@ -398,6 +396,7 @@ public class PolePositionManager : NetworkBehaviour
     {
         clasificationLap = false;
         int raceLayer = LayerMask.NameToLayer("Default");
+        finishedPlayersCount = 0;
         foreach (PlayerInfo player in m_Players)
         {
             player.CurrentLap = 0;
@@ -427,7 +426,7 @@ public class PolePositionManager : NetworkBehaviour
     [Server]
     void CheckFinishClasificationLap()
     {
-        if (finishedPlayersCount == maxNumPlayers)
+        if (finishedPlayersCount == maxNumPlayers && clasificationLap)
         {
             ClasificationLapFinished();
         }

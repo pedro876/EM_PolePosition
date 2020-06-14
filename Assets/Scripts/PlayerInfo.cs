@@ -439,5 +439,6 @@ public class PlayerInfoComparer : Comparer<PlayerInfo>
         if (x.arcLength < y.arcLength)
             return 1;
         else return -1;
+
     }
 }
