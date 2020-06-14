@@ -340,7 +340,7 @@ public class PlayerInfo : NetworkBehaviour
 
     private void SetWrongDir(bool oldV, bool newV)
     {
-        if(oldV != newV)
+        if(oldV != newV && isLocalPlayer)
         {
             uiManager.gameHUD.backwardsText.gameObject.SetActive(newV);
         }
@@ -439,15 +439,17 @@ public class PlayerInfo : NetworkBehaviour
 
     public void SetTransparency(bool transparent)
     {
-        float transparency = transparent ? 0.3f : 1f;
+        //float transparency = transparent ? 0.3f : 1f;
 
         MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
         foreach (var mesh in renderers)
         {
             Material[] mats = mesh.materials;
-            foreach (var m in mats)
+            for (int i = 0; i < mats.Length; i++)
             {
-                m.color = new Color(m.color.r, m.color.g, m.color.b, transparency);
+                Debug.Log(mats[i].name);
+                mats[i] = transparent ? MaterialReferences.toTransparentMaterials[mats[i].name] : 
+                    MaterialReferences.toOpaqueMaterials[mats[i].name];
             }
 
             mesh.materials = mats;
