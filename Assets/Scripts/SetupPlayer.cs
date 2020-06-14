@@ -110,6 +110,13 @@ public class SetupPlayer : NetworkBehaviour
         rb.constraints = RigidbodyConstraints.None;
     }
 
+    [Server]
+    public void BlockPlayer()
+    {
+        m_PlayerController.enabled = false;
+        rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+    }
+
     #endregion
 
     #region OnDestroyRemovePlayer

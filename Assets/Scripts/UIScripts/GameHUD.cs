@@ -51,6 +51,10 @@ public class GameHUD : MonoBehaviour
                 countdownText.text = "GO!";
                 StartCoroutine("RemoveCountdown");
             }
+            else if(secondsLeft == 4)
+            {
+                countdownText.text = "CLASIFICATION LAP";
+            }
             else
                 countdownText.text = secondsLeft.ToString();
         }
