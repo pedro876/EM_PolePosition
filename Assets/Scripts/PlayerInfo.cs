@@ -394,6 +394,7 @@ public class PlayerInfo : NetworkBehaviour
         if (!polePosition.clasificationLap && CurrentLap > polePosition.maxLaps) Finish = true;
         else if (polePosition.clasificationLap && CurrentLap == 2)
         {
+            Speed = 0f;
             polePosition.PlayerFinishedClasificationLap(this);
             CircuitProgress.Initialize();
         }
