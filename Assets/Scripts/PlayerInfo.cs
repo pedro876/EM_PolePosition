@@ -375,12 +375,15 @@ public class PlayerInfo : NetworkBehaviour
     {
         CurrentLap++;
         if (CurrentLap == 1)
+        {
             startTime = DateTime.Now;
+            bestLapSpan = new TimeSpan();
+        }
         else
         {
             DateTime endTime = DateTime.Now;
             TimeSpan interval = endTime - startTime;
-            if(bestLap=="" || interval < bestLapSpan)
+            if(bestLap=="" || bestLap == "--:--:--" || interval < bestLapSpan)
             {
                 bestLapSpan = interval;
                 ComputeBestTime();
