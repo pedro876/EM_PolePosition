@@ -46,7 +46,7 @@ public class PositionPredictor : NetworkBehaviour
     }
 
     [Client]
-    private void Update()
+    private void LateUpdate()
     {
         if (!isServer)
         {
@@ -92,8 +92,8 @@ public class PositionPredictor : NetworkBehaviour
     {
         //Vector3 newPos = transform.position + lastDir * Time.deltaTime / syncInterval;
         //transform.position = newPos;
-        transform.position = Vector3.Lerp(transform.position, actualPosition, 0.9f);
-        transform.rotation = Quaternion.Lerp(transform.rotation, actualRotation, 0.9f);
+        transform.position = Vector3.Lerp(transform.position, actualPosition, lerpAmountVelocity * Time.deltaTime);
+        transform.rotation = Quaternion.Lerp(transform.rotation, actualRotation, lerpAmountVelocity * Time.deltaTime);
         //pos = lastPosition + |dir| * deltaTime/syncInterval
 
         /*float distance = (lastPosition - transform.position).magnitude;

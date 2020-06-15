@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 9124325200002634512}
   - component: {fileID: 449604030476931776}
   - component: {fileID: 3466774584401487325}
-  - component: {fileID: 114008818728681926}
+  - component: {fileID: 114149703676001984}
   - component: {fileID: 1137246169109603126}
   - component: {fileID: 6346869062069434778}
   - component: {fileID: 2697569808015383802}
@@ -154,13 +154,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508097745644926054}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.03
+  syncInterval: 0.1
   clientAuthority: 0
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
@@ -236,7 +236,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 760e292862e88d143a2f1044a8055db5, type: 2}
   - {fileID: 2100000, guid: f00262141109ae94da51a6edc8a7c571, type: 2}
   - {fileID: 2100000, guid: 40a3822b5f97cfc4d94515ad6b9e717d, type: 2}
---- !u!114 &114008818728681926
+--- !u!114 &114149703676001984
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -245,16 +245,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1508097745644926054}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd28ceb451c901446b8ed2ba42bb9502, type: 3}
+  m_Script: {fileID: 11500000, guid: 508700628309f224fb32a9e4c5e0bc3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  predictionType: 1
-  velocityMultiplier: 1
-  compVelMult: {x: 1, y: 1, z: 1}
-  syncPosInterval: 0.08
   lerpAmount: 10
+  transformSyncInterval: 0.1
+  fixPosTime: 0.05
+  timeCont: 0
+  maxDistance: 0.9
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,7 +284,7 @@ MonoBehaviour:
   engineBrake: 1e+12
   footBrake: 1e+24
   topSpeed: 200
-  downForce: 1500
+  downForce: 1000
   slipLimit: 0.2
   circuitController: {fileID: 0}
   saveTime: 1

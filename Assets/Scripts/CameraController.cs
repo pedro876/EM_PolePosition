@@ -87,7 +87,7 @@ public class CameraController : MonoBehaviour
         if (polePosition)
         {
             float localLerp = lerpMultiplier;
-            if (strictBehindFlag) Debug.Log("strict behing");
+            //if (strictBehindFlag) Debug.Log("strict behing");
             Vector3 newPos = ComputePosition(!polePosition.inGame || settingBehind);
             Quaternion newRot = Quaternion.LookRotation(m_Focus.transform.position - transform.position, Vector3.up);
             if (strictBehindFlag)

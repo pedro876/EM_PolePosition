@@ -118,7 +118,15 @@ public class PlayerInfo : NetworkBehaviour
     private void Update()
     {
         if(isLocalPlayer && polePosition.inGame)
+        {
             mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                networkManager.StopClient();
+                if (isServer) networkManager.StopServer();
+            }
+        }
+            
         CheckWrongDir();
 
         CheckSendChat();
@@ -133,7 +141,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            Debug.Log("reset camera");
+            //Debug.Log("reset camera");
             if (!mainCamera) mainCamera = Camera.main.GetComponent<CameraController>();
             mainCamera.strictBehindFlag = true;
             /*StopCoroutine("ResetCamCoroutine");
@@ -312,10 +320,13 @@ public class PlayerInfo : NetworkBehaviour
     {
         while (!Finish)
         {
+            axisVertical = Input.GetAxis("Vertical");
+            axisHorizontal = Input.GetAxis("Horizontal");
+            axisBrake = Input.GetAxis("Jump");
             CmdUpdateInput(
-                Input.GetAxis("Vertical"),
-                Input.GetAxis("Horizontal"),
-                Input.GetAxis("Jump"),
+                axisVertical,
+                axisHorizontal,
+                axisBrake,
                 mustSave);
             mustSave = false;
             yield return new WaitForSeconds(updateInputInterval);

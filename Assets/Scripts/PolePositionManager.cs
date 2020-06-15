@@ -229,7 +229,7 @@ public class PolePositionManager : NetworkBehaviour
         {
             foreach (var player in m_Players)
             {
-                player.GetComponent<SetupPlayer>().ReleasePlayer();
+                player.GetComponent<SetupPlayer>().RpcReleasePlayer();
             }
         }
     }
@@ -427,7 +427,7 @@ public class PolePositionManager : NetworkBehaviour
         player.transform.position = startPositions[finishedPlayersCount].position;
         player.transform.rotation = startPositions[finishedPlayersCount].rotation;
         player.RpcResetCam();
-        player.GetComponent<SetupPlayer>().BlockPlayer();
+        player.GetComponent<SetupPlayer>().RpcBlockPlayer();
         if(maxNumPlayers-finishedPlayersCount>1) player.RpcActivateWaitingUI();
         finishedPlayersCount++;
         CheckFinishClasificationLap();

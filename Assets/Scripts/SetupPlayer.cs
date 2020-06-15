@@ -45,12 +45,15 @@ public class SetupPlayer : NetworkBehaviour
     /*
      * En caso de no ser el servidor, no se simulan físicas y se desactivan los colliders
      */
-    [Server]
+    //[Server]
     void Start()
     {
-        rb.isKinematic = false;
-        bc.enabled = true;
-        foreach (WheelCollider wc in wheelColls) wc.enabled = true;
+        if(isServer || isLocalPlayer)
+        {
+            rb.isKinematic = false;
+            bc.enabled = true;
+            foreach (WheelCollider wc in wheelColls) wc.enabled = true;
+        }
     }
 
     #endregion
@@ -103,15 +106,15 @@ public class SetupPlayer : NetworkBehaviour
     /*
      * Permite a un jugador moverse, por ejemplo cuando acaba el countdown
      */
-    [Server]
-    public void ReleasePlayer()
+    [ClientRpc]
+    public void RpcReleasePlayer()
     {
         m_PlayerController.enabled = true;
         rb.constraints = RigidbodyConstraints.None;
     }
 
-    [Server]
-    public void BlockPlayer()
+    [ClientRpc]
+    public void RpcBlockPlayer()
     {
         m_PlayerController.enabled = false;
         rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;

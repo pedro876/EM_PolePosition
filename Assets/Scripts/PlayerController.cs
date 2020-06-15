@@ -56,9 +56,10 @@ public class PlayerController : NetworkBehaviour
         if(!circuitController) circuitController = FindObjectOfType<CircuitController>();
     }
 
-    [Server]
     public void Update()
     {
+        if (!(isLocalPlayer || isServer)) return;
+
         m_PlayerInfo.SetSpeed(m_Rigidbody.velocity.magnitude);
         CheckMustSave();
     }
@@ -66,6 +67,7 @@ public class PlayerController : NetworkBehaviour
     #endregion
 
     #region savePlayerMethods
+    [Server]
     private void CheckMustSave()
     {
         if (m_PlayerInfo.mustSave)
@@ -93,6 +95,7 @@ public class PlayerController : NetworkBehaviour
         coroutineCalled = false;
     }
 
+    [Server]
     void SavePlayer()
     {
         int segId;
@@ -116,6 +119,8 @@ public class PlayerController : NetworkBehaviour
 
     public void FixedUpdate()
     {
+        if (!(isLocalPlayer || isServer)) return;
+
         float InputSteering = Mathf.Clamp(m_PlayerInfo.axisHorizontal, -1, 1);
         float InputAcceleration = Mathf.Clamp(m_PlayerInfo.axisVertical, -1, 1);
         float InputBrake = Mathf.Clamp(m_PlayerInfo.axisBrake, 0, 1);
@@ -206,8 +211,13 @@ public class PlayerController : NetworkBehaviour
     {
         foreach (var axleInfo in axleInfos)
         {
-            axleInfo.leftWheel.attachedRigidbody.AddForce(
-                -transform.up * (downForce * axleInfo.leftWheel.attachedRigidbody.velocity.magnitude));
+            if(axleInfo.leftWheel.attachedRigidbody && axleInfo.rightWheel.attachedRigidbody)
+            {
+                axleInfo.leftWheel.attachedRigidbody.AddForce(
+                    -transform.up * (downForce * axleInfo.leftWheel.attachedRigidbody.velocity.magnitude));
+                axleInfo.rightWheel.attachedRigidbody.AddForce(
+                    -transform.up * (downForce * axleInfo.rightWheel.attachedRigidbody.velocity.magnitude));
+            }
         }
     }
 
