@@ -45,7 +45,7 @@ WheelCollider:
     spring: 35000
     damper: 4500
     targetPosition: 0.5
-  m_SuspensionDistance: 0.15
+  m_SuspensionDistance: 0.05
   m_ForceAppPointDistance: 0
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -253,7 +253,6 @@ MonoBehaviour:
   lerpAmount: 10
   transformSyncInterval: 0.1
   fixPosTime: 0.05
-  timeCont: 0
   maxDistance: 0.9
 --- !u!114 &1137246169109603126
 MonoBehaviour:
@@ -284,7 +283,7 @@ MonoBehaviour:
   engineBrake: 1e+12
   footBrake: 1e+24
   topSpeed: 200
-  downForce: 1000
+  downForce: 700
   slipLimit: 0.2
   circuitController: {fileID: 0}
   saveTime: 1
@@ -608,7 +607,7 @@ WheelCollider:
     spring: 35000
     damper: 4500
     targetPosition: 0.5
-  m_SuspensionDistance: 0.15
+  m_SuspensionDistance: 0.05
   m_ForceAppPointDistance: 0
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -861,7 +860,7 @@ WheelCollider:
     spring: 35000
     damper: 4500
     targetPosition: 0.5
-  m_SuspensionDistance: 0.15
+  m_SuspensionDistance: 0.05
   m_ForceAppPointDistance: 0
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -923,7 +922,7 @@ WheelCollider:
     spring: 35000
     damper: 4500
     targetPosition: 0.5
-  m_SuspensionDistance: 0.15
+  m_SuspensionDistance: 0.05
   m_ForceAppPointDistance: 0
   m_Mass: 20
   m_WheelDampingRate: 0.25
