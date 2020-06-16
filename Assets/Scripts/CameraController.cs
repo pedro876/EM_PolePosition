@@ -51,7 +51,7 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("V"))
+        if (Input.GetButtonDown("V") && polePosition.inGame)
         {
             currentOption = ++currentOption % distanceOptions.Length;
         }
