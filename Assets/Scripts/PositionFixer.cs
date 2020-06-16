@@ -13,15 +13,16 @@ public class PositionFixer : NetworkBehaviour
     private bool fixing = true;
     Rigidbody rb;
 
-    //Vector3 lastPos;
-    //Quaternion lastRot;
     Vector3 actualPos = Vector3.zero, actualVel = Vector3.zero, actualAcc = Vector3.zero;
     Quaternion actualRot = Quaternion.identity;
     double lastPackage = 0f;
-    //DateTime instant = DateTime.Now;
 
     [SerializeField] float maxDistance = 2.0f;
 
+    /*
+     * Desactivará el network transform en caso de ser cliente y localPlayer,
+     * en otro caso, si no es servidor se desactivará a si mismo
+     */
     private void Start()
     {
         //GET REFERENCES
@@ -41,7 +42,6 @@ public class PositionFixer : NetworkBehaviour
             actualVel = rb.velocity;
             StartCoroutine("IntervalCoroutine");
         }
-        
     }
 
     [Server]
@@ -61,6 +61,9 @@ public class PositionFixer : NetworkBehaviour
         }
     }
 
+    /*
+     * Ajustará la posición del cliente respecto a la del servidor
+     */
     void FixPos()
     {
         if (!isLocalPlayer) return;
@@ -85,21 +88,11 @@ public class PositionFixer : NetworkBehaviour
             }
             
         }
-
-        //float timeDif = (float)(DateTime.Now - instant).TotalSeconds;
-        //
-        //Vector3 predictPos = actualPos + actualVel * timeDif + 0.5f * actualAcc * Mathf.Pow(timeDif, 2f);
-        //
-        //float distance = (actualPos - transform.position).magnitude;
-        //if(distance > maxDistance)
-        //{
-        //    Debug.Log("resetPos");
-        //    transform.position = /*predictPos*/actualPos;
-        //    transform.rotation = actualRot;
-        //}
-
     }
 
+    /*
+     * Enviará periódicamente la información de posición y velocidad al cliente
+     */
     IEnumerator IntervalCoroutine()
     {
         while (true)
@@ -110,18 +103,19 @@ public class PositionFixer : NetworkBehaviour
         }
     }
 
+    /*
+     * Actualiza las variables que utilizará el cliente para ajustar su posición respecto a la del servidor
+     */
     [ClientRpc]
     void RpcUpdateTransform(Vector3 pos, Quaternion rot, Vector3 vel, Vector3 acc, double packageTime)
     {
 
-        if (isServer/* || !isLocalPlayer*/) return;
+        if (isServer) return;
         if (packageTime < lastPackage)
         {
             Debug.Log("discard package");
             return; //el paquete es antiguo, queda descartado
         }
-
-        //Debug.Log("updating transform info");
 
         lastPackage = packageTime;
         actualPos = pos;
@@ -130,22 +124,10 @@ public class PositionFixer : NetworkBehaviour
 
         timeCont = 0f;
 
-        //lastPos = transform.position;
-        //lastRot = transform.rotation;
-
         if (rb == null) rb = GetComponent<Rigidbody>();
         rb.velocity = actualVel;
-        //rb.angularVelocity = angVel;
-        //transform.position = actualPos;
-        //transform.rotation = actualRot;
 
         actualAcc = acc;
-        //instant = DateTime.Now;
         fixing = true;
     }
-    /*IEnumerator StopFixingCoroutine()
-    {
-        yield return new WaitForSeconds(fixPosTime);
-        fixing = false;
-    }*/
 }

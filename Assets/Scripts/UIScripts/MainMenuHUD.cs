@@ -13,7 +13,6 @@ public class MainMenuHUD : MonoBehaviour
     [SerializeField] GameObject tempField;
     [SerializeField] Text tempFieldText;
     [SerializeField] GameObject tryConnectField;
-    [SerializeField] Text tryConnectText;
     [SerializeField] float temporalMessageTime = 4.0f;
 
     public void SetTemporalMessage(string message = "", float time = 3.0f)
@@ -47,12 +46,10 @@ public class MainMenuHUD : MonoBehaviour
 
     public void HideNetworkButtons(bool hide = true)
     {
-        Debug.Log("Hide: " + hide);
         tryConnectField.SetActive(hide);
         buttonHost.gameObject.SetActive(!hide);
         buttonClient.gameObject.SetActive(!hide);
         inputFieldIP.gameObject.SetActive(!hide);
-        //tryConnectText.text = "Trying to connect...";
     }
 
     private void OnEnable()
