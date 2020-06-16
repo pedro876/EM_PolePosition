@@ -6,18 +6,18 @@ using System;
 
 public class PositionFixer : NetworkBehaviour
 {
-    [SerializeField] float lerpAmount = 10f;
-    [SerializeField] float transformSyncInterval = 0.1f;
-    [SerializeField] float fixPosTime = 0.05f;
-    float timeCont = 0f;
+    [SerializeField] private float lerpAmount = 10f;
+    [SerializeField] private float transformSyncInterval = 0.1f;
+    [SerializeField] private float fixPosTime = 0.05f;
+    private float timeCont = 0f;
     private bool fixing = true;
-    Rigidbody rb;
+    private Rigidbody rb;
 
-    Vector3 actualPos = Vector3.zero, actualVel = Vector3.zero, actualAcc = Vector3.zero;
-    Quaternion actualRot = Quaternion.identity;
-    double lastPackage = 0f;
+    private Vector3 actualPos = Vector3.zero, actualVel = Vector3.zero, actualAcc = Vector3.zero;
+    private Quaternion actualRot = Quaternion.identity;
+    private double lastPackage = 0f;
 
-    [SerializeField] float maxDistance = 2.0f;
+    [SerializeField] private float maxDistance = 2.0f;
 
     /*
      * Desactivará el network transform en caso de ser cliente y localPlayer,
@@ -64,7 +64,7 @@ public class PositionFixer : NetworkBehaviour
     /*
      * Ajustará la posición del cliente respecto a la del servidor
      */
-    void FixPos()
+    private void FixPos()
     {
         if (!isLocalPlayer) return;
 
@@ -107,7 +107,7 @@ public class PositionFixer : NetworkBehaviour
      * Actualiza las variables que utilizará el cliente para ajustar su posición respecto a la del servidor
      */
     [ClientRpc]
-    void RpcUpdateTransform(Vector3 pos, Quaternion rot, Vector3 vel, Vector3 acc, double packageTime)
+    private void RpcUpdateTransform(Vector3 pos, Quaternion rot, Vector3 vel, Vector3 acc, double packageTime)
     {
 
         if (isServer) return;
