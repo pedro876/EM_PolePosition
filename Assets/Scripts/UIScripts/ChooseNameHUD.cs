@@ -19,4 +19,9 @@ public class ChooseNameHUD : MonoBehaviour
             playerName = inputFieldName.text.ToUpper();
         }
     }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }

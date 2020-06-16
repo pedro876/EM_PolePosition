@@ -119,8 +119,8 @@ public class PlayerInfo : NetworkBehaviour
     {
         if(isLocalPlayer && polePosition.inGame)
         {
-            mustSave = mustSave || Input.GetKeyDown(KeyCode.R);
-            if (Input.GetKeyDown(KeyCode.Escape))
+            mustSave = mustSave || Input.GetButtonDown("R");
+            if (Input.GetButtonDown("Escape"))
             {
                 networkManager.StopClient();
                 if (isServer) networkManager.StopServer();

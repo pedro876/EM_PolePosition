@@ -49,6 +49,14 @@ public class CameraController : MonoBehaviour
         if (!mainCamera) GetComponent<Camera>();
     }
 
+    private void Update()
+    {
+        if (Input.GetButtonDown("V"))
+        {
+            currentOption = ++currentOption % distanceOptions.Length;
+        }
+    }
+
     void FixedUpdate()
     {
         if (m_Focus != null)
