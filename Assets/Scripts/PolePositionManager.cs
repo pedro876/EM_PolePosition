@@ -160,6 +160,7 @@ public class PolePositionManager : NetworkBehaviour
             m_uiManager.ActivateRoomHUD();
             clasificationLap = m_uiManager.roomHUD.HadClasificationLap();
             orderCoroutineCalled = false;
+            StopCoroutine("SortRaceOrderCoroutine");
         }
     }
 
@@ -196,7 +197,7 @@ public class PolePositionManager : NetworkBehaviour
             if (clasificationLap) StartClasificationLap();
             StopCoroutine("DecreaseCountdownCoroutine");
             StartCoroutine("DecreaseCountdownCoroutine");
-            StopCoroutine("SortRaceOrderCoroutine");
+            
             RpcUpdateCountdownUI(secondsLeft);
         }
     }
