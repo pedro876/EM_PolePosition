@@ -105,6 +105,7 @@ public class CustomNetworkManager : NetworkManager
         Debug.Log("OnStartHost");
 
         uiManager.roomHUD.ActivateRoomHostOptions(true);
+        uiManager.rankingHUD.ActivateRoomHostOptions(true);
 
     }
     public override void OnStopHost()
@@ -113,6 +114,7 @@ public class CustomNetworkManager : NetworkManager
         Debug.Log("OnStopHost");
 
         uiManager.roomHUD.ActivateRoomHostOptions(false);
+        uiManager.rankingHUD.ActivateRoomHostOptions(false);
     }
     #endregion
 }

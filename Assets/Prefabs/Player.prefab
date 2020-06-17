@@ -604,6 +604,7 @@ MonoBehaviour:
   transformSyncInterval: 0.1
   fixPosTime: 0.05
   maxDistance: 0.9
+  netTransform: {fileID: 9124325200002634512}
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0

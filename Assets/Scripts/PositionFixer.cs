@@ -18,21 +18,45 @@ public class PositionFixer : NetworkBehaviour
     private double lastPackage = 0f;
 
     [SerializeField] private float maxDistance = 2.0f;
+    [SerializeField] private NetworkTransform netTransform;
 
     /*
      * Desactivará el network transform en caso de ser cliente y localPlayer,
      * en otro caso, si no es servidor se desactivará a si mismo
      */
-    private void Start()
+    /*private void Start()
+    {
+        Reset();
+    }*/
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        Reset();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Reset();
+    }
+
+    private void OnEnable()
+    {
+        Reset();
+    }
+
+    private void Reset()
     {
         //GET REFERENCES
         if (rb == null) rb = GetComponent<Rigidbody>();
         if (isLocalPlayer && !isServer)
         {
-            GetComponent<NetworkTransform>().enabled = false;
-        } else if(!isServer)
+            netTransform.enabled = false;
+        }
+        else if (!isServer)
         {
-            this.enabled = false;
+            netTransform.enabled = true;
         }
 
         if (isServer)
@@ -40,6 +64,7 @@ public class PositionFixer : NetworkBehaviour
             actualPos = transform.position;
             actualRot = transform.rotation;
             actualVel = rb.velocity;
+            StopCoroutine("IntervalCoroutine");
             StartCoroutine("IntervalCoroutine");
         }
     }

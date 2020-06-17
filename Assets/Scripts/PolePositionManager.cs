@@ -71,7 +71,7 @@ public class PolePositionManager : NetworkBehaviour
     private void Update()
     {
         if (m_Players.Count == 0) return;
-        UpdateRaceProgress();
+        if (inGame) UpdateRaceProgress();
     }
 
     #endregion
@@ -122,13 +122,58 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Reset()
     {
-        clasificationLap = false;
+        //clasificationLap = false;
         finishedPlayersCount = 0;
         maxNumPlayers = 4;
         m_Ranking.Clear();
         inGame = false;
         orderCoroutineCalled = false;
         admitsPlayers = true;
+    }
+
+    #endregion
+
+    #region resetGame
+
+    [Server]
+    public void ResetGame()
+    {
+        if(m_Ranking.Count == maxNumPlayers)
+        {
+            inGame = false;
+            StopCoroutine("WaitingLastPlayer");
+            admitsPlayers = true;
+            finishedPlayersCount = 0;
+            maxNumPlayers = 4;
+            lock (addPlayerLock)
+            {
+                foreach (PlayerInfo player in m_Ranking)
+                {
+                    player.Activate(true);
+                    AddPlayer(player);
+                    player.GetComponent<SetupPlayer>().RpcBlockPlayer();
+                    player.Finish = false;
+                }
+                m_Ranking.Clear();
+            }
+            RpcActivatePlayers();
+            m_uiManager.ActivateRoomHUD();
+            clasificationLap = m_uiManager.roomHUD.HadClasificationLap();
+            orderCoroutineCalled = false;
+        }
+    }
+
+    [ClientRpc]
+    private void RpcActivatePlayers()
+    {
+        if (!isServer)
+        {
+            foreach (PlayerInfo player in m_Players)
+            {
+                player.Activate(true);
+            }
+            m_uiManager.ActivateRoomHUD();
+        }
     }
 
     #endregion
@@ -143,7 +188,6 @@ public class PolePositionManager : NetworkBehaviour
 
         if (allReady)
         {
-            
             maxNumPlayers = m_Players.Count;
             inGame = true;
             admitsPlayers = false;
@@ -152,6 +196,8 @@ public class PolePositionManager : NetworkBehaviour
             if (clasificationLap) StartClasificationLap();
             StopCoroutine("DecreaseCountdownCoroutine");
             StartCoroutine("DecreaseCountdownCoroutine");
+            //StopCoroutine("SortRaceOrderCoroutine");
+            //StartCoroutine("SortRaceOrderCoroutine");
             RpcUpdateCountdownUI(secondsLeft);
         }
     }
@@ -211,9 +257,16 @@ public class PolePositionManager : NetworkBehaviour
                     if (m_Players[i] != null && !inGame)
                         m_Players[i].transform.position = startPositions[i].position;
                 }
-                maxNumPlayers = m_Players.Count;
                 CheckFinishClasificationLap();
             }
+
+            //Borrar del ranking
+            int rankingIndex = m_Ranking.IndexOf(player);
+            if(rankingIndex > -1)
+            {
+                m_Ranking.RemoveAt(rankingIndex);
+            }
+            if (rankingIndex > -1 || playerIndex > -1) maxNumPlayers--;
         }
     }
 
@@ -227,6 +280,7 @@ public class PolePositionManager : NetworkBehaviour
         RpcUpdateCountdownUI(secondsLeft);
         if (secondsLeft == 0)
         {
+            Debug.Log("fin del countdown");
             foreach (var player in m_Players)
             {
                 player.GetComponent<SetupPlayer>().RpcReleasePlayer();
@@ -286,7 +340,7 @@ public class PolePositionManager : NetworkBehaviour
             }
         }
 
-        if (m_Ranking.Count == maxNumPlayers - 1 && maxNumPlayers != 1)
+        if (m_Ranking.Count == maxNumPlayers - 1 && maxNumPlayers != 1 && inGame)
             StartCoroutine("WaitingLastPlayer");
     }
 
@@ -332,7 +386,7 @@ public class PolePositionManager : NetworkBehaviour
     IEnumerator WaitingLastPlayer()
     {
         yield return new WaitForSeconds(lastPlayerGracePeriod);
-        if (m_Players.Count != 0)
+        if (m_Players.Count != 0 && inGame)
             m_Players[0].Finish = true;
     }
 

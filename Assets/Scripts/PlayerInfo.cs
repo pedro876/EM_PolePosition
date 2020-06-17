@@ -18,6 +18,7 @@ public class PlayerInfo : NetworkBehaviour
     private CameraController mainCamera;
     public CircuitProgress CircuitProgress { get; set; }
     private Rigidbody rb;
+    //private SetupPlayer setupPlayer;
     [SerializeField] MeshRenderer carMeshRenderer;
 
     #endregion
@@ -70,6 +71,11 @@ public class PlayerInfo : NetworkBehaviour
     private DateTime startTime;
     private TimeSpan bestLapSpan;
 
+
+    private Renderer[] renderers;
+    private Collider[] colliders;
+    private Light[] lights;
+
     #endregion
 
     #region AwakeStartUpdate
@@ -98,6 +104,9 @@ public class PlayerInfo : NetworkBehaviour
             colorOptions = new Dictionary<string, Material>();
             for (int i = 0; i < colors.Length; i++) colorOptions.Add(ColorUtility.ToHtmlStringRGB(colors[i]), materials[i]);
         }
+        if (renderers == null || renderers.Length == 0) renderers = GetComponentsInChildren<Renderer>();
+        if (colliders == null || colliders.Length == 0) colliders = GetComponentsInChildren<Collider>();
+        if (lights == null || lights.Length == 0) lights = GetComponentsInChildren<Light>();
     }
 
     public override void OnStartLocalPlayer()
@@ -195,10 +204,12 @@ public class PlayerInfo : NetworkBehaviour
     {
         if (nv && isLocalPlayer)
         {
+            Debug.Log("PERMISSION GRANTED");
             GetRefs();
 
             mainCamera.SetFocus(this.gameObject);
 
+            StopCoroutine("UpdateInputCoroutine");
             StartCoroutine("UpdateInputCoroutine");
             //StartCoroutine("WrongDirCoroutine");
 
@@ -286,14 +297,49 @@ public class PlayerInfo : NetworkBehaviour
 
     #region finishFuncs
 
+    public void Activate(bool active)
+    {
+        Debug.Log("Set active: " + active);
+        foreach (Renderer r in renderers) r.enabled = active;
+        foreach (Light l in lights) l.enabled = active;
+        foreach (Collider c in colliders)
+        {
+            c.gameObject.layer = active ? LayerMask.NameToLayer("Default") :
+                LayerMask.NameToLayer("Clasification");
+        }
+
+        if (active && (isLocalPlayer || isServer))
+        {
+            Speed = 0f;
+            rb.isKinematic = false;
+            rb.velocity = Vector3.zero;
+            if (!isServer)
+            {
+                CmdSetReady(false);
+            }
+            else
+            {
+                CurrentLap = 0;
+                CircuitProgress.Initialize();
+                bestLap = "--:--:--";
+            }
+        } else if(isLocalPlayer || isServer)
+        {
+            rb.isKinematic = true;
+            rb.velocity = Vector3.zero;
+        }
+        
+    }
+
     /*
      * Cuando un jugador termina la partida, se desactiva su coche para no ser visible ni controlable para ningún cliente
      * En caso de ser localPlayer, se activa el ranking
      */
     private void FinishCircuit(bool oldVal, bool newVal)
     {
-        if (newVal) {
-            transform.gameObject.SetActive(false);
+        if (newVal && polePosition.inGame) {
+            Debug.Log("Circuito terminado");
+            Activate(false);
             if (isLocalPlayer)
                 uiManager.ActivateRankingHUD();
         }
@@ -318,7 +364,7 @@ public class PlayerInfo : NetworkBehaviour
 
     IEnumerator UpdateInputCoroutine()
     {
-        while (!Finish)
+        while (true)
         {
             axisVertical = Input.GetAxis("Vertical");
             axisHorizontal = Input.GetAxis("Horizontal");
@@ -387,6 +433,7 @@ public class PlayerInfo : NetworkBehaviour
         CurrentLap++;
         if (CurrentLap == 1)
         {
+            Debug.Log("iniciando contador en vuelta 1");
             startTime = DateTime.Now;
             bestLapSpan = new TimeSpan();
         }
@@ -402,7 +449,11 @@ public class PlayerInfo : NetworkBehaviour
             startTime = endTime;
         }
 
-        if (!polePosition.clasificationLap && CurrentLap > polePosition.maxLaps) Finish = true;
+        if (!polePosition.clasificationLap && CurrentLap > polePosition.maxLaps)
+        {
+            Finish = true;
+            Debug.Log("ha terminado!");
+        }
         else if (polePosition.clasificationLap && CurrentLap == 2)
         {
             Speed = 0f;
@@ -462,12 +513,19 @@ public class PlayerInfo : NetworkBehaviour
             Material[] mats = mesh.materials;
             for (int i = 0; i < mats.Length; i++)
             {
-                Debug.Log(mats[i].name);
                 mats[i] = transparent ? MaterialReferences.toTransparentMaterials[mats[i].name] : 
                     MaterialReferences.toOpaqueMaterials[mats[i].name];
             }
 
             mesh.materials = mats;
+        }
+
+        if (transparent)
+        {
+            foreach (Light l in lights) l.enabled = false;
+        } else
+        {
+            foreach (Light l in lights) l.enabled = true;
         }
 
     }

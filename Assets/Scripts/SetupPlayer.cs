@@ -109,15 +109,25 @@ public class SetupPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcReleasePlayer()
     {
-        m_PlayerController.enabled = true;
-        rb.constraints = RigidbodyConstraints.None;
+        if (isLocalPlayer || isServer)
+        {
+            Debug.Log("releasingPlayer");
+            m_PlayerController.enabled = true;
+            rb.constraints = RigidbodyConstraints.None;
+        }
     }
 
     [ClientRpc]
     public void RpcBlockPlayer()
     {
-        m_PlayerController.enabled = false;
-        rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+        if (isLocalPlayer || isServer)
+        {
+            Debug.Log("blockingPlayer");
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            m_PlayerController.enabled = false;
+            rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+        }
     }
 
     #endregion

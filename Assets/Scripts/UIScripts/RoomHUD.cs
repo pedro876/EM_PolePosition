@@ -60,6 +60,11 @@ public class RoomHUD : MonoBehaviour
         closeRoomButton.gameObject.SetActive(true);
     }
 
+    public bool HadClasificationLap()
+    {
+        return yesClasificationLapButton.gameObject.activeSelf;
+    }
+
     private void OnEnable()
     {
         Reset();

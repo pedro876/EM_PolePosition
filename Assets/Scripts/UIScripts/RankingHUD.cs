@@ -8,13 +8,19 @@ public class RankingHUD : MonoBehaviour
     [Header("Ranking HUD")]
     [SerializeField] private Text[] playerTexts;
     [SerializeField] private Text[] timeTexts;
-    [SerializeField] private Button returnButton;
+    [SerializeField] private Button roomButton;
     private int textIndex = 0;
 
     /*private void Awake()
     {
         foreach (Text t in playerTexts) t.gameObject.SetActive(false);
     }*/
+
+    public void ActivateRoomHostOptions(bool active)
+    {
+        roomButton.gameObject.SetActive(active);
+    }
+
 
     public void AddPlayerToRanking(string newName, string bestTime)
     {
