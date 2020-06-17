@@ -159,8 +159,8 @@ public class PolePositionManager : NetworkBehaviour
             RpcActivatePlayers();
             m_uiManager.ActivateRoomHUD();
             clasificationLap = m_uiManager.roomHUD.HadClasificationLap();
-            orderCoroutineCalled = false;
-            StopCoroutine("SortRaceOrderCoroutine");
+            //orderCoroutineCalled = false;
+            //StopCoroutine("SortRaceOrderCoroutine");
         }
     }
 
