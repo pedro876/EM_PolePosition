@@ -214,9 +214,9 @@ public class PlayerController : NetworkBehaviour
             if(axleInfo.leftWheel.attachedRigidbody && axleInfo.rightWheel.attachedRigidbody)
             {
                 axleInfo.leftWheel.attachedRigidbody.AddForce(
-                    -transform.up * (downForce * axleInfo.leftWheel.attachedRigidbody.velocity.magnitude));
+                    -Vector3.up * (downForce * axleInfo.leftWheel.attachedRigidbody.velocity.magnitude));
                 axleInfo.rightWheel.attachedRigidbody.AddForce(
-                    -transform.up * (downForce * axleInfo.rightWheel.attachedRigidbody.velocity.magnitude));
+                    -Vector3.up * (downForce * axleInfo.rightWheel.attachedRigidbody.velocity.magnitude));
             }
         }
     }

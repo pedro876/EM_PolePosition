@@ -24,6 +24,9 @@ public class UIManager :  MonoBehaviour
     [Header("Choose Name")]
     [SerializeField] public ChooseNameHUD chooseNameHUD;
 
+    [Header("Controls")]
+    [SerializeField] public GameObject controlsHUD;
+
     [Header("Main Menu")]
     [SerializeField] public MainMenuHUD mainMenuHUD;
 
@@ -59,6 +62,7 @@ public class UIManager :  MonoBehaviour
 
     public void ActivateChooseNameHUD()
     {
+        controlsHUD.SetActive(false);
         chooseNameHUD.gameObject.SetActive(true);
         mainMenuHUD.gameObject.SetActive(false);
         roomHUD.gameObject.SetActive(false);
@@ -67,8 +71,19 @@ public class UIManager :  MonoBehaviour
         if(polePosition && polePosition.isActiveAndEnabled) polePosition.StopCoroutine("UpdateRoomUICoroutine");
     }
 
+    public void ActivateControlsHUD()
+    {
+        controlsHUD.SetActive(true);
+        chooseNameHUD.gameObject.SetActive(false);
+        mainMenuHUD.gameObject.SetActive(false);
+        roomHUD.gameObject.SetActive(false);
+        gameHUD.gameObject.SetActive(false);
+        rankingHUD.gameObject.SetActive(false);
+    }
+
     public void ActivateMainMenu()
     {
+        controlsHUD.SetActive(false);
         mainMenuHUD.HideNetworkButtons(false);
         rankingHUD.Reset();
 
@@ -82,6 +97,7 @@ public class UIManager :  MonoBehaviour
 
     public void ActivateRoomHUD()
     {
+        controlsHUD.SetActive(false);
         chooseNameHUD.gameObject.SetActive(false);
         mainMenuHUD.gameObject.SetActive(false);
         roomHUD.gameObject.SetActive(true);
@@ -93,6 +109,7 @@ public class UIManager :  MonoBehaviour
 
     public void ActivateInGameHUD()
     {
+        controlsHUD.SetActive(false);
         chooseNameHUD.gameObject.SetActive(false);
         mainMenuHUD.gameObject.SetActive(false);
         roomHUD.gameObject.SetActive(false);
@@ -106,6 +123,7 @@ public class UIManager :  MonoBehaviour
 
     public void ActivateRankingHUD()
     {
+        controlsHUD.SetActive(false);
         chooseNameHUD.gameObject.SetActive(false);
         mainMenuHUD.gameObject.SetActive(false);
         roomHUD.gameObject.SetActive(false);

@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] public GameObject m_Focus;
     [SerializeField] public CircuitController m_Circuit;
 
-    private Vector3 originalPosition = new Vector3(0f, 2.82f, -10f);
+    private Vector3 originalPosition = new Vector3(0f, 2.82f, -68f);
     private Quaternion originalRotation = Quaternion.identity;
 
     [Header("Cinematic mode")]
@@ -107,6 +107,10 @@ public class CameraController : MonoBehaviour
             }
             if(settingBehind) localLerp = lerpStrictBehindMultiplier;
             transform.position = Vector3.Lerp(transform.position, newPos, Time.fixedDeltaTime * localLerp);
+            transform.position = new Vector3(
+                transform.position.x, 
+                m_Focus.transform.position.y + elevationOptions[currentOption], 
+                transform.position.z);
             transform.rotation = Quaternion.Lerp(transform.rotation, newRot, Time.fixedDeltaTime * localLerp);
             //strictBehindFlag = false;
         }
@@ -137,7 +141,7 @@ public class CameraController : MonoBehaviour
         else
             from = to - m_Focus.transform.forward * distanceOptions[currentOption];
         
-        from.y = elevationOptions[currentOption];
+        //from.y = m_Focus.transform.position.y + elevationOptions[currentOption];
         return from;
     }
 

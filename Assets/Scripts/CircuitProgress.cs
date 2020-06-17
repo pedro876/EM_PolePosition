@@ -23,7 +23,7 @@ public class CircuitProgress
 
     #region variables
 
-    static int _numCheckpoints = 5;
+    static int _numCheckpoints = 10;
 
     private List<Checkpoint> checkpoints { get; set; }
     private int numCheckpoints;
