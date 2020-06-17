@@ -969,10 +969,26 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
       objectReference: {fileID: 1839589613}
+    - target: {fileID: 749219612, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 749219613, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 116.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 749219613, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.4
+      objectReference: {fileID: 0}
     - target: {fileID: 788651057, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
       propertyPath: roomButton
       value: 
       objectReference: {fileID: 628174857}
+    - target: {fileID: 949038599, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1043948711, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -1000,6 +1016,18 @@ PrefabInstance:
     - target: {fileID: 1437761454, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
       propertyPath: m_AssetId
       value: 5c339809502a33749b546f6663bcfb75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1448686032, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1838098735, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1838098736, guid: 5c339809502a33749b546f6663bcfb75, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.4
       objectReference: {fileID: 0}
     - target: {fileID: 326129657868244334, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
@@ -1170,6 +1198,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909394533716696, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909394707280194, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909394716864725, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.15
       objectReference: {fileID: 0}
     - target: {fileID: 7530865462116279566, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
