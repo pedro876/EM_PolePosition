@@ -196,8 +196,7 @@ public class PolePositionManager : NetworkBehaviour
             if (clasificationLap) StartClasificationLap();
             StopCoroutine("DecreaseCountdownCoroutine");
             StartCoroutine("DecreaseCountdownCoroutine");
-            //StopCoroutine("SortRaceOrderCoroutine");
-            //StartCoroutine("SortRaceOrderCoroutine");
+            StopCoroutine("SortRaceOrderCoroutine");
             RpcUpdateCountdownUI(secondsLeft);
         }
     }
@@ -347,7 +346,7 @@ public class PolePositionManager : NetworkBehaviour
     [Server]
     IEnumerator SortRaceOrderCoroutine()
     {
-        while (m_Ranking.Count < maxNumPlayers)
+        while (true)
         {
             SortRaceOrder();
             yield return new WaitForSeconds(progressInterval);

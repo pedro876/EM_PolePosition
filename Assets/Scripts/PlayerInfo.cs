@@ -305,7 +305,7 @@ public class PlayerInfo : NetworkBehaviour
         foreach (Collider c in colliders)
         {
             c.gameObject.layer = active ? LayerMask.NameToLayer("Default") :
-                LayerMask.NameToLayer("Clasification");
+                LayerMask.NameToLayer("Finish");
         }
 
         if (active && (isLocalPlayer || isServer))
