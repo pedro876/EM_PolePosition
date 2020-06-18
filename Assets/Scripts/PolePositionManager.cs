@@ -30,6 +30,7 @@ public class PolePositionManager : NetworkBehaviour
     private int secondsLeft = 3;
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>();
     private readonly List<PlayerInfo> m_Ranking = new List<PlayerInfo>();
+    public bool isPracticeGame = true;
 
     [Header("ClasificationLap")]
     public bool clasificationLap = false;
@@ -239,6 +240,11 @@ public class PolePositionManager : NetworkBehaviour
                     StartCoroutine("SortRaceOrderCoroutine");
                 }
             }
+
+
+            isPracticeGame = m_Players.Count < 2;
+            //ACTUALIZAR INTERFAZ
+            m_uiManager.roomHUD.SetStartButtonText();
         }
     }
 
@@ -267,6 +273,18 @@ public class PolePositionManager : NetworkBehaviour
                 m_Ranking.RemoveAt(rankingIndex);
             }
             if (rankingIndex > -1 || playerIndex > -1) maxNumPlayers--;
+
+            if (inGame)
+            {
+                if(!isPracticeGame && m_Players.Count < 2)
+                {
+                    m_Players[0].Finish = true;
+                    //ResetGame();
+                }
+            }
+            isPracticeGame = m_Players.Count < 2;
+            //ACTUALIZAR INTERFAZ
+            m_uiManager.roomHUD.SetStartButtonText();
         }
     }
 

@@ -35,6 +35,7 @@ public class RoomHUD : MonoBehaviour
     [SerializeField] private Button readyButton;
     [SerializeField] private Button notReadyButton;
     [SerializeField] private Button startButton;
+    [SerializeField] private Text startButtonText;
     [SerializeField] private Button openRoomButton;
     [SerializeField] private Button closeRoomButton;
     [SerializeField] public InputField chatInput;
@@ -58,6 +59,11 @@ public class RoomHUD : MonoBehaviour
         notReadyButton.gameObject.SetActive(false);
         openRoomButton.gameObject.SetActive(false);
         closeRoomButton.gameObject.SetActive(true);
+    }
+
+    public void SetStartButtonText()
+    {
+        startButtonText.text = polePosition.isPracticeGame ? "PRACTICE" : "START";
     }
 
     public bool HadClasificationLap()

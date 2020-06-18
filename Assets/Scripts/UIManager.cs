@@ -44,6 +44,8 @@ public class UIManager :  MonoBehaviour
     [SerializeField] public bool hasDayLight = true;
     [SerializeField] GameObject dayLightContainer;
     [SerializeField] GameObject nightLightContainer;
+    [SerializeField] GameObject dayPostProcess;
+    [SerializeField] GameObject nightPostProcess;
     private Light[] dayLights;
     private Light[] nightLights;
     [SerializeField] Material daySkybox;
@@ -79,6 +81,8 @@ public class UIManager :  MonoBehaviour
 
     public void ChangeLightMode()
     {
+        dayPostProcess.SetActive(hasDayLight);
+        nightPostProcess.SetActive(!hasDayLight);
         foreach (Light l in nightLights) l.enabled = !hasDayLight;
         foreach (Light l in dayLights) l.enabled = hasDayLight;
         RenderSettings.skybox = hasDayLight ? daySkybox : nightSkybox;
