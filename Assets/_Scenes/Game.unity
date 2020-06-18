@@ -113,15 +113,9 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!4 &232228711 stripped
+--- !u!4 &56131459 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3251817754252941477, guid: 2356b61abd7af864eadff2e62f8c8586,
-    type: 3}
-  m_PrefabInstance: {fileID: 1039344386}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &331620222 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3251817753832546121, guid: 2356b61abd7af864eadff2e62f8c8586,
+  m_CorrespondingSourceObject: {fileID: 7234015789136470596, guid: 2356b61abd7af864eadff2e62f8c8586,
     type: 3}
   m_PrefabInstance: {fileID: 1039344386}
   m_PrefabAsset: {fileID: 0}
@@ -303,9 +297,9 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
---- !u!4 &473049863 stripped
+--- !u!4 &571643339 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 3251817753896173946, guid: 2356b61abd7af864eadff2e62f8c8586,
+  m_CorrespondingSourceObject: {fileID: 9175956359817917013, guid: 2356b61abd7af864eadff2e62f8c8586,
     type: 3}
   m_PrefabInstance: {fileID: 1039344386}
   m_PrefabAsset: {fileID: 0}
@@ -321,12 +315,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5804d363870f70f47be114bdeab11a5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &656479149 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3251817754012444346, guid: 2356b61abd7af864eadff2e62f8c8586,
-    type: 3}
-  m_PrefabInstance: {fileID: 1039344386}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &689438451
 GameObject:
   m_ObjectHideFlags: 0
@@ -444,6 +432,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2356b61abd7af864eadff2e62f8c8586, type: 3}
+--- !u!4 &1081254559 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2208672722756951477, guid: 2356b61abd7af864eadff2e62f8c8586,
+    type: 3}
+  m_PrefabInstance: {fileID: 1039344386}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1398635944 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7668604940986191195, guid: 2356b61abd7af864eadff2e62f8c8586,
+    type: 3}
+  m_PrefabInstance: {fileID: 1039344386}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1839589612
 GameObject:
   m_ObjectHideFlags: 0
@@ -481,10 +481,10 @@ MonoBehaviour:
   m_CircuitController: {fileID: 2100276569}
   mainCamera: {fileID: 372009861}
   startPositions:
-  - {fileID: 331620222}
-  - {fileID: 232228711}
-  - {fileID: 656479149}
-  - {fileID: 473049863}
+  - {fileID: 1081254559}
+  - {fileID: 56131459}
+  - {fileID: 1398635944}
+  - {fileID: 571643339}
   maxNumPlayers: 4
   maxLaps: 1
   clasificationLap: 0
@@ -833,6 +833,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1839589613}
+    - target: {fileID: 3336563382918507133, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6415909393004719078, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
@@ -913,6 +918,16 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2140735092}
+    - target: {fileID: 6415909394493063714, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909394707280194, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7530865462116279566, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
