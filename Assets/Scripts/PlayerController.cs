@@ -102,8 +102,14 @@ public class PlayerController : NetworkBehaviour
         Vector3 posProj;
         float dist;
         float arcLen = circuitController.ComputeClosestPointArcLength(transform.position, out segId, out posProj, out dist);
+        RaycastHit hit;
+        if(Physics.Raycast(posProj + Vector3.up*0.1f, -Vector3.up, out hit, Mathf.Infinity))
+        {
+            posProj = hit.point + Vector3.up * 0.05f;
+        }
         transform.position = posProj;
         Vector3 dir = circuitController.GetSegment(segId);
+        dir = Vector3.ProjectOnPlane(dir, Vector3.up).normalized;
         transform.forward = dir;
         m_Rigidbody.velocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;

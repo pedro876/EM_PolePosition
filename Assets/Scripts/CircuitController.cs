@@ -9,6 +9,7 @@ using UnityEngine;
 
 public class CircuitController : MonoBehaviour
 {
+    //private Transform DebugSphere;
     private LineRenderer m_CircuitPath;
     private Vector3[] m_PathPos;
     private float[] m_CumArcLength;
@@ -21,6 +22,8 @@ public class CircuitController : MonoBehaviour
 
     void Start()
     {
+        //DebugSphere = GameObject.Find("DebugSphere").transform;
+
         m_CircuitPath = GetComponent<LineRenderer>();
 
         int numPoints = m_CircuitPath.positionCount;
@@ -62,12 +65,14 @@ public class CircuitController : MonoBehaviour
             Vector3 carVec = (posIn - m_PathPos[i]);
             float dotProd = Vector3.Dot(carVec, pathVec);
 
-            const float margin = 1.0f;
+            const float margin = 0.0f;
             if (dotProd < -margin) //el coche está antes del comienzo del segmento
-                continue;
+                dotProd = 0f;
+                //continue;
 
             if (dotProd > segLength + margin) //el coche ha pasado el fin del segmento
-                continue; // Passed
+                dotProd = 1f;
+                //continue; // Passed
 
             Vector3 proj = m_PathPos[i] + dotProd * pathVec;
             
@@ -102,7 +107,7 @@ public class CircuitController : MonoBehaviour
         segIdx = minSegIdx;
         posProjOut = minProj;
         distOut = minDist;
-
+        //if(DebugSphere != null) DebugSphere.position = posProjOut;
         return minArcL;
     }
 }
