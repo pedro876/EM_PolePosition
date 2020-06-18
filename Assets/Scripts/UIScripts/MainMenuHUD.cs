@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class MainMenuHUD : MonoBehaviour
 {
     [Header("Main Menu")]
+    [SerializeField] private UIManager uiManager;
     [SerializeField] private CustomNetworkManager m_NetworkManager;
     [SerializeField] private Button buttonHost;
     [SerializeField] private Button buttonClient;
@@ -14,6 +15,9 @@ public class MainMenuHUD : MonoBehaviour
     [SerializeField] Text tempFieldText;
     [SerializeField] GameObject tryConnectField;
     [SerializeField] float temporalMessageTime = 4.0f;
+
+    public void SetDayLight() { uiManager.hasDayLight = true; uiManager.ChangeLightMode(); }
+    public void SetNightLight() { uiManager.hasDayLight = false; uiManager.ChangeLightMode(); }
 
     public void SetTemporalMessage(string message = "", float time = 3.0f)
     {

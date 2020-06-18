@@ -40,6 +40,15 @@ public class UIManager :  MonoBehaviour
     [Header("Ranking HUD")]
     [SerializeField] public RankingHUD rankingHUD;
 
+    [Header("Light options")]
+    [SerializeField] public bool hasDayLight = true;
+    [SerializeField] GameObject dayLightContainer;
+    [SerializeField] GameObject nightLightContainer;
+    private Light[] dayLights;
+    private Light[] nightLights;
+    [SerializeField] Material daySkybox;
+    [SerializeField] Material nightSkybox;
+
     #endregion
 
     #region AwakeStart
@@ -50,10 +59,29 @@ public class UIManager :  MonoBehaviour
         ActivateChooseNameHUD();
     }
 
+    private void Start()
+    {
+        dayLightContainer.SetActive(true);
+        dayLights = dayLightContainer.GetComponentsInChildren<Light>();
+        nightLights = nightLightContainer.GetComponentsInChildren<Light>();
+        ChangeLightMode();
+    }
+
     void GetRefs()
     {
         if(!polePosition) FindObjectOfType<PolePositionManager>();
         if (!m_NetworkManager) m_NetworkManager = FindObjectOfType<CustomNetworkManager>();
+    }
+
+    #endregion
+
+    #region lighting
+
+    public void ChangeLightMode()
+    {
+        foreach (Light l in nightLights) l.enabled = !hasDayLight;
+        foreach (Light l in dayLights) l.enabled = hasDayLight;
+        RenderSettings.skybox = hasDayLight ? daySkybox : nightSkybox;
     }
 
     #endregion

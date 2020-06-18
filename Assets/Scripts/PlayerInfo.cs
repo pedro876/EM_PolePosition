@@ -88,6 +88,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         GetRefs();
         CurrentLap = 0;
+        foreach (Light l in lights) l.enabled = !uiManager.hasDayLight;
     }
 
     void GetRefs()
