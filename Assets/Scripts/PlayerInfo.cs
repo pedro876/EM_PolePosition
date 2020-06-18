@@ -302,7 +302,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         Debug.Log("Set active: " + active);
         foreach (Renderer r in renderers) r.enabled = active;
-        foreach (Light l in lights) l.enabled = active;
+        foreach (Light l in lights) l.enabled = active && !uiManager.hasDayLight;
         foreach (Collider c in colliders)
         {
             c.gameObject.layer = active ? LayerMask.NameToLayer("Default") :
