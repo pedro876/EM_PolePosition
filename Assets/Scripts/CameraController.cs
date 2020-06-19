@@ -120,7 +120,6 @@ public class CameraController : MonoBehaviour
     {
         yield return new WaitForSeconds(strictBehindTime);
         settingBehind = false;
-        Debug.Log("setting behind to false");
     }
 
     /*

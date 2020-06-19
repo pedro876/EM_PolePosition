@@ -424,7 +424,6 @@ public class PlayerInfo : NetworkBehaviour
         CurrentLap++;
         if (CurrentLap == 1)
         {
-            Debug.Log("iniciando contador en vuelta 1");
             startTime = DateTime.Now;
             bestLapSpan = new TimeSpan();
         }
@@ -443,7 +442,6 @@ public class PlayerInfo : NetworkBehaviour
         if (!polePosition.clasificationLap && CurrentLap > polePosition.maxLaps)
         {
             Finish = true;
-            Debug.Log("ha terminado!");
         }
         else if (polePosition.clasificationLap && CurrentLap == 2)
         {
