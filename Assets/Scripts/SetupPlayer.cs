@@ -102,7 +102,7 @@ public class SetupPlayer : NetworkBehaviour
 
     #endregion
 
-    #region ReleasePlayer
+    #region ReleaseAndBlockPlayer
     /*
      * Permite a un jugador moverse, por ejemplo cuando acaba el countdown
      */
@@ -116,7 +116,9 @@ public class SetupPlayer : NetworkBehaviour
             rb.constraints = RigidbodyConstraints.None;
         }
     }
-
+    /*
+     * Bloquea el jugador, no permitiendo que se mueva o recoloque
+     */
     [ClientRpc]
     public void RpcBlockPlayer()
     {

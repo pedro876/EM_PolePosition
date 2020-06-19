@@ -49,6 +49,9 @@ public class CustomNetworkManager : NetworkManager
         base.OnStartClient();
         Debug.Log("OnStartClient");
     }
+    /*
+     * Cuando un cliente se desconecta se le lleva al menú principal y se le indica que la conexión con el host ha terminado
+     */
     public override void OnStopClient()
     {
         base.OnStopClient();
@@ -99,6 +102,9 @@ public class CustomNetworkManager : NetworkManager
     #endregion
 
     #region onHostFuncs
+    /*
+     * Cuando se inicia el Host se le activan en las interfaces aquellas opciones que solo debera tener el host
+     */
     public override void OnStartHost()
     {
         base.OnStartHost();
@@ -108,6 +114,9 @@ public class CustomNetworkManager : NetworkManager
         uiManager.rankingHUD.ActivateRoomHostOptions(true);
 
     }
+    /*
+     * Cuando se desconecta el Host se le desactivan en las interfaces aquellas opciones que solo debera tener el host
+     */
     public override void OnStopHost()
     {
         base.OnStopHost();
