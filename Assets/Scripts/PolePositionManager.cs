@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 /*
  * Gestiona todos los datos relacionados con la carrera y los mantiene actualizamos para los jugadores.
- * */
+ */
 
 public class PolePositionManager : NetworkBehaviour
 {
@@ -97,6 +97,9 @@ public class PolePositionManager : NetworkBehaviour
 
     #region roomUIUpdate
 
+    /*
+     * Mantiene actualizada la información de la sala de espera
+     */
     [Client]
     IEnumerator UpdateRoomUICoroutine()
     {
@@ -136,6 +139,11 @@ public class PolePositionManager : NetworkBehaviour
 
     #region resetGame
 
+    /*
+     * Permite resetear el juego, para que los jugadores puedan volver a la sala de espera
+     * tras terminar una partida. De esta forma, no es necesario desconectarse y volver
+     * a conectarse para volver a jugar.
+     */
     [Server]
     public void ResetGame()
     {
@@ -165,6 +173,9 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    /*
+     * Informa a los clientes de que deben activar a los jugadores
+     */
     [ClientRpc]
     private void RpcActivatePlayers()
     {
@@ -182,6 +193,9 @@ public class PolePositionManager : NetworkBehaviour
 
     #region StartGameAndChangeToGameHUD
 
+    /*
+     * Comienza la partida si todos los jugadores están listos
+     */
     [Server]
     public void StartGame()
     {
@@ -213,10 +227,11 @@ public class PolePositionManager : NetworkBehaviour
 
     #region addAndRemovePlayers
 
-    /*Se encarga de añadir un jugador a la partida. Actualiza la interfaz de los juagdores restantes, y en caso de haber llegado al maximo de jugadores, 
-    *llama a la corrutina que hace comenzar la cuenta atras previa a la carrera. Cuando se añade el primer jugador a la partida, hará comenzar una 
-    *corrutina que se encargara de mostrar el orden de los jugadores hasta que termine la misma.
-    */
+    /*
+     * Se encarga de añadir un jugador a la partida. Actualiza la interfaz de los juagdores restantes, y en caso de haber llegado al maximo de jugadores, 
+     * llama a la corrutina que hace comenzar la cuenta atras previa a la carrera. Cuando se añade el primer jugador a la partida, hará comenzar una 
+     * corrutina que se encargara de mostrar el orden de los jugadores hasta que termine la misma.
+     */
     public void AddPlayer(PlayerInfo player)
     {
         lock (addPlayerLock)
@@ -400,6 +415,10 @@ public class PolePositionManager : NetworkBehaviour
 
     #region lastPlayer
 
+    /*
+     * Ofrece un tiempo de gracia al último jugador para que termine la carrera
+     * Si pasado ese tiempo aún no ha terminado, lo finaliza automáticamente
+     */
     [Server]
     IEnumerator WaitingLastPlayer()
     {
@@ -458,6 +477,10 @@ public class PolePositionManager : NetworkBehaviour
         secondsLeft = 4;
     }
 
+    /*
+     * Hará que los clientes dejen de mostrar al jugador la información no relevante
+     * durante la vuelta de clasificación
+     */
     [ClientRpc]
     private void RpcHideUIClasificationLap(bool hide)
     {
@@ -465,6 +488,10 @@ public class PolePositionManager : NetworkBehaviour
         m_uiManager.gameHUD.HideLapsAndRaceOrder(hide);
     }
 
+    /*
+     * Reconfiguración de la partida una vez han terminado la vuelta de
+     * clasificación todos los jugadores
+     */
     [Server]
     public void ClasificationLapFinished()
     {
@@ -486,6 +513,10 @@ public class PolePositionManager : NetworkBehaviour
 
     }
 
+    /*
+     * Indica a los jugadores que deben dejar de mostrar el texto de
+     * esperando al resto de jugadores
+     */
     [ClientRpc]
     void RpcDisableWaitingUI()
     {
@@ -493,6 +524,9 @@ public class PolePositionManager : NetworkBehaviour
         m_uiManager.gameHUD.HideWaitingText(true);
     }
 
+    /*
+     * Reconfiguración del jugador al terminar la vuelta de clasificación
+     */
     [Server]
     public void PlayerFinishedClasificationLap(PlayerInfo player)
     {
@@ -515,6 +549,11 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    /*
+     * Pone el resto de coches que no sean localPlayer transparentes, para que no
+     * distraigan tanto al jugador, además de ser un indicativo visual de que son
+     * coches fantasma.
+     */
     [ClientRpc]
     void RpcTransparentPlayer(bool transparent)
     {

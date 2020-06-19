@@ -20,15 +20,6 @@ public class PositionFixer : NetworkBehaviour
     [SerializeField] private float maxDistance = 2.0f;
     [SerializeField] private NetworkTransform netTransform;
 
-    /*
-     * Desactivará el network transform en caso de ser cliente y localPlayer,
-     * en otro caso, si no es servidor se desactivará a si mismo
-     */
-    /*private void Start()
-    {
-        Reset();
-    }*/
-
     public override void OnStartServer()
     {
         base.OnStartServer();

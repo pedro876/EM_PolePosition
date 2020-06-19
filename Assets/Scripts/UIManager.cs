@@ -79,6 +79,9 @@ public class UIManager :  MonoBehaviour
 
     #region lighting
 
+    /*
+     * Cambia la iluminación de la escena, incluído skybox y postproceso
+     */
     public void ChangeLightMode()
     {
         dayPostProcess.SetActive(hasDayLight);

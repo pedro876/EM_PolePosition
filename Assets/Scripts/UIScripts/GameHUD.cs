@@ -16,7 +16,9 @@ public class GameHUD : MonoBehaviour
     [SerializeField] public Text bestLapText;
     [SerializeField] public Text waitingText;
 
-
+    /*
+     * Activa o desactiva los elementos del GameHUD no relevantes en la vuelta de clasificación
+     */
     public void HideLapsAndRaceOrder(bool hide)
     {
         textLaps.transform.parent.gameObject.SetActive(!hide);
@@ -86,7 +88,7 @@ public class GameHUD : MonoBehaviour
     }
 
     /*
-     * Esta corrutina se encarga de quitar el mensaje GO! de la interfaz a los dos segundos de aparecer
+     * Quita el mensaje GO! de la interfaz a los dos segundos de aparecer
      */
     IEnumerator RemoveCountdown()
     {

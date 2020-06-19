@@ -67,6 +67,10 @@ public class PlayerController : NetworkBehaviour
     #endregion
 
     #region savePlayerMethods
+    /*
+     * Comprueba si el servidor de ser salvado, es decir,
+     * recolocado en el centro de la carretera en la dirección correcta
+     */
     [Server]
     private void CheckMustSave()
     {
@@ -95,6 +99,9 @@ public class PlayerController : NetworkBehaviour
         coroutineCalled = false;
     }
 
+    /*
+     * recoloca en el centro de la carretera al jugador en la dirección correcta
+     */
     [Server]
     void SavePlayer()
     {
@@ -118,8 +125,6 @@ public class PlayerController : NetworkBehaviour
         m_PlayerInfo.SetSpeed(0);
         m_PlayerInfo.RpcResetCam();
     }
-
-
 
     #endregion savePlayerMethods
 
@@ -217,6 +222,11 @@ public class PlayerController : NetworkBehaviour
     // this is used to add more grip in relation to speed
     private void AddDownForce()
     {
+        /*
+         * Se han realizado algunos cambios para evitar errores.
+         * Además, antes sólo se aplicaba down force sobre las ruedas izquierdas,
+         * ahora también sobre las derechas
+         */
         foreach (var axleInfo in axleInfos)
         {
             if(axleInfo.leftWheel.attachedRigidbody && axleInfo.rightWheel.attachedRigidbody)
@@ -268,7 +278,7 @@ public class PlayerController : NetworkBehaviour
             }
         }
 
-// this if is needed to avoid gimbal lock problems that will make the car suddenly shift direction
+        // this if is needed to avoid gimbal lock problems that will make the car suddenly shift direction
         if (Mathf.Abs(CurrentRotation - transform.eulerAngles.y) < 10f)
         {
             var turnAdjust = (transform.eulerAngles.y - CurrentRotation) * m_SteerHelper;

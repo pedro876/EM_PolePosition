@@ -19,6 +19,9 @@ public class MainMenuHUD : MonoBehaviour
     public void SetDayLight() { uiManager.hasDayLight = true; uiManager.ChangeLightMode(); }
     public void SetNightLight() { uiManager.hasDayLight = false; uiManager.ChangeLightMode(); }
 
+    /*
+     * Activa un mensaje temporal en pantalla
+     */
     public void SetTemporalMessage(string message = "", float time = 3.0f)
     {
         if (message != "")
@@ -32,6 +35,9 @@ public class MainMenuHUD : MonoBehaviour
         }
     }
 
+    /*
+     * Desactiva un mensaje temporal en pantalla pasado un cierto tiempo
+     */
     IEnumerator TemporalMessageCoroutine()
     {
         yield return new WaitForSeconds(temporalMessageTime);
@@ -48,6 +54,9 @@ public class MainMenuHUD : MonoBehaviour
             m_NetworkManager.networkAddress = inputFieldIP.text;
     }
 
+    /*
+     * Durante el intento de conexión
+     */
     public void HideNetworkButtons(bool hide = true)
     {
         tryConnectField.SetActive(hide);

@@ -10,12 +10,18 @@ public class CustomChat : NetworkBehaviour
     [SerializeField] Text chatText;
     [SerializeField] ScrollRect scrollBar;
 
+    /*
+     * Situa la scrollbar al final para mantener visibles siempre los nuevos mensajes
+     */
     void UpdateScrollBar()
     {
         scrollBar.verticalScrollbar.value = 0f;
         scrollBar.verticalScrollbar.onValueChanged.RemoveAllListeners();
     }
 
+    /*
+     * Actualiza el texto del chat
+     */
     void UpdateChatHistory(string ov, string nv)
     {
         chatText.text = nv;
