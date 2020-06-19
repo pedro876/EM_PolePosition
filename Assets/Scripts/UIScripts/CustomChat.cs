@@ -10,25 +10,11 @@ public class CustomChat : NetworkBehaviour
     [SerializeField] Text chatText;
     [SerializeField] ScrollRect scrollBar;
 
-    /*private void Start()
-    {
-        scrollBar.onValueChanged.AddListener((val) => scrollBar.value = 0f);
-    }*/
-
     void UpdateScrollBar()
     {
         scrollBar.verticalScrollbar.value = 0f;
         scrollBar.verticalScrollbar.onValueChanged.RemoveAllListeners();
     }
-
-    /*IEnumerator UpdateScrollBar()
-    {
-        
-        yield return null;
-        yield return null;
-
-        scrollBar.value = 0f;
-    }*/
 
     void UpdateChatHistory(string ov, string nv)
     {
