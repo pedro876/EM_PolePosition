@@ -18,7 +18,6 @@ public class PlayerInfo : NetworkBehaviour
     private CameraController mainCamera;
     public CircuitProgress CircuitProgress { get; set; }
     private Rigidbody rb;
-    //private SetupPlayer setupPlayer;
     [SerializeField] MeshRenderer carMeshRenderer;
 
     #endregion
@@ -56,9 +55,6 @@ public class PlayerInfo : NetworkBehaviour
     [SerializeField] float wrongDirMinSpeed = 1.0f;
     [HideInInspector] public float arcLength;
 
-    ///[SerializeField] private float checkDirInterval = 0.5f;
-    //[SerializeField] private float wrongDirThreshold = 1.0f;
-
     [Header("Color")]
     [SerializeField] Color[] colors;
     [SerializeField] Material[] materials;
@@ -66,7 +62,6 @@ public class PlayerInfo : NetworkBehaviour
 
     [Header("CHAT")]
     
-
     //BEST LAP
     private DateTime startTime;
     private TimeSpan bestLapSpan;
@@ -80,16 +75,17 @@ public class PlayerInfo : NetworkBehaviour
 
     #region AwakeStartUpdate
 
-    /*
-     * Se crean las entradas del diccionario que se usarán para saber qué material se le debe asignar al coche
-     * en función del color del botón pulsado
-     */
     private void Awake()
     {
         GetRefs();
         CurrentLap = 0;
         foreach (Light l in lights) l.enabled = !uiManager.hasDayLight;
     }
+
+    /*
+     * Se crean las entradas del diccionario que se usarán para saber qué material se le debe asignar al coche
+     * en función del color del botón pulsado y se cogen las referencias necesarias en caso de que no existan
+     */
 
     void GetRefs()
     {
@@ -124,6 +120,10 @@ public class PlayerInfo : NetworkBehaviour
         PlayerColor = Color.white;
     }
 
+    /*
+     * En caso de que el jugador esté en el juego se comprueba si ha dado a ESC para sacarle del juego o si le ha dado a la R para recolocarlo
+     */
+
     [Client]
     private void Update()
     {
@@ -138,7 +138,6 @@ public class PlayerInfo : NetworkBehaviour
         }
             
         CheckWrongDir();
-
         CheckSendChat();
     }
 
@@ -146,29 +145,29 @@ public class PlayerInfo : NetworkBehaviour
 
     #region CameraReset
 
+    /*
+     * Se recoloca la cámara para todos los clientes
+     */
+
     [ClientRpc]
     public void RpcResetCam()
     {
         if (isLocalPlayer)
         {
-            //Debug.Log("reset camera");
             if (!mainCamera) mainCamera = Camera.main.GetComponent<CameraController>();
             mainCamera.strictBehindFlag = true;
-            /*StopCoroutine("ResetCamCoroutine");
-            StartCoroutine("ResetCamCoroutine");*/
 
         }
     }
 
-    /*IEnumerator ResetCamCoroutine()
-    {
-        //yield return new WaitForSeconds(networkManager.serverTickRate * 2f + 0.05f);
-        mainCamera.strictBehindFlag = true;
-    }*/
-
     #endregion
 
     #region Chat
+    
+    /*
+     * En caso de que se pulse el enter se añade el mensaje al historial del chat siempre que el mensaje no esté vacío, teniendo en cuenta
+     * el color elegido por cada jugador para ponerselo al nombre de este 
+     */
 
     void CheckSendChat()
     {
@@ -183,13 +182,8 @@ public class PlayerInfo : NetworkBehaviour
     [Command]
     public void CmdSendMessage(string message)
     {
-        //CAMBIAR COLOR
-        //PONER NOMBRE
-        //message = "\n" + message;
         string color = ColorUtility.ToHtmlStringRGBA(PlayerColor);
-
         message =$"<color=#{color}> {PlayerName}: </color> {message}"+"\n";
-
         chat.chatHistory += message;
     }
 
@@ -212,7 +206,6 @@ public class PlayerInfo : NetworkBehaviour
 
             StopCoroutine("UpdateInputCoroutine");
             StartCoroutine("UpdateInputCoroutine");
-            //StartCoroutine("WrongDirCoroutine");
 
             uiManager.roomHUD.SetColorButtonsFunctions(this);
             uiManager.roomHUD.SetReadyButtonsFunctions(this);
@@ -283,6 +276,11 @@ public class PlayerInfo : NetworkBehaviour
 
     #region speedChange
 
+    /*
+     * Siempre que el nuevo valor de velocidad no sea despreciable respecto al anterior, se actualiza la variable y gracias al hook
+     * también la su apariencia en la interfaz
+     */
+
     public void SetSpeed(float newVal)
     {
         if (Math.Abs(newVal - Speed) < float.Epsilon) return;
@@ -297,10 +295,14 @@ public class PlayerInfo : NetworkBehaviour
     #endregion
 
     #region finishFuncs
+    
+    /*
+     * Se desactivan todas las propiedades del jugador necesarias una vez haya terminado el juego, como el collider, las luces y el render.
+     * Además se resetean las variables por si quiere volver a jugar
+     */
 
     public void Activate(bool active)
     {
-        Debug.Log("Set active: " + active);
         foreach (Renderer r in renderers) r.enabled = active;
         foreach (Light l in lights) l.enabled = active && !uiManager.hasDayLight;
         foreach (Collider c in colliders)
@@ -339,12 +341,10 @@ public class PlayerInfo : NetworkBehaviour
     private void FinishCircuit(bool oldVal, bool newVal)
     {
         if (newVal && polePosition.inGame) {
-            Debug.Log("Circuito terminado");
             Activate(false);
             if (isLocalPlayer)
                 uiManager.ActivateRankingHUD();
         }
-        //Cambiar a cámara de otro jugador en cinematico
     }
 
     #endregion finishFuncs
@@ -384,6 +384,11 @@ public class PlayerInfo : NetworkBehaviour
 
     #region wrongDirection
 
+    /*
+     * Comprueba si la direccion del movimiento del jugador respecto a la dirección del segmento supera un cierto angulo para saber si va en direccion
+     * contraria o no, teniendo en cuenta una velocidad minima del jugador. Si la dirección es contraria el hook hace que se muestre un mensaje por pantalla
+     */
+
     [Server]
     private void CheckWrongDir()
     {
@@ -403,21 +408,6 @@ public class PlayerInfo : NetworkBehaviour
             uiManager.gameHUD.backwardsText.gameObject.SetActive(newV);
         }
     }
-
-    /*
-     * Cada cierto tiempo se comprueba si el jugador va en dirección contraria para avisarle por la interfaz
-     */
-    /*IEnumerator WrongDirCoroutine()
-    {
-        while (!Finish)
-        {
-            float localLastArcLength = LastArcLength;
-            yield return new WaitForSeconds(checkDirInterval);
-            float difference = LastArcLength - localLastArcLength;
-            bool wrongDir = difference < -wrongDirThreshold;
-            uiManager.gameHUD.backwardsText.gameObject.SetActive(wrongDir && Speed > 1.0f);
-        }
-    }*/
 
     #endregion
 
@@ -497,6 +487,11 @@ public class PlayerInfo : NetworkBehaviour
     #endregion updateLap
 
     #region clasificationLap
+    
+    /*
+     * Activa el mensaje de que se está esperando al resto de jugadores
+     */
+
     [ClientRpc]
     public void RpcActivateWaitingUI()
     {
@@ -504,10 +499,12 @@ public class PlayerInfo : NetworkBehaviour
             uiManager.gameHUD.HideWaitingText(false);
     }
 
+    /*
+     * Se encarga de añadir transparencia a los materiales del coche del resto de jugadores
+     */
+
     public void SetTransparency(bool transparent)
     {
-        //float transparency = transparent ? 0.3f : 1f;
-
         MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
         foreach (var mesh in renderers)
         {
@@ -536,6 +533,7 @@ public class PlayerInfo : NetworkBehaviour
     public override string ToString() { return PlayerName; }
 }
 
+//Esta clase tiene un único método que se usa para comparar la posición de los jugadores en la carrera 
 public class PlayerInfoComparer : Comparer<PlayerInfo>
 {
     public override int Compare(PlayerInfo x, PlayerInfo y)
